@@ -26,6 +26,7 @@ public class WebConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
+                        .allowedOrigins("http://localhost:8085","https://18127003.github.io/ptudwnc-app")
                         .allowedMethods("PUT","DELETE","GET","POST","PATCH")
                         .allowCredentials(true);
             }
