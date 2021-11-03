@@ -10,4 +10,5 @@ public class ClassroomDto {
     private String part;
     private String topic;
     private String room;
+    private String description;
 }

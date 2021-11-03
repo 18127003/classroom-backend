@@ -13,9 +13,9 @@ import java.util.stream.Collectors;
 
 
 @RestController
-@RequestMapping(AbstractServiceEndpoint.WEBAPP_API_PATH)
+@RequestMapping(AbstractServiceEndpoint.CLASS_PATH)
 @RequiredArgsConstructor
-public class CommonController {
+public class CommonController extends AbstractServiceEndpoint{
     private final ClassroomService classroomService;
     private final ClassroomMapper classroomMapper;
 
@@ -29,7 +29,7 @@ public class CommonController {
         return ResponseEntity.ok(classroomMapper.toClassroomDto(classroomService.createClassroom(classroom)));
     }
 
-    @GetMapping("classroom")
+    @GetMapping("all")
     public ResponseEntity<List<ClassroomDto>> getClasses(){
         return ResponseEntity.ok(classroomService.getClassrooms().stream().map(classroomMapper::toClassroomDto)
                 .collect(Collectors.toList()));

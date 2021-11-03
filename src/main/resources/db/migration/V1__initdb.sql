@@ -6,18 +6,32 @@ create table ACCOUNT
 (
     id bigint primary key auto_increment not null,
     name varchar(255) character set utf8 collate utf8_unicode_ci,
-    password varchar(32),
+    password varchar(255) not null ,
     version  integer default 0
 );
 
 create table CLASSROOM
 (
     id bigint primary key auto_increment not null,
-    name varchar(255) character set utf8 collate utf8_unicode_ci,
+    name varchar(255) character set utf8 collate utf8_unicode_ci not null,
     room varchar(255) character set utf8 collate utf8_unicode_ci,
     part varchar(255) character set utf8 collate utf8_unicode_ci,
     topic varchar(255) character set utf8 collate utf8_unicode_ci,
-    code varchar(255),
+    description text character set utf8 collate utf8_unicode_ci,
+    code varchar(255) unique,
     version  integer default 0
 );
+
+create table ACCOUNT_CLASSROOM
+(
+    id bigint not null auto_increment primary key,
+    account_id bigint not null,
+    classroom_id bigint not null,
+    role varchar(10) not null default 'TEACHER',
+    version integer default 0,
+    key fk_account (account_id),
+    key fk_classroom (classroom_id),
+    constraint fk_account foreign key (account_id) references account (id),
+    constraint fk_classroom foreign key (classroom_id) references classroom (id)
+)
 

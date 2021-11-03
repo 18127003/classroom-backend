@@ -42,6 +42,8 @@
         </exclusion> 
       </exclusions> 
     </dependency>
+
+    <!-- hibernate -->
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-core</artifactId>
@@ -58,6 +60,7 @@
       <groupId>javax.validation</groupId>
       <artifactId>validation-api</artifactId>
     </dependency>
+
     <!-- QueryDSL -->
     <dependency>
       <groupId>com.querydsl</groupId>
@@ -71,33 +74,55 @@
       <groupId>com.querydsl</groupId>
       <artifactId>querydsl-core</artifactId>
     </dependency>
+
+    <!-- flyway -->
     <dependency>
       <groupId>org.flywaydb</groupId>
       <artifactId>flyway-core</artifactId>
     </dependency>
+
+    <!-- apache library -->
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
     </dependency>
+
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-security</artifactId>
     </dependency>
+
+    <!-- lombok -->
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
     </dependency>
+
+    <!-- mapstruct -->
     <dependency>
       <groupId>org.mapstruct</groupId>
       <artifactId>mapstruct</artifactId>
       <version>1.4.2.Final</version>
     </dependency>
-    <!-- http://mapstruct.org/documentation/ide-support/ -->
     <dependency>
       <groupId>org.mapstruct</groupId>
       <artifactId>mapstruct-processor</artifactId>
       <version>1.4.2.Final</version>
       <optional>true</optional>
+    </dependency>
+
+    <!-- JWT library -->
+    <dependency>
+      <groupId>io.jsonwebtoken</groupId>
+      <artifactId>jjwt</artifactId>
+      <version>0.9.1</version>
+    </dependency>
+
+    <!-- Jasypt string encoder -->
+    <dependency>
+      <groupId>com.github.ulisesbocchio</groupId>
+      <artifactId>jasypt-spring-boot-starter</artifactId>
+      <version>3.0.4</version>
     </dependency>
   </dependencies>  
   <build> 
@@ -117,6 +142,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.8.1</version>
         <configuration>
           <release>11</release>
           <compilerArgs>

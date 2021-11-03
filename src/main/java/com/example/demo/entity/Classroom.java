@@ -6,6 +6,7 @@ import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Getter
@@ -20,7 +21,7 @@ public class Classroom extends AbstractEntity{
     @Column(nullable = false)
     private String code;
 
-    @Column
+    @Column(nullable = false)
     private String name;
 
     @Column
@@ -32,16 +33,25 @@ public class Classroom extends AbstractEntity{
     @Column
     private String room;
 
-    public Classroom(String code, String name, String part, String topic, String room) {
+    @Column(columnDefinition = "text")
+    private String description;
+
+    @OneToMany(mappedBy = "classroom")
+    private List<Participant> participants;
+
+    public Classroom(String code, String name, String part, String topic, String room,
+                     List<Participant> participants) {
         this.code = code;
         this.name = name;
         this.part = part;
         this.topic = topic;
         this.room = room;
+        this.participants=participants;
     }
 
-    public Classroom(long id, String code, String name, String part, String topic, String room) {
-        this(code, name, part, topic, room);
+    public Classroom(long id, String code, String name, String part, String topic, String room,
+                     List<Participant> participants) {
+        this(code, name, part, topic, room, participants);
         this.id = id;
     }
 }
