@@ -19,7 +19,10 @@ create table CLASSROOM
     topic varchar(255) character set utf8 collate utf8_unicode_ci,
     description text character set utf8 collate utf8_unicode_ci,
     code varchar(255) unique,
-    version  integer default 0
+    creator bigint not null,
+    version  integer default 0,
+    key fk_creator (creator),
+    constraint fk_creator foreign key (creator) references account (id)
 );
 
 create table ACCOUNT_CLASSROOM

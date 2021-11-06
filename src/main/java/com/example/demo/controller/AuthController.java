@@ -33,11 +33,6 @@ public class AuthController extends AbstractServiceEndpoint{
     public ResponseEntity<AccountDto> authenticate(@RequestBody final JwtRequest jwtRequest, final HttpServletResponse response) {
         final var userDetails = authService.loadUserByUsername(jwtRequest.getUsername());
         if (authService.validatePassword(jwtRequest.getPassword(), userDetails.getPassword())) {
-//            final var cookie = new Cookie(JWT_COOKIE_TEXT, jwtService.generateJwtToken(userDetails));
-//            cookie.setHttpOnly(true);
-//            cookie.setMaxAge(cookieMaxAge);
-//            cookie.setPath(WEBAPP_API_PATH);
-//            response.addCookie(cookie);
             ResponseCookie b = ResponseCookie.from(JWT_COOKIE_TEXT, jwtService.generateJwtToken(userDetails))
                     .maxAge(cookieMaxAge)
                     .httpOnly(true)

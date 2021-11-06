@@ -26,4 +26,9 @@ public class AccountServiceImpl implements AccountService {
         account.setPassword(passwordEncoder.encode(account.getPassword()));
         return accountRepository.save(account);
     }
+
+    @Override
+    public Account findById(Long accountId) {
+        return accountRepository.findById(accountId).get();
+    }
 }
