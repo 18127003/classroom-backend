@@ -11,11 +11,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
-
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
-
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import static com.example.demo.common.constant.Constants.JWT_COOKIE_TEXT;
 
 @RestController
@@ -33,15 +34,24 @@ public class AuthController extends AbstractServiceEndpoint{
     public ResponseEntity<AccountDto> authenticate(@RequestBody final JwtRequest jwtRequest, final HttpServletResponse response) {
         final var userDetails = authService.loadUserByUsername(jwtRequest.getUsername());
         if (authService.validatePassword(jwtRequest.getPassword(), userDetails.getPassword())) {
-            ResponseCookie b = ResponseCookie.from(JWT_COOKIE_TEXT, jwtService.generateJwtToken(userDetails))
-                    .maxAge(cookieMaxAge)
-                    .httpOnly(true)
-                    .secure(true)
-                    .sameSite("None")
-                    .path(WEBAPP_API_PATH)
-                    .build();
-            response.addHeader(HttpHeaders.SET_COOKIE, b.toString());
+            response.addHeader(HttpHeaders.SET_COOKIE, generateJwtCookies(userDetails).toString());
             return ResponseEntity.ok(accountMapper.toAccountDto((Account) userDetails));
+        }
+        return ResponseEntity.badRequest().build();
+    }
+
+    @PostMapping(value = "socialLogin")
+    public ResponseEntity<AccountDto> socialAuthenticate(@RequestBody final String tokenId, final HttpServletResponse response){
+
+        try {
+            var account = authService.validateSocialToken(tokenId);
+            if (account != null){
+                response.addHeader(HttpHeaders.SET_COOKIE, generateJwtCookies(account).toString());
+                return ResponseEntity.ok(accountMapper.toAccountDto(account));
+            }
+
+        } catch (GeneralSecurityException | IOException ignored) {
+
         }
         return ResponseEntity.badRequest().build();
     }
@@ -60,5 +70,15 @@ public class AuthController extends AbstractServiceEndpoint{
     public ResponseEntity<Boolean> revokeToken(@PathVariable final String tokenId) {
         jwtService.invalidToken(tokenId);
         return ResponseEntity.ok(Boolean.TRUE);
+    }
+
+    private ResponseCookie generateJwtCookies(UserDetails account){
+        return ResponseCookie.from(JWT_COOKIE_TEXT, jwtService.generateJwtToken(account))
+                .maxAge(cookieMaxAge)
+                .httpOnly(true)
+                .secure(true)
+                .sameSite("None")
+                .path(WEBAPP_API_PATH)
+                .build();
     }
 }

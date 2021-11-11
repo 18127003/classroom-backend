@@ -45,6 +45,7 @@ public class ApiSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and().authorizeRequests().antMatchers(
                     "/"+ AbstractServiceEndpoint.AUTH_PATH+"login",
+                    "/"+ AbstractServiceEndpoint.AUTH_PATH+"socialLogin",
                     "/"+ AbstractServiceEndpoint.ACCOUNT_PATH+"create"
                 ).permitAll()
 //                .antMatchers(ADMIN_ACCESSIBLE_PATH.toArray(String[]::new)).hasAnyAuthority(Role.ADMIN.name())

@@ -30,14 +30,13 @@ public class Account extends AbstractEntity implements UserDetails {
     @OneToMany(mappedBy = "account")
     private List<Participant> assignedClasses;
 
-    public Account(String name, String password, List<Participant> assignedClasses) {
+    public Account(String name, String password) {
         this.name = name;
         this.password = password;
-        this.assignedClasses = assignedClasses;
     }
 
-    public Account(long id, String name, String password, List<Participant> assignedClasses){
-        this(name, password, assignedClasses);
+    public Account(long id, String name, String password){
+        this(name, password);
         this.id = id;
     }
 

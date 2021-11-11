@@ -1,6 +1,9 @@
 package com.example.demo;
 
 import com.example.demo.security.ApiSecurityConfig;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.jackson2.JacksonFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.jasypt.encryption.StringEncryptor;
 import org.jasypt.encryption.pbe.PooledPBEStringEncryptor;
@@ -12,6 +15,10 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import java.util.Collections;
+
+import static com.example.demo.common.constant.Constants.GOOGLE_AUTH_CLIENT_ID;
 
 @SpringBootApplication(scanBasePackageClasses = WebConfig.class)
 @Import({ApiSecurityConfig.class})
@@ -31,6 +38,17 @@ public class WebConfig {
                         .allowCredentials(true);
             }
         };
+    }
+
+    @Bean
+    public GoogleIdTokenVerifier googleIdTokenVerifier() {
+        return new GoogleIdTokenVerifier
+            .Builder(new NetHttpTransport(), JacksonFactory.getDefaultInstance())
+            // Specify the CLIENT_ID of the app that accesses the backend:
+            .setAudience(Collections.singletonList(GOOGLE_AUTH_CLIENT_ID))
+            // Or, if multiple clients access the backend:
+            //.setAudience(Arrays.asList(CLIENT_ID_1, CLIENT_ID_2, CLIENT_ID_3))
+            .build();
     }
 
     @Primary
