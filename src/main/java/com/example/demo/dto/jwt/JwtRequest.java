@@ -10,6 +10,6 @@ import java.io.Serializable;
 @Getter
 @RequiredArgsConstructor
 public class JwtRequest implements Serializable {
-    private String username;
+    private String email;
     private String password;
 }

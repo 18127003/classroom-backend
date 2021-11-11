@@ -6,7 +6,8 @@ create table ACCOUNT
 (
     id bigint primary key auto_increment not null,
     name varchar(255) character set utf8 collate utf8_unicode_ci,
-    password varchar(255) not null ,
+    password varchar(255) not null,
+    email varchar(255) unique not null,
     version  integer default 0
 );
 

@@ -3,7 +3,6 @@ package com.example.demo.entity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.GenericGenerator;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -27,16 +26,20 @@ public class Account extends AbstractEntity implements UserDetails {
     @Column
     private String password;
 
+    @Column
+    private String email;
+
     @OneToMany(mappedBy = "account")
     private List<Participant> assignedClasses;
 
-    public Account(String name, String password) {
+    public Account(String name, String password, String email) {
         this.name = name;
         this.password = password;
+        this.email = email;
     }
 
-    public Account(long id, String name, String password){
-        this(name, password);
+    public Account(long id, String name, String password, String email){
+        this(name, password, email);
         this.id = id;
     }
 
@@ -47,7 +50,7 @@ public class Account extends AbstractEntity implements UserDetails {
 
     @Override
     public String getUsername() {
-        return name;
+        return id.toString();
     }
 
     @Override

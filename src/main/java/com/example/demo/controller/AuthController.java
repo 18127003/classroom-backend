@@ -1,5 +1,7 @@
 package com.example.demo.controller;
 
+import com.example.demo.common.exception.RTException;
+import com.example.demo.common.exception.RecordNotFoundException;
 import com.example.demo.dto.AccountDto;
 import com.example.demo.dto.jwt.JwtRequest;
 import com.example.demo.entity.Account;
@@ -32,12 +34,13 @@ public class AuthController extends AbstractServiceEndpoint{
 
     @PostMapping(value = "login")
     public ResponseEntity<AccountDto> authenticate(@RequestBody final JwtRequest jwtRequest, final HttpServletResponse response) {
-        final var userDetails = authService.loadUserByUsername(jwtRequest.getUsername());
-        if (authService.validatePassword(jwtRequest.getPassword(), userDetails.getPassword())) {
-            response.addHeader(HttpHeaders.SET_COOKIE, generateJwtCookies(userDetails).toString());
-            return ResponseEntity.ok(accountMapper.toAccountDto((Account) userDetails));
+        try{
+            var user = authService.validatePassword(jwtRequest);
+            response.addHeader(HttpHeaders.SET_COOKIE, generateJwtCookies(user).toString());
+            return ResponseEntity.ok(accountMapper.toAccountDto(user));
+        } catch (RTException e){
+            return ResponseEntity.badRequest().build();
         }
-        return ResponseEntity.badRequest().build();
     }
 
     @PostMapping(value = "socialLogin")

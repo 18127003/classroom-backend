@@ -1,5 +1,8 @@
 package com.example.demo.service.impl;
 
+import com.example.demo.common.exception.RTException;
+import com.example.demo.common.exception.RecordNotFoundException;
+import com.example.demo.dto.jwt.JwtRequest;
 import com.example.demo.entity.Account;
 import com.example.demo.repository.AccountRepository;
 import com.example.demo.service.AuthService;
@@ -22,8 +25,7 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder passwordEncoder;
     private final GoogleIdTokenVerifier googleIdTokenVerifier;
 
-    @Override
-    public boolean validatePassword(String rawPassword, String password) {
+    private boolean checkPassword(String rawPassword, String password) {
         if (rawPassword.isEmpty()&&password.isEmpty()){
             return true;
         }
@@ -31,6 +33,15 @@ public class AuthServiceImpl implements AuthService {
             return false;
         }
         return passwordEncoder.matches(rawPassword, password);
+    }
+
+    @Override
+    public Account validatePassword(JwtRequest jwtRequest) {
+        var user = accountRepository.findByEmail(jwtRequest.getEmail());
+        if(user==null){
+            throw new RTException(new RecordNotFoundException(jwtRequest.getEmail(), Account.class.getSimpleName()));
+        }
+        return checkPassword(jwtRequest.getPassword(), user.getPassword())?user:null;
     }
 
     @Override
@@ -55,9 +66,9 @@ public class AuthServiceImpl implements AuthService {
 //            String givenName = (String) payload.get("given_name");
 
             // find account in app db
-            var account = accountRepository.findByName(name);
+            var account = accountRepository.findByEmail(email);
             if(account==null){
-                return accountRepository.save(new Account(name,""));
+                return accountRepository.save(new Account(name,"", email));
             }
             return account;
         } else {
@@ -68,10 +79,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
-        var user = accountRepository.findByName(s);
-        if(user==null){
-            throw new UsernameNotFoundException("Not found user name "+ s);
-        }
-        return user;
+        return accountRepository.findById(Long.valueOf(s))
+                .orElseThrow(() -> new UsernameNotFoundException("Not found user name "+ s));
     }
 }

@@ -1,10 +1,11 @@
 package com.example.demo.service.impl;
 
 import com.example.demo.common.enums.Role;
+import com.example.demo.common.exception.RTException;
+import com.example.demo.common.exception.RecordNotFoundException;
 import com.example.demo.entity.Account;
 import com.example.demo.entity.Classroom;
 import com.example.demo.entity.Participant;
-import com.example.demo.repository.AccountRepository;
 import com.example.demo.repository.ClassroomRepository;
 import com.example.demo.repository.ParticipantRepository;
 import com.example.demo.service.AccountService;
@@ -41,8 +42,8 @@ public class ClassroomServiceImpl implements ClassroomService {
 
     @Override
     public List<Participant> getParticipants(Long classroomId) {
-        var classroom = classroomRepository.findById(classroomId).get();
-
+        var classroom = classroomRepository.findById(classroomId)
+                .orElseThrow(()->new RTException(new RecordNotFoundException(classroomId.toString(),Classroom.class.getSimpleName())));
         return classroom.getParticipants();
     }
 }

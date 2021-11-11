@@ -2,6 +2,7 @@ package com.example.demo.service.impl;
 
 import com.example.demo.common.exception.DuplicateRecordException;
 import com.example.demo.common.exception.RTException;
+import com.example.demo.common.exception.RecordNotFoundException;
 import com.example.demo.entity.Account;
 import com.example.demo.repository.AccountRepository;
 import com.example.demo.service.AccountService;
@@ -29,6 +30,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public Account findById(Long accountId) {
-        return accountRepository.findById(accountId).get();
+        return accountRepository.findById(accountId)
+                .orElseThrow(()->new RTException(new RecordNotFoundException(accountId.toString(), Account.class.getSimpleName())));
     }
 }

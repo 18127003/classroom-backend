@@ -41,8 +41,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             return;
         }
         var jwtToken = jwtCookie.getValue();
-        var userName = jwtService.getUsernameFromToken(jwtToken);
-        UserDetails userDetails = authService.loadUserByUsername(userName);
+        var userId = jwtService.getUserIdFromToken(jwtToken);
+        UserDetails userDetails = authService.loadUserByUsername(userId);
         if (jwtService.validateToken(jwtToken, userDetails)) {
             UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
                     userDetails, null, userDetails.getAuthorities());
