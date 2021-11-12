@@ -37,7 +37,8 @@ public class CommonController extends AbstractServiceEndpoint{
 
     @GetMapping("all")
     public ResponseEntity<List<ClassroomDto>> getClasses(@AuthenticationPrincipal Account account){
-        return ResponseEntity.ok(classroomService.getClassrooms(account.getId()).stream().map(classroomMapper::toAssignedClassroomDto)
+        return ResponseEntity.ok(classroomService.getAssignedClassrooms(account.getId())
+                .stream().map(classroomMapper::toAssignedClassroomDto)
                 .collect(Collectors.toList()));
     }
 

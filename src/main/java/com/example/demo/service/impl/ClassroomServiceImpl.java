@@ -20,15 +20,12 @@ import java.util.List;
 @Transactional(rollbackFor = {Throwable.class})
 @RequiredArgsConstructor
 public class ClassroomServiceImpl implements ClassroomService {
-    private final ClassroomRepository classroomRepository;
-    private final AccountService accountService;
     private final ParticipantRepository participantRepository;
     private final StringEncryptor stringEncryptor;
 
     @Override
-    public List<Participant> getClassrooms(Long accountId) {
-        var account = accountService.findById(accountId);
-        return account.getAssignedClasses();
+    public List<Participant> getAssignedClassrooms(Long accountId) {
+        return participantRepository.getAssignedClassroom(accountId);
     }
 
     @Override
@@ -42,8 +39,6 @@ public class ClassroomServiceImpl implements ClassroomService {
 
     @Override
     public List<Participant> getParticipants(Long classroomId) {
-        var classroom = classroomRepository.findById(classroomId)
-                .orElseThrow(()->new RTException(new RecordNotFoundException(classroomId.toString(),Classroom.class.getSimpleName())));
-        return classroom.getParticipants();
+        return participantRepository.getParticipants(classroomId);
     }
 }

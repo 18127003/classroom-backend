@@ -20,11 +20,12 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public Account createAccount(Account account) {
-        var existedAccount = accountRepository.findByName(account.getName());
+        var existedAccount = accountRepository.findByEmail(account.getEmail());
         if(existedAccount!=null){
             throw new RTException(new DuplicateRecordException(existedAccount.getId().toString(),Account.class.getSimpleName()));
         }
         account.setPassword(passwordEncoder.encode(account.getPassword()));
+        account.setName(account.getFirstName()+" "+account.getLastName());
         return accountRepository.save(account);
     }
 

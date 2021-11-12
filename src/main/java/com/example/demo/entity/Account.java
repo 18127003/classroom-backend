@@ -20,6 +20,12 @@ public class Account extends AbstractEntity implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "first_name")
+    private String firstName;
+
+    @Column(name = "last_name")
+    private String lastName;
+
     @Column
     private String name;
 
@@ -32,14 +38,16 @@ public class Account extends AbstractEntity implements UserDetails {
     @OneToMany(mappedBy = "account")
     private List<Participant> assignedClasses;
 
-    public Account(String name, String password, String email) {
-        this.name = name;
+    public Account(String firstName, String lastName, String password, String email) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.name = firstName + " " + lastName;
         this.password = password;
         this.email = email;
     }
 
-    public Account(long id, String name, String password, String email){
-        this(name, password, email);
+    public Account(long id, String firstName, String lastName, String password, String email){
+        this(firstName, lastName, password, email);
         this.id = id;
     }
 

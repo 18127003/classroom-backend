@@ -5,6 +5,8 @@ drop table if exists ACCOUNT;
 create table ACCOUNT
 (
     id bigint primary key auto_increment not null,
+    first_name varchar(150) character set utf8 collate utf8_unicode_ci,
+    last_name varchar(100) character set utf8 collate utf8_unicode_ci,
     name varchar(255) character set utf8 collate utf8_unicode_ci,
     password varchar(255) not null,
     email varchar(255) unique not null,

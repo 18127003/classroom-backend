@@ -7,7 +7,7 @@ import com.example.demo.entity.Participant;
 import java.util.List;
 
 public interface ClassroomService {
-    List<Participant> getClassrooms(Long accountId);
+    List<Participant> getAssignedClassrooms(Long accountId);
 
     Classroom createClassroom(Classroom classroom, Account account);
 

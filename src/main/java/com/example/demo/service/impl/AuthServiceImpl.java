@@ -53,22 +53,21 @@ public class AuthServiceImpl implements AuthService {
             GoogleIdToken.Payload payload = idToken.getPayload();
 
             // Print user identifier
-            String userId = payload.getSubject();
-            System.out.println("User ID: " + userId);
+//            String userId = payload.getSubject();
 
             // Get profile information from payload
             String email = payload.getEmail();
-            boolean emailVerified = payload.getEmailVerified();
-            String name = (String) payload.get("name");
+//            boolean emailVerified = payload.getEmailVerified();
+//            String name = (String) payload.get("name");
 //            String pictureUrl = (String) payload.get("picture");
 //            String locale = (String) payload.get("locale");
-//            String familyName = (String) payload.get("family_name");
-//            String givenName = (String) payload.get("given_name");
+            String familyName = (String) payload.get("family_name");
+            String givenName = (String) payload.get("given_name");
 
             // find account in app db
             var account = accountRepository.findByEmail(email);
             if(account==null){
-                return accountRepository.save(new Account(name,"", email));
+                return accountRepository.save(new Account(familyName, givenName, "", email));
             }
             return account;
         } else {
