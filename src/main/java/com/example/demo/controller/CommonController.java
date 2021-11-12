@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import com.example.demo.common.exception.RTException;
 import com.example.demo.dto.AccountDto;
 import com.example.demo.dto.ClassroomDto;
 import com.example.demo.entity.Account;
@@ -33,6 +34,17 @@ public class CommonController extends AbstractServiceEndpoint{
     public ResponseEntity<ClassroomDto> createClass(@RequestBody Classroom classroom,
                                                     @AuthenticationPrincipal Account account){
         return ResponseEntity.ok(classroomMapper.toClassroomDto(classroomService.createClassroom(classroom, account)));
+    }
+
+    @PostMapping("join")
+    public ResponseEntity<ClassroomDto> joinClass(@RequestParam String code,
+                                                    @AuthenticationPrincipal Account account){
+        try{
+            var classroom = classroomService.joinClassroom(code, account);
+            return ResponseEntity.ok(classroomMapper.toClassroomDto(classroom));
+        } catch (RTException e){
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @GetMapping("all")

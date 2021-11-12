@@ -23,4 +23,12 @@ public class ParticipantRepositoryImpl extends AbstractRepositoryImpl<Participan
                 .where(QParticipant.participant.account.id.eq(accountId))
                 .fetch();
     }
+
+    @Override
+    public Participant findParticipant(Long classId, Long accountId) {
+        return selectFrom(QParticipant.participant)
+                .where(QParticipant.participant.classroom.id.eq(classId)
+                .and(QParticipant.participant.account.id.eq(accountId)))
+                .fetchOne();
+    }
 }
