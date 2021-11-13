@@ -16,4 +16,9 @@ public class AccountRepositoryImpl extends AbstractRepositoryImpl<Account> imple
     public Account findByEmail(String email) {
         return selectFrom(QAccount.account).where(QAccount.account.email.eq(email)).fetchOne();
     }
+
+    @Override
+    public Account findByStudentId(String studentId) {
+        return selectFrom(QAccount.account).where(QAccount.account.studentId.eq(studentId)).fetchOne();
+    }
 }

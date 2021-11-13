@@ -9,6 +9,7 @@ create table ACCOUNT
     last_name varchar(100) character set utf8 collate utf8_unicode_ci,
     name varchar(255) character set utf8 collate utf8_unicode_ci,
     password varchar(255) not null,
+    student_id varchar(10) unique,
     email varchar(255) unique not null,
     version  integer default 0
 );

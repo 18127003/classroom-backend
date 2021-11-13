@@ -6,6 +6,7 @@ import com.example.demo.dto.jwt.JwtRequest;
 import com.example.demo.entity.Account;
 import com.example.demo.repository.AccountRepository;
 import com.example.demo.service.AuthService;
+import com.example.demo.util.PasswordUtil;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import lombok.RequiredArgsConstructor;
@@ -22,18 +23,9 @@ import java.security.GeneralSecurityException;
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
     private final AccountRepository accountRepository;
-    private final PasswordEncoder passwordEncoder;
     private final GoogleIdTokenVerifier googleIdTokenVerifier;
+    private final PasswordUtil passwordUtil;
 
-    private boolean checkPassword(String rawPassword, String password) {
-        if (rawPassword.isEmpty()&&password.isEmpty()){
-            return true;
-        }
-        if (rawPassword.isEmpty()||password.isEmpty()){
-            return false;
-        }
-        return passwordEncoder.matches(rawPassword, password);
-    }
 
     @Override
     public Account validatePassword(JwtRequest jwtRequest) {
@@ -41,7 +33,7 @@ public class AuthServiceImpl implements AuthService {
         if(user==null){
             throw new RTException(new RecordNotFoundException(jwtRequest.getEmail(), Account.class.getSimpleName()));
         }
-        return checkPassword(jwtRequest.getPassword(), user.getPassword())?user:null;
+        return passwordUtil.checkPassword(jwtRequest.getPassword(), user.getPassword())?user:null;
     }
 
     @Override

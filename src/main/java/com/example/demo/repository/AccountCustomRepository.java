@@ -7,4 +7,6 @@ public interface AccountCustomRepository {
     Account findByName(String name);
 
     Account findByEmail(String email);
+
+    Account findByStudentId(String studentId);
 }
