@@ -34,14 +34,20 @@ public class AccountServiceImpl implements AccountService {
     public Account updateAccount(Long id, Account update) {
         var account = accountRepository.findById(id)
                 .orElseThrow(()->new RTException(new RecordNotFoundException(id.toString(), Account.class.getSimpleName())));
-        var email = accountRepository.findByEmail(update.getEmail());
-        if(email!=null){
-            throw new RTException(new DuplicateRecordException(email.getId().toString(), Account.class.getSimpleName()));
+        if (!update.getEmail().equals(account.getEmail())){
+            var email = accountRepository.findByEmail(update.getEmail());
+            if(email!=null){
+                throw new RTException(new DuplicateRecordException(email.getId().toString(), Account.class.getSimpleName()));
+            }
         }
+
         var studentId = update.getStudentId();
-        if(studentId!=null && accountRepository.findByStudentId(studentId)!=null){
-            throw new RTException(new DuplicateRecordException(studentId, Account.class.getSimpleName()));
+        if(studentId!=null && !studentId.equals(account.getStudentId())){
+            if(accountRepository.findByStudentId(studentId)!=null){
+                throw new RTException(new DuplicateRecordException(studentId, Account.class.getSimpleName()));
+            }
         }
+
         account.setFirstName(update.getFirstName());
         account.setLastName(update.getLastName());
         account.setName(update.getFirstName()+" "+update.getLastName());
