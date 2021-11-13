@@ -138,6 +138,13 @@
       <version>1.29.3</version>
     </dependency>
 
+    <!-- email sender -->
+    <dependency>
+      <groupId>com.sendgrid</groupId>
+      <artifactId>sendgrid-java</artifactId>
+      <version>4.8.0</version>
+    </dependency>
+
   </dependencies>  
   <build> 
     <plugins> 
