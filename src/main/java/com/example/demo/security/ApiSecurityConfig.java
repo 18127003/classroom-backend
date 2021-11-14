@@ -1,5 +1,6 @@
 package com.example.demo.security;
 
+import com.example.demo.common.enums.Role;
 import com.example.demo.controller.AbstractServiceEndpoint;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +17,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import static com.example.demo.controller.AbstractServiceEndpoint.STUDENT_PROTECTED_PATH;
+import static com.example.demo.controller.AbstractServiceEndpoint.TEACHER_PROTECTED_PATH;
+
 @Configuration
 @EnableWebSecurity
 @Slf4j
@@ -25,6 +29,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class ApiSecurityConfig extends WebSecurityConfigurerAdapter {
     private final AuthEntryPointJwt unauthorizedHandler;
     private final JwtAuthFilter authenticateFilter;
+    private final ApiAccessFilter apiAccessFilter;
 
     @Override
     protected final void configure(AuthenticationManagerBuilder auth) {
@@ -47,10 +52,10 @@ public class ApiSecurityConfig extends WebSecurityConfigurerAdapter {
                     "/"+ AbstractServiceEndpoint.AUTH_PATH+"socialLogin",
                     "/"+ AbstractServiceEndpoint.ACCOUNT_PATH+"create"
                 ).permitAll()
-//                .antMatchers(ADMIN_ACCESSIBLE_PATH.toArray(String[]::new)).hasAnyAuthority(Role.ADMIN.name())
-//                .antMatchers(INSPECTOR_ACCESSIBLE_PATH.toArray(String[]::new)).hasAnyAuthority(Role.INSPECTOR.name())
+                .antMatchers(TEACHER_PROTECTED_PATH.toArray(String[]::new)).hasAnyAuthority(Role.TEACHER.name())
+                .antMatchers(STUDENT_PROTECTED_PATH.toArray(String[]::new)).hasAnyAuthority(Role.STUDENT.name())
                 .anyRequest().authenticated();
-        http.addFilterBefore(authenticateFilter, UsernamePasswordAuthenticationFilter.class);
-//        http.addFilterAfter(accessAuthorizeFilter, UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(apiAccessFilter, UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(authenticateFilter, ApiAccessFilter.class);
     }
 }
