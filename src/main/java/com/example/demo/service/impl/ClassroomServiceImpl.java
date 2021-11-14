@@ -45,7 +45,7 @@ public class ClassroomServiceImpl implements ClassroomService {
     }
 
     @Override
-    public Classroom joinClassroom(String code, Account account) {
+    public Classroom joinClassroom(String code, Role role, Account account) {
         var classroom = classroomRepository.findByCode(code);
         if (classroom == null){
             throw new RTException(new RecordNotFoundException(code, Classroom.class.getSimpleName()));
@@ -54,7 +54,7 @@ public class ClassroomServiceImpl implements ClassroomService {
         if (participant != null){
             throw new RTException(new DuplicateRecordException(participant.getId().toString(), Participant.class.getSimpleName()));
         }
-        participantRepository.save(new Participant(account, classroom, Role.STUDENT));
+        participantRepository.save(new Participant(account, classroom, role));
         return classroom;
     }
 
@@ -84,12 +84,12 @@ public class ClassroomServiceImpl implements ClassroomService {
     }
 
     private String generateInvitationLink(Classroom classroom, Role role){
-//        return "http://localhost:8085/invite/accpet_token/"
-        return "https://18127003.github.io/classroom-frontend/invite/accept_token/"
+        return "http://localhost:8085/#/invite/accept_token/"
+//        return "https://18127003.github.io/classroom-frontend/#/invite/accept_token/"
                 +classroom.getId()
                 +"?role="
                 +role.toString()
-                +"&token="
+                +"&code="
                 +classroom.getCode();
     }
 

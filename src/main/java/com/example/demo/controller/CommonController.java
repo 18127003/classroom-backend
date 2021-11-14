@@ -45,9 +45,13 @@ public class CommonController extends AbstractServiceEndpoint{
 
     @PostMapping("join")
     public ResponseEntity<ClassroomDto> joinClass(@RequestParam String code,
+                                                  @RequestParam(required = false) String role,
                                                     @AuthenticationPrincipal Account account){
+        if(role==null){
+            role = Role.STUDENT.name();
+        }
         try{
-            var classroom = classroomService.joinClassroom(code, account);
+            var classroom = classroomService.joinClassroom(code, Role.valueOf(role.toUpperCase()), account);
             return ResponseEntity.ok(classroomMapper.toClassroomDto(classroom));
         } catch (RTException e){
             return ResponseEntity.badRequest().build();

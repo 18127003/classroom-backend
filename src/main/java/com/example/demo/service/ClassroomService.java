@@ -12,7 +12,7 @@ public interface ClassroomService {
 
     Classroom createClassroom(Classroom classroom, Account account);
 
-    Classroom joinClassroom(String code, Account account);
+    Classroom joinClassroom(String code, Role role, Account account);
 
     List<Participant> getParticipants(Long classroomId);
 
