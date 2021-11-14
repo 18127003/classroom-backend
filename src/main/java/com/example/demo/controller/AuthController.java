@@ -69,6 +69,11 @@ public class AuthController extends AbstractServiceEndpoint{
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping("testConnection")
+    public ResponseEntity<Void> testConnection(){
+        return ResponseEntity.ok().build();
+    }
+
     @GetMapping(value = "/revokeToken/{tokenId}")
     public ResponseEntity<Boolean> revokeToken(@PathVariable final String tokenId) {
         jwtService.invalidToken(tokenId);

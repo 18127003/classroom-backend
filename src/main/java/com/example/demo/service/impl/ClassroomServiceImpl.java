@@ -84,8 +84,8 @@ public class ClassroomServiceImpl implements ClassroomService {
     }
 
     private String generateInvitationLink(Classroom classroom, Role role){
-        return "http://localhost:8085/#/invite/accept_token/"
-//        return "https://18127003.github.io/classroom-frontend/#/invite/accept_token/"
+//        return "http://localhost:8085/#/invite/accept_token/"
+        return "https://18127003.github.io/classroom-frontend/#/invite/accept_token/"
                 +classroom.getId()
                 +"?role="
                 +role.toString()
