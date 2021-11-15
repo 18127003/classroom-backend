@@ -36,16 +36,16 @@ public class ClassroomServiceImpl implements ClassroomService {
     }
 
     @Override
-    public Classroom createClassroom(Classroom classroom, Account account) {
+    public Participant createClassroom(Classroom classroom, Account account) {
         classroom.setCreator(account);
         var participant = participantRepository.save(new Participant(account, classroom, Role.TEACHER));
         var createdClassroom = participant.getClassroom();
         createdClassroom.setCode(stringEncryptor.encrypt(createdClassroom.getId().toString()));
-        return createdClassroom;
+        return participant;
     }
 
     @Override
-    public Classroom joinClassroom(String code, Role role, Account account) {
+    public Participant joinClassroom(String code, Role role, Account account) {
         var classroom = classroomRepository.findByCode(code);
         if (classroom == null){
             throw new RTException(new RecordNotFoundException(code, Classroom.class.getSimpleName()));
@@ -54,8 +54,7 @@ public class ClassroomServiceImpl implements ClassroomService {
         if (participant != null){
             throw new RTException(new DuplicateRecordException(participant.getId().toString(), Participant.class.getSimpleName()));
         }
-        participantRepository.save(new Participant(account, classroom, role));
-        return classroom;
+        return participantRepository.save(new Participant(account, classroom, role));
     }
 
     @Override

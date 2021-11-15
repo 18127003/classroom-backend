@@ -40,7 +40,7 @@ public class CommonController extends AbstractServiceEndpoint{
     @PostMapping("create")
     public ResponseEntity<ClassroomDto> createClass(@RequestBody Classroom classroom,
                                                     @AuthenticationPrincipal Account account){
-        return ResponseEntity.ok(classroomMapper.toClassroomDto(classroomService.createClassroom(classroom, account)));
+        return ResponseEntity.ok(classroomMapper.toAssignedClassroomDto(classroomService.createClassroom(classroom, account)));
     }
 
     @PostMapping("join")
@@ -52,7 +52,7 @@ public class CommonController extends AbstractServiceEndpoint{
         }
         try{
             var classroom = classroomService.joinClassroom(code, Role.valueOf(role.toUpperCase()), account);
-            return ResponseEntity.ok(classroomMapper.toClassroomDto(classroom));
+            return ResponseEntity.ok(classroomMapper.toAssignedClassroomDto(classroom));
         } catch (RTException e){
             return ResponseEntity.badRequest().build();
         }

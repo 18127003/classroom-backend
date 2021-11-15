@@ -10,9 +10,9 @@ import java.util.List;
 public interface ClassroomService {
     List<Participant> getAssignedClassrooms(Long accountId);
 
-    Classroom createClassroom(Classroom classroom, Account account);
+    Participant createClassroom(Classroom classroom, Account account);
 
-    Classroom joinClassroom(String code, Role role, Account account);
+    Participant joinClassroom(String code, Role role, Account account);
 
     List<Participant> getParticipants(Long classroomId);
 
