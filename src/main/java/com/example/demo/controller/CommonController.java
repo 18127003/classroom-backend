@@ -45,6 +45,7 @@ public class CommonController extends AbstractServiceEndpoint{
         if(role==null){
             role = Role.STUDENT.name();
         }
+        code = code.replaceAll(" ","+");
         try{
             var classroom = classroomService.joinClassroom(code, Role.valueOf(role.toUpperCase()), account);
             return ResponseEntity.ok(classroomMapper.toAssignedClassroomDto(classroom));

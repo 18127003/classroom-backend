@@ -12,7 +12,10 @@ public class AbstractServiceEndpoint {
     public static final String AUTH_PATH = WEBAPP_API_PATH + "/auth/";
 
     public static final Set<String> TEACHER_PROTECTED_PATH = Set.of(
-            CLASS_PATH + "**/invite**"
+            CLASS_PATH + "**/invite**",
+            CLASS_PATH + "**/removeParticipants**",
+            CLASS_PATH + "**/hideParticipants**",
+            CLASS_PATH + "**/regenerateCode**"
     );
 
     public static final Set<String> STUDENT_PROTECTED_PATH = Set.of(
