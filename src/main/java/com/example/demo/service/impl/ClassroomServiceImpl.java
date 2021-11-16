@@ -60,27 +60,25 @@ public class ClassroomServiceImpl implements ClassroomService {
 
     @Override
     public void removeParticipants(Long id, List<Long> removals) {
-        var participants = participantRepository.getParticipants(id);
-        if(participants.isEmpty()){
-            throw new RTException(new RecordNotFoundException(id.toString(), Classroom.class.getSimpleName()));
-        }
-        var removed = participants.stream()
-                .filter(participant -> removals.contains(participant.getId()))
-                .collect(Collectors.toList());
+        var removed = getParticipantsWithId(id, removals);
         participantRepository.deleteAll(removed);
     }
 
     @Override
     public void hideParticipants(Long id, List<Long> participants) {
+        List<Participant> hidings = getParticipantsWithId(id, participants);
+        hidings.forEach(hiding->hiding.setHidden(true));
+        participantRepository.saveAll(hidings);
+    }
+
+    private List<Participant> getParticipantsWithId(Long id, List<Long> participants) {
         var allParticipants = participantRepository.getParticipants(id);
         if(allParticipants.isEmpty()){
             throw new RTException(new RecordNotFoundException(id.toString(), Classroom.class.getSimpleName()));
         }
-        var hidings = allParticipants.stream()
-                .filter(participant -> participants.contains(participant.getId()))
+        return  allParticipants.stream()
+                .filter(participant -> participants.contains(participant.getAccount().getId()))
                 .collect(Collectors.toList());
-        hidings.forEach(hiding->hiding.setHidden(true));
-        participantRepository.saveAll(hidings);
     }
 
     @Override
