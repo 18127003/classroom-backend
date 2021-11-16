@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.example.demo.common.constant.Constants.HOST_EMAIL;
 
@@ -38,7 +39,7 @@ public class ClassroomServiceImpl implements ClassroomService {
     @Override
     public Participant createClassroom(Classroom classroom, Account account) {
         classroom.setCreator(account);
-        var participant = participantRepository.save(new Participant(account, classroom, Role.TEACHER));
+        var participant = participantRepository.save(new Participant(account, classroom, Role.TEACHER, false));
         var createdClassroom = participant.getClassroom();
         createdClassroom.setCode(stringEncryptor.encrypt(createdClassroom.getId().toString()));
         return participant;
@@ -54,7 +55,43 @@ public class ClassroomServiceImpl implements ClassroomService {
         if (participant != null){
             throw new RTException(new DuplicateRecordException(participant.getId().toString(), Participant.class.getSimpleName()));
         }
-        return participantRepository.save(new Participant(account, classroom, role));
+        return participantRepository.save(new Participant(account, classroom, role, false));
+    }
+
+    @Override
+    public void removeParticipants(Long id, List<Long> removals) {
+        var participants = participantRepository.getParticipants(id);
+        if(participants.isEmpty()){
+            throw new RTException(new RecordNotFoundException(id.toString(), Classroom.class.getSimpleName()));
+        }
+        var removed = participants.stream()
+                .filter(participant -> removals.contains(participant.getId()))
+                .collect(Collectors.toList());
+        participantRepository.deleteAll(removed);
+    }
+
+    @Override
+    public void hideParticipants(Long id, List<Long> participants) {
+        var allParticipants = participantRepository.getParticipants(id);
+        if(allParticipants.isEmpty()){
+            throw new RTException(new RecordNotFoundException(id.toString(), Classroom.class.getSimpleName()));
+        }
+        var hidings = allParticipants.stream()
+                .filter(participant -> participants.contains(participant.getId()))
+                .collect(Collectors.toList());
+        hidings.forEach(hiding->hiding.setHidden(true));
+        participantRepository.saveAll(hidings);
+    }
+
+    @Override
+    public String regenerateCode(Long id) {
+        var classroom = classroomRepository.findById(id)
+                .orElseThrow(()->new RTException(
+                        new RecordNotFoundException(id.toString(), Classroom.class.getSimpleName())));
+        var newCode = stringEncryptor.encrypt(classroom.getCode());
+        classroom.setCode(newCode);
+        classroomRepository.save(classroom);
+        return newCode;
     }
 
     @Override

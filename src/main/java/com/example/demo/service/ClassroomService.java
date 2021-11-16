@@ -14,6 +14,12 @@ public interface ClassroomService {
 
     Participant joinClassroom(String code, Role role, Account account);
 
+    void removeParticipants(Long id, List<Long> removals);
+
+    void hideParticipants(Long id, List<Long> participants);
+
+    String regenerateCode(Long id);
+
     List<Participant> getParticipants(Long classroomId);
 
     void sendInvitation(List<String> invitations, Long classroomId, Role role);

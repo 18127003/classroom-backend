@@ -10,15 +10,10 @@ import com.example.demo.mapper.AccountMapper;
 import com.example.demo.mapper.ClassroomMapper;
 import com.example.demo.service.ClassroomService;
 import com.sendgrid.*;
-import com.sendgrid.helpers.mail.Mail;
-import com.sendgrid.helpers.mail.objects.Content;
-import com.sendgrid.helpers.mail.objects.Email;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -56,6 +51,31 @@ public class CommonController extends AbstractServiceEndpoint{
         } catch (RTException e){
             return ResponseEntity.badRequest().build();
         }
+    }
+    
+    @DeleteMapping("{id}/removeParticipants")
+    public ResponseEntity<Void> removeParticipants(@PathVariable Long id, @RequestBody List<Long> removals){
+        try{
+            classroomService.removeParticipants(id, removals);
+            return ResponseEntity.ok().build();
+        } catch (RTException e){
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @PatchMapping("{id}/hideParticipants")
+    public ResponseEntity<Void> hideParticipants(@PathVariable Long id, @RequestBody List<Long> participants){
+        try {
+            classroomService.hideParticipants(id, participants);
+            return ResponseEntity.ok().build();
+        } catch (RTException e){
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @PatchMapping("{id}/regenerateCode")
+    public ResponseEntity<String> regenerateCode(@PathVariable Long id){
+        return ResponseEntity.ok(classroomService.regenerateCode(id));
     }
 
     @GetMapping("all")

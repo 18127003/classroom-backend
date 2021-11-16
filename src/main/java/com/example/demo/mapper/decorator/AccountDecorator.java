@@ -21,6 +21,7 @@ public class AccountDecorator implements AccountMapper {
     public AccountDto toParticipantDto(Participant participant) {
         var user = delegate.toAccountDto(participant.getAccount());
         user.setRole(participant.getRole().name());
+        user.setHidden(participant.getHidden());
         return user;
     }
 }

@@ -26,17 +26,21 @@ public class Participant extends AbstractEntity{
     private Classroom classroom;
 
     @Column
+    private Boolean hidden;
+
+    @Column
     @Enumerated(value = EnumType.STRING)
     private Role role;
 
-    public Participant(Account account, Classroom classroom, Role role){
+    public Participant(Account account, Classroom classroom, Role role, Boolean hidden){
         this.account = account;
         this.classroom = classroom;
+        this.hidden = hidden;
         this.role=role;
     }
 
-    public Participant(Long id, Account account, Classroom classroom, Role role){
-        this(account, classroom, role);
+    public Participant(Long id, Account account, Classroom classroom, Role role, Boolean hidden){
+        this(account, classroom, role, hidden);
         this.id = id;
     }
 

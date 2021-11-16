@@ -35,6 +35,7 @@ create table ACCOUNT_CLASSROOM
     account_id bigint not null,
     classroom_id bigint not null,
     role varchar(10) not null default 'TEACHER',
+    hidden boolean default FALSE,
     version integer default 0,
     key fk_account (account_id),
     key fk_classroom (classroom_id),
