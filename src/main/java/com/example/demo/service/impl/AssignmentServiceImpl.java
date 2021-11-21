@@ -1,5 +1,7 @@
 package com.example.demo.service.impl;
 
+import com.example.demo.common.exception.RTException;
+import com.example.demo.common.exception.RecordNotFoundException;
 import com.example.demo.entity.Account;
 import com.example.demo.entity.Assignment;
 import com.example.demo.entity.Classroom;
@@ -22,6 +24,12 @@ public class AssignmentServiceImpl implements AssignmentService {
     private final AssignmentRepository assignmentRepository;
 
     @Override
+    public Assignment getAssignment(Long id) {
+        return assignmentRepository.findById(id)
+                .orElseThrow(()->new RTException(new RecordNotFoundException(id.toString(), Assignment.class.getSimpleName())));
+    }
+
+    @Override
     public List<Assignment> getAllAssignments(Long classroomId) {
         return assignmentRepository.getAll(classroomId);
     }
@@ -31,6 +39,22 @@ public class AssignmentServiceImpl implements AssignmentService {
         assignment.setCreator(creator);
         Date current = Date.from(Instant.now());
         assignment.setCreatedAt(current);
+        return assignmentRepository.save(assignment);
+    }
+
+    @Override
+    public void removeAssignment(Long id) {
+        var assignment = getAssignment(id);
+        assignmentRepository.delete(assignment);
+    }
+
+    @Override
+    public Assignment updateAssignment(Long id, Assignment update) {
+        var assignment = getAssignment(id);
+        assignment.setName(update.getName());
+        assignment.setDeadline(update.getDeadline());
+        assignment.setDescription(update.getDescription());
+        assignment.setPoints(update.getPoints());
         return assignmentRepository.save(assignment);
     }
 

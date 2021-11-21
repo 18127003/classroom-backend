@@ -3,15 +3,11 @@ package com.example.demo.controller;
 import com.example.demo.common.enums.Role;
 import com.example.demo.common.exception.RTException;
 import com.example.demo.dto.AccountDto;
-import com.example.demo.dto.AssignmentDto;
 import com.example.demo.dto.ClassroomDto;
 import com.example.demo.entity.Account;
-import com.example.demo.entity.Assignment;
 import com.example.demo.entity.Classroom;
 import com.example.demo.mapper.AccountMapper;
-import com.example.demo.mapper.AssignmentMapper;
 import com.example.demo.mapper.ClassroomMapper;
-import com.example.demo.service.AssignmentService;
 import com.example.demo.service.ClassroomService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -28,8 +24,6 @@ public class CommonController extends AbstractServiceEndpoint{
     private final ClassroomService classroomService;
     private final ClassroomMapper classroomMapper;
     private final AccountMapper accountMapper;
-    private final AssignmentMapper assignmentMapper;
-    private final AssignmentService assignmentService;
 
     @GetMapping("test")
     public ResponseEntity<String> test(){
@@ -110,25 +104,5 @@ public class CommonController extends AbstractServiceEndpoint{
     public void inviteParticipants(@RequestBody List<String> invitations, @PathVariable Long id,
                                    @RequestParam String role) {
         classroomService.sendInvitation(invitations, id, Role.valueOf(role.toUpperCase()));
-    }
-
-    @PostMapping("{id}/assignment/create")
-    public ResponseEntity<AssignmentDto> addAssignment(@RequestBody Assignment assignment
-            , @AuthenticationPrincipal Account account, @PathVariable Long id){
-        try {
-            var classroom = classroomService.getClassroom(id);
-            return ResponseEntity.ok(assignmentMapper.toAssignmentDto(
-                    assignmentService.addAssignment(assignment, account, classroom)));
-        } catch (RTException e){
-            return ResponseEntity.badRequest().build();
-        }
-    }
-
-    @GetMapping("{id}/assignment/all")
-    public ResponseEntity<List<AssignmentDto>> allAssignment(@PathVariable Long id){
-        return ResponseEntity.ok(
-                assignmentService.getAllAssignments(id).stream().map(assignmentMapper::toAssignmentDto)
-                        .collect(Collectors.toList())
-        );
     }
 }

@@ -1,5 +1,6 @@
 package com.example.demo.security;
 
+import com.example.demo.common.exception.RTException;
 import com.example.demo.entity.Account;
 import com.example.demo.service.ClassroomService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,8 @@ import java.util.Map;
 @Component
 public class ApiAccessFilter extends OncePerRequestFilter {
 
+    public static final String CLASSROOM_URL_PATTERN = "**/classroom/{id:[\\d+]}/**";
+
     @Bean
     public AntPathMatcher antPathMatcher() {
         return new AntPathMatcher();
@@ -34,23 +37,31 @@ public class ApiAccessFilter extends OncePerRequestFilter {
     @Autowired
     private ClassroomService classroomService;
 
+    @Autowired
+    private ParticipantInfo participantInfo;
+
     @Override
     protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain) throws ServletException, IOException {
         var requestUrl = httpServletRequest.getRequestURL().toString();
-        String classPattern = "**/classroom/{id:[\\d+]}/**";
-        if(antPathMatcher.match(classPattern, requestUrl)){
-            Map<String, String> pathVariables = antPathMatcher.extractUriTemplateVariables(classPattern, requestUrl);
+        if(antPathMatcher.match(CLASSROOM_URL_PATTERN, requestUrl)){
+            Map<String, String> pathVariables = antPathMatcher.extractUriTemplateVariables(CLASSROOM_URL_PATTERN, requestUrl);
             var classroomId = Long.valueOf(pathVariables.get("id"));
             Account account = (Account) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            var participant = classroomService.getAssignedClassroom(classroomId, account);
-            UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
-                    account,
-                    null,
-                    Collections.singletonList(new SimpleGrantedAuthority(participant.getRole().toString())));
-            usernamePasswordAuthenticationToken
-                    .setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));
-            SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+            try{
+                var participant = classroomService.getAssignedClassroom(classroomId, account);
+                participantInfo.setParticipant(participant);
+                UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
+                        account,
+                        null,
+                        Collections.singletonList(new SimpleGrantedAuthority(participant.getRole().toString())));
+                usernamePasswordAuthenticationToken
+                        .setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));
+                SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+            } catch (RTException e){
+                // ignore because unauthorized later
+            }
         }
+
         filterChain.doFilter(httpServletRequest, httpServletResponse);
     }
 }
