@@ -2,12 +2,15 @@ package com.example.demo.service;
 
 import com.example.demo.common.enums.Role;
 import com.example.demo.entity.Account;
+import com.example.demo.entity.Assignment;
 import com.example.demo.entity.Classroom;
 import com.example.demo.entity.Participant;
 
 import java.util.List;
 
 public interface ClassroomService {
+    Classroom getClassroom(Long classroomId);
+
     List<Participant> getAssignedClassrooms(Long accountId);
 
     Participant createClassroom(Classroom classroom, Account account);
@@ -25,4 +28,6 @@ public interface ClassroomService {
     void sendInvitation(List<String> invitations, Long classroomId, Role role);
 
     Participant getAssignedClassroom(Long classroomId, Account account);
+
+
 }

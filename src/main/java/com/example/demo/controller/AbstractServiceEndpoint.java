@@ -9,13 +9,16 @@ public class AbstractServiceEndpoint {
 
     public static final String ACCOUNT_PATH = WEBAPP_API_PATH + "/account/";
 
+    public static final String ASSIGNMENT_PATH = WEBAPP_API_PATH + "/assignment/";
+
     public static final String AUTH_PATH = WEBAPP_API_PATH + "/auth/";
 
     public static final Set<String> TEACHER_PROTECTED_PATH = Set.of(
             CLASS_PATH + "**/invite**",
             CLASS_PATH + "**/removeParticipants**",
             CLASS_PATH + "**/hideParticipants**",
-            CLASS_PATH + "**/regenerateCode**"
+            CLASS_PATH + "**/regenerateCode**",
+            CLASS_PATH + "**/assignment/create**"
     );
 
     public static final Set<String> STUDENT_PROTECTED_PATH = Set.of(

@@ -5,8 +5,10 @@ import com.example.demo.common.exception.DuplicateRecordException;
 import com.example.demo.common.exception.RTException;
 import com.example.demo.common.exception.RecordNotFoundException;
 import com.example.demo.entity.Account;
+import com.example.demo.entity.Assignment;
 import com.example.demo.entity.Classroom;
 import com.example.demo.entity.Participant;
+import com.example.demo.repository.AssignmentRepository;
 import com.example.demo.repository.ClassroomRepository;
 import com.example.demo.repository.ParticipantRepository;
 import com.example.demo.service.ClassroomService;
@@ -17,6 +19,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.time.Instant;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,8 +32,15 @@ import static com.example.demo.common.constant.Constants.HOST_EMAIL;
 public class ClassroomServiceImpl implements ClassroomService {
     private final ClassroomRepository classroomRepository;
     private final ParticipantRepository participantRepository;
+    private final AssignmentRepository assignmentRepository;
     private final StringEncryptor stringEncryptor;
     private final EmailSender emailSender;
+
+    @Override
+    public Classroom getClassroom(Long classroomId) {
+        return classroomRepository.findById(classroomId)
+                .orElseThrow(()->new RTException(new RecordNotFoundException(classroomId.toString(), Classroom.class.getSimpleName())));
+    }
 
     @Override
     public List<Participant> getAssignedClassrooms(Long accountId) {
@@ -135,4 +146,6 @@ public class ClassroomServiceImpl implements ClassroomService {
         }
         return participant;
     }
+
+
 }

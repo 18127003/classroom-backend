@@ -1,7 +1,3 @@
-drop table if exists CLASSROOM;
-drop table if exists ACCOUNT;
-
-
 create table ACCOUNT
 (
     id bigint primary key auto_increment not null,
@@ -41,5 +37,22 @@ create table ACCOUNT_CLASSROOM
     key fk_classroom (classroom_id),
     constraint fk_account foreign key (account_id) references account (id),
     constraint fk_classroom foreign key (classroom_id) references classroom (id)
-)
+);
+
+create table ASSIGNMENT
+(
+    id bigint not null auto_increment primary key ,
+    name varchar(255) character set utf8 collate utf8_unicode_ci,
+    description text character set utf8 collate utf8_unicode_ci,
+    points int default 100,
+    deadline datetime,
+    created_at datetime not null,
+    classroom bigint not null,
+    creator bigint not null,
+    version integer default 0,
+    key fk_assignment_classroom (classroom),
+    key fk_assignment_creator (creator),
+    constraint fk_assignment_creator foreign key (creator) references ACCOUNT (id),
+    constraint fk_assignment_classroom foreign key (classroom) references CLASSROOM (id)
+);
 
