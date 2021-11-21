@@ -1,10 +1,8 @@
 package com.example.demo.controller;
 
 import com.example.demo.common.exception.RTException;
-import com.example.demo.common.exception.RecordNotFoundException;
 import com.example.demo.dto.AccountDto;
 import com.example.demo.dto.jwt.JwtRequest;
-import com.example.demo.entity.Account;
 import com.example.demo.mapper.AccountMapper;
 import com.example.demo.security.JwtTokenService;
 import com.example.demo.service.AuthService;
