@@ -32,17 +32,21 @@ public class Assignment extends AbstractEntity{
     @Column(name = "created_at")
     private Date createdAt;
 
-    public Assignment(String name, String description, Integer points, Date deadline, Date createdAt) {
+    @Column
+    private Integer position;
+
+    public Assignment(String name, String description, Integer points, Date deadline, Date createdAt, Integer position) {
         this.name = name;
         this.description = description;
         this.points = points;
         this.deadline = deadline;
         this.createdAt = createdAt;
+        this.position = position;
     }
 
     public Assignment(Long id, String name, String description, Integer points, Date deadline, Date createdAt,
-                      Classroom classroom, Account creator) {
-        this(name, description, points, deadline, createdAt);
+                      Classroom classroom, Account creator, Integer position) {
+        this(name, description, points, deadline, createdAt, position);
         this.id = id;
         this.classroom = classroom;
         this.creator = creator;

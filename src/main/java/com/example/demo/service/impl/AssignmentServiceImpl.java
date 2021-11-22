@@ -7,7 +7,6 @@ import com.example.demo.entity.Assignment;
 import com.example.demo.entity.Classroom;
 import com.example.demo.repository.AssignmentRepository;
 import com.example.demo.service.AssignmentService;
-import com.example.demo.service.ClassroomService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -33,6 +33,7 @@ public class AssignmentServiceImpl implements AssignmentService {
     public List<Assignment> getAllAssignments(Long classroomId) {
         return assignmentRepository.getAll(classroomId);
     }
+
     @Override
     public Assignment addAssignment(Assignment assignment, Account creator, Classroom classroom) {
         assignment.setClassroom(classroom);
@@ -56,6 +57,14 @@ public class AssignmentServiceImpl implements AssignmentService {
         assignment.setDescription(update.getDescription());
         assignment.setPoints(update.getPoints());
         return assignmentRepository.save(assignment);
+    }
+
+    @Override
+    public void updatePosition(Long id, List<Long> update) {
+        var assignments = getAllAssignments(id);
+        var updateMap = update.stream().collect(Collectors.toMap((k)->k, update::indexOf));
+        assignments.forEach(assignment -> assignment.setPosition(updateMap.get(assignment.getId())));
+        assignmentRepository.saveAll(assignments);
     }
 
 }

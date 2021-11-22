@@ -16,4 +16,6 @@ public interface AssignmentService {
     void removeAssignment(Long id);
 
     Assignment updateAssignment(Long id, Assignment update);
+
+    void updatePosition(Long id, List<Long> update);
 }

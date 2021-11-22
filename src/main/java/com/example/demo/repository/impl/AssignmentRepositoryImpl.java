@@ -11,6 +11,9 @@ import java.util.List;
 public class AssignmentRepositoryImpl extends AbstractRepositoryImpl<Assignment> implements AssignmentCustomRepository {
     @Override
     public List<Assignment> getAll(Long classroomId) {
-        return selectFrom(QAssignment.assignment).where(QAssignment.assignment.classroom.id.eq(classroomId)).fetch();
+        return selectFrom(QAssignment.assignment)
+                .where(QAssignment.assignment.classroom.id.eq(classroomId))
+                .orderBy(QAssignment.assignment.position.asc())
+                .fetch();
     }
 }

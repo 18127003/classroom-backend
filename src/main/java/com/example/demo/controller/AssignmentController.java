@@ -47,6 +47,12 @@ public class AssignmentController extends AbstractServiceEndpoint {
         );
     }
 
+    @PatchMapping("updatePosition")
+    public ResponseEntity<Void> updatePosition(@RequestBody List<Long> update){
+        assignmentService.updatePosition(participantInfo.getClassroom().getId(), update);
+        return ResponseEntity.ok().build();
+    }
+
     @GetMapping("{id}/detail")
     public ResponseEntity<AssignmentDto> getAssignment(@PathVariable Long id){
         try{
