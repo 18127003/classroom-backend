@@ -47,7 +47,7 @@ create table ASSIGNMENT
     points int default 100,
     deadline datetime,
     created_at datetime not null,
-    position int unique not null,
+    position int not null,
     classroom bigint not null,
     creator bigint not null,
     version integer default 0,
