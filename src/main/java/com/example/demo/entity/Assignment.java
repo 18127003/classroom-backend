@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -27,7 +28,7 @@ public class Assignment extends AbstractEntity{
     private Integer points;
 
     @Column
-    private Date deadline;
+    private LocalDateTime deadline;
 
     @Column(name = "created_at")
     private Date createdAt;
@@ -35,7 +36,7 @@ public class Assignment extends AbstractEntity{
     @Column
     private Integer position;
 
-    public Assignment(String name, String description, Integer points, Date deadline, Date createdAt, Integer position) {
+    public Assignment(String name, String description, Integer points, LocalDateTime deadline, Date createdAt, Integer position) {
         this.name = name;
         this.description = description;
         this.points = points;
@@ -44,7 +45,7 @@ public class Assignment extends AbstractEntity{
         this.position = position;
     }
 
-    public Assignment(Long id, String name, String description, Integer points, Date deadline, Date createdAt,
+    public Assignment(Long id, String name, String description, Integer points, LocalDateTime deadline, Date createdAt,
                       Classroom classroom, Account creator, Integer position) {
         this(name, description, points, deadline, createdAt, position);
         this.id = id;
