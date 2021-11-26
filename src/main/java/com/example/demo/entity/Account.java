@@ -38,6 +38,9 @@ public class Account extends AbstractEntity implements UserDetails {
     @Column
     private String email;
 
+    @OneToOne(mappedBy = "classroomAccount")
+    private StudentInfo studentInfo;
+
     @OneToMany(mappedBy = "account")
     private List<Participant> assignedClasses;
 
@@ -49,17 +52,18 @@ public class Account extends AbstractEntity implements UserDetails {
         this.email = email;
     }
 
-    public Account(String firstName, String lastName, String password, String email, String studentId) {
+    public Account(String firstName, String lastName, String password, String email, String studentId, StudentInfo studentInfo) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.name = firstName + " " + lastName;
         this.password = password;
         this.email = email;
         this.studentId = studentId;
+        this.studentInfo = studentInfo;
     }
 
-    public Account(long id, String firstName, String lastName, String password, String email, String studentId){
-        this(firstName, lastName, password, email, studentId);
+    public Account(long id, String firstName, String lastName, String password, String email, String studentId, StudentInfo studentInfo){
+        this(firstName, lastName, password, email, studentId, studentInfo);
         this.id = id;
     }
 
