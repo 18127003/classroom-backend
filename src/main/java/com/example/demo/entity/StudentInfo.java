@@ -28,6 +28,10 @@ public class StudentInfo extends AbstractEntity{
     @Column
     private String name;
 
+    @ManyToOne(targetEntity = Classroom.class)
+    @JoinColumn(name = "classroom_id", referencedColumnName = "id")
+    private Classroom classroom;
+
     @OneToOne(targetEntity = Account.class)
     @JoinColumn(name = "account_id", referencedColumnName = "id")
     private Account classroomAccount;
@@ -35,14 +39,15 @@ public class StudentInfo extends AbstractEntity{
     @OneToMany(mappedBy = "studentInfo")
     private List<Submission> submissions;
 
-    public StudentInfo(String studentId, String name, Account classroomAccount) {
+    public StudentInfo(String studentId, String name, Account classroomAccount, Classroom classroom) {
         this.studentId = studentId;
         this.name = name;
         this.classroomAccount = classroomAccount;
+        this.classroom = classroom;
     }
 
-    public StudentInfo(Long id, String studentId, String name, Account classroomAccount) {
-        this(studentId, name, classroomAccount);
+    public StudentInfo(Long id, String studentId, String name, Account classroomAccount, Classroom classroom) {
+        this(studentId, name, classroomAccount, classroom);
         this.id = id;
     }
 }

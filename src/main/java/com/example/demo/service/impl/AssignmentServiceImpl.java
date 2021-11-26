@@ -2,10 +2,11 @@ package com.example.demo.service.impl;
 
 import com.example.demo.common.exception.RTException;
 import com.example.demo.common.exception.RecordNotFoundException;
-import com.example.demo.entity.Account;
-import com.example.demo.entity.Assignment;
-import com.example.demo.entity.Classroom;
+import com.example.demo.dto.SubmissionDto;
+import com.example.demo.entity.*;
 import com.example.demo.repository.AssignmentRepository;
+import com.example.demo.repository.StudentInfoRepository;
+import com.example.demo.repository.SubmissionRepository;
 import com.example.demo.service.AssignmentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,11 +23,27 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class AssignmentServiceImpl implements AssignmentService {
     private final AssignmentRepository assignmentRepository;
+    private final StudentInfoRepository studentInfoRepository;
+    private final SubmissionRepository submissionRepository;
 
     @Override
     public Assignment getAssignment(Long id) {
         return assignmentRepository.findById(id)
                 .orElseThrow(()->new RTException(new RecordNotFoundException(id.toString(), Assignment.class.getSimpleName())));
+    }
+
+    @Override
+    public StudentInfo getStudentInfo(String studentId) {
+        var result = studentInfoRepository.findByStudentId(studentId);
+        if(result == null){
+            throw new RTException(new RecordNotFoundException(studentId, StudentInfo.class.getSimpleName()));
+        }
+        return result;
+    }
+
+    @Override
+    public List<StudentInfo> getAllStudentInfo(Long classroomId) {
+        return studentInfoRepository.findAllStudentInfo(classroomId);
     }
 
     @Override
@@ -67,4 +84,16 @@ public class AssignmentServiceImpl implements AssignmentService {
         assignmentRepository.saveAll(assignments);
     }
 
+    @Override
+    public StudentInfo addStudentInfo(StudentInfo studentInfo) {
+        return studentInfoRepository.save(studentInfo);
+    }
+
+    @Override
+    public Submission addSubmission(SubmissionDto submissionDto) {
+        var assignment = getAssignment(submissionDto.getAssignmentId());
+        var studentInfo = getStudentInfo(submissionDto.getStudentId());
+        var submission = new Submission(submissionDto.getGrade(), studentInfo, assignment);
+        return submissionRepository.save(submission);
+    }
 }

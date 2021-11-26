@@ -8,5 +8,6 @@ import lombok.RequiredArgsConstructor;
 public class SubmissionDto {
     private Long id;
     private Long assignmentId;
+    private String studentId;
     private Integer grade;
 }

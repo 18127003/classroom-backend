@@ -2,9 +2,14 @@ package com.example.demo.controller;
 
 import com.example.demo.common.exception.RTException;
 import com.example.demo.dto.AssignmentDto;
+import com.example.demo.dto.StudentInfoDto;
+import com.example.demo.dto.SubmissionDto;
 import com.example.demo.entity.Account;
 import com.example.demo.entity.Assignment;
+import com.example.demo.entity.StudentInfo;
 import com.example.demo.mapper.AssignmentMapper;
+import com.example.demo.mapper.StudentInfoMapper;
+import com.example.demo.mapper.SubmissionMapper;
 import com.example.demo.security.ParticipantInfo;
 import com.example.demo.service.AssignmentService;
 import com.example.demo.service.ClassroomService;
@@ -25,6 +30,8 @@ public class AssignmentController extends AbstractServiceEndpoint {
     private final ClassroomService classroomService;
     private final AssignmentMapper assignmentMapper;
     private final ParticipantInfo participantInfo;
+    private final StudentInfoMapper studentInfoMapper;
+    private final SubmissionMapper submissionMapper;
 
     @PostMapping("create")
     public ResponseEntity<AssignmentDto> addAssignment(@RequestBody Assignment assignment
@@ -81,5 +88,26 @@ public class AssignmentController extends AbstractServiceEndpoint {
         } catch (RTException e){
             return ResponseEntity.badRequest().build();
         }
+    }
+
+    // for test only
+    @PostMapping("studentInfo/add")
+    public ResponseEntity<StudentInfoDto> addStudentInfo(@RequestBody StudentInfo studentInfo){
+        studentInfo.setClassroom(participantInfo.getClassroom());
+        return ResponseEntity.ok(studentInfoMapper.toStudentInfoDto(assignmentService.addStudentInfo(studentInfo)));
+    }
+
+    @GetMapping("studentInfo/all")
+    public ResponseEntity<List<StudentInfoDto>> getStudentInfo(){
+        return ResponseEntity.ok(
+                assignmentService.getAllStudentInfo(participantInfo.getClassroom().getId())
+                .stream().map(studentInfoMapper::toStudentInfoDto)
+                .collect(Collectors.toList())
+        );
+    }
+
+    @PostMapping("*/submission/add")
+    public ResponseEntity<SubmissionDto> addSubmission(@RequestBody SubmissionDto submission){
+        return ResponseEntity.ok(submissionMapper.toSubmissionDto(assignmentService.addSubmission(submission)));
     }
 }

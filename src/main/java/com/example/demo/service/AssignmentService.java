@@ -1,8 +1,7 @@
 package com.example.demo.service;
 
-import com.example.demo.entity.Account;
-import com.example.demo.entity.Assignment;
-import com.example.demo.entity.Classroom;
+import com.example.demo.dto.SubmissionDto;
+import com.example.demo.entity.*;
 
 import java.util.List;
 
@@ -18,4 +17,12 @@ public interface AssignmentService {
     Assignment updateAssignment(Long id, Assignment update);
 
     void updatePosition(Long id, List<Long> update);
+
+    StudentInfo addStudentInfo(StudentInfo studentInfo);
+
+    Submission addSubmission(SubmissionDto submissionDto);
+
+    StudentInfo getStudentInfo(String studentId);
+
+    List<StudentInfo> getAllStudentInfo(Long classroomId);
 }

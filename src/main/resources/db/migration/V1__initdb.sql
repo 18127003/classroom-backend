@@ -60,12 +60,15 @@ create table ASSIGNMENT
 create table STUDENT_INFO
 (
     id bigint not null auto_increment primary key,
-    student_id varchar(10) unique,
-    name varchar(255) character set utf8 collate utf8_unicode_ci,
+    student_id varchar(10) unique not null ,
+    name varchar(255) character set utf8 collate utf8_unicode_ci not null ,
+    classroom_id bigint not null,
     account_id bigint,
     version integer default 0,
     key fk_student_account (account_id),
-    constraint fk_student_account foreign key (account_id) references ACCOUNT (id)
+    key fk_student_classroom (classroom_id),
+    constraint fk_student_account foreign key (account_id) references ACCOUNT (id),
+    constraint fk_student_classroom foreign key (classroom_id) references CLASSROOM (id)
 );
 
 create table ASSIGNMENT_SUBMISSION

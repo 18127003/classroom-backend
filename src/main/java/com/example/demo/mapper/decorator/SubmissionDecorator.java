@@ -15,6 +15,7 @@ public class SubmissionDecorator implements SubmissionMapper {
     public SubmissionDto toSubmissionDto(Submission submission) {
         var result = delegate.toSubmissionDto(submission);
         result.setAssignmentId(submission.getAssignment().getId());
+        result.setStudentId(submission.getStudentInfo().getStudentId());
         return result;
     }
 }
