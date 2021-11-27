@@ -8,10 +8,13 @@ import com.example.demo.repository.AssignmentRepository;
 import com.example.demo.repository.StudentInfoRepository;
 import com.example.demo.repository.SubmissionRepository;
 import com.example.demo.service.AssignmentService;
+import com.example.demo.util.ExcelUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.util.Date;
 import java.util.List;
@@ -25,6 +28,7 @@ public class AssignmentServiceImpl implements AssignmentService {
     private final AssignmentRepository assignmentRepository;
     private final StudentInfoRepository studentInfoRepository;
     private final SubmissionRepository submissionRepository;
+    private final ExcelUtil excelUtil;
 
     @Override
     public Assignment getAssignment(Long id) {
@@ -44,6 +48,12 @@ public class AssignmentServiceImpl implements AssignmentService {
     @Override
     public List<StudentInfo> getAllStudentInfo(Long classroomId) {
         return studentInfoRepository.findAllStudentInfo(classroomId);
+    }
+
+    @Override
+    public void importStudentInfo(MultipartFile file, Classroom classroom) throws IOException {
+        var students = excelUtil.importStudentInfo(file, classroom);
+        studentInfoRepository.saveAll(students);
     }
 
     @Override

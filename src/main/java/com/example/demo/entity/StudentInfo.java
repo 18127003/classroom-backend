@@ -39,6 +39,12 @@ public class StudentInfo extends AbstractEntity{
     @OneToMany(mappedBy = "studentInfo")
     private List<Submission> submissions;
 
+    public StudentInfo(String studentId, String name, Classroom classroom) {
+        this.studentId = studentId;
+        this.name = name;
+        this.classroom = classroom;
+    }
+
     public StudentInfo(String studentId, String name, Account classroomAccount, Classroom classroom) {
         this.studentId = studentId;
         this.name = name;

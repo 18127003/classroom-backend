@@ -13,11 +13,14 @@ import com.example.demo.mapper.SubmissionMapper;
 import com.example.demo.security.ParticipantInfo;
 import com.example.demo.service.AssignmentService;
 import com.example.demo.service.ClassroomService;
+import com.example.demo.util.ExcelUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,6 +35,7 @@ public class AssignmentController extends AbstractServiceEndpoint {
     private final ParticipantInfo participantInfo;
     private final StudentInfoMapper studentInfoMapper;
     private final SubmissionMapper submissionMapper;
+    private final ExcelUtil excelUtil;
 
     @PostMapping("create")
     public ResponseEntity<AssignmentDto> addAssignment(@RequestBody Assignment assignment
@@ -109,5 +113,16 @@ public class AssignmentController extends AbstractServiceEndpoint {
     @PostMapping("*/submission/add")
     public ResponseEntity<SubmissionDto> addSubmission(@RequestBody SubmissionDto submission){
         return ResponseEntity.ok(submissionMapper.toSubmissionDto(assignmentService.addSubmission(submission)));
+    }
+
+    @PostMapping("studentInfo/import")
+    public ResponseEntity<Void> upload(@RequestParam("file") final MultipartFile file) {
+        try{
+            assignmentService.importStudentInfo(file, participantInfo.getClassroom());
+            return ResponseEntity.ok().build();
+        } catch (IOException e){
+            return ResponseEntity.badRequest().build();
+        }
+
     }
 }
