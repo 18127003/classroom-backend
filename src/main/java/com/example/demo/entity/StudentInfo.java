@@ -36,7 +36,7 @@ public class StudentInfo extends AbstractEntity{
     @JoinColumn(name = "account_id", referencedColumnName = "id")
     private Account classroomAccount;
 
-    @OneToMany(mappedBy = "studentInfo")
+    @OneToMany(mappedBy = "studentInfo", cascade = CascadeType.ALL)
     private List<Submission> submissions;
 
     public StudentInfo(String studentId, String name, Classroom classroom) {

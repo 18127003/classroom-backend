@@ -24,7 +24,9 @@ public interface AssignmentService {
 
     Submission addSubmission(SubmissionDto submissionDto);
 
-    StudentInfo getStudentInfo(String studentId);
+    StudentInfo getStudentInfo(String studentId, Long classroomId);
+
+    void deleteAllStudentInfo(Long classroomId);
 
     List<StudentInfo> getAllStudentInfo(Long classroomId);
 

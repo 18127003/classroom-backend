@@ -7,6 +7,7 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Getter
@@ -61,5 +62,7 @@ public class Assignment extends AbstractEntity{
     @JoinColumn(name = "creator", referencedColumnName = "id")
     private Account creator;
 
-
+    // for removal purpose only
+    @OneToMany(mappedBy = "assignment", cascade = CascadeType.REMOVE)
+    private List<Submission> submissions;
 }

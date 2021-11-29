@@ -9,7 +9,7 @@ import javax.persistence.*;
 /**
  * diem so cua 1 student info trong 1 assignment
  * la 1 submission
- * => giao cua dong student info vaf cot assignment
+ * => giao cua dong student info va cot assignment
  **/
 @Entity
 @Setter
@@ -25,7 +25,10 @@ public class Submission extends AbstractEntity{
     private Integer grade;
 
     @ManyToOne(targetEntity = StudentInfo.class)
-    @JoinColumn(name = "student_id", referencedColumnName = "student_id")
+    @JoinColumns({
+        @JoinColumn(name = "student_id", referencedColumnName = "student_id"),
+        @JoinColumn(name = "classroom_id", referencedColumnName = "classroom_id")
+    })
     private StudentInfo studentInfo;
 
     @ManyToOne(targetEntity = Assignment.class)

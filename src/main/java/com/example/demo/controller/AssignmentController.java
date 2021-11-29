@@ -13,7 +13,6 @@ import com.example.demo.mapper.SubmissionMapper;
 import com.example.demo.security.ParticipantInfo;
 import com.example.demo.service.AssignmentService;
 import com.example.demo.service.ClassroomService;
-import com.example.demo.util.ExcelUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -32,10 +31,15 @@ public class AssignmentController extends AbstractServiceEndpoint {
     private final AssignmentService assignmentService;
     private final ClassroomService classroomService;
     private final AssignmentMapper assignmentMapper;
-    private final ParticipantInfo participantInfo;
     private final StudentInfoMapper studentInfoMapper;
     private final SubmissionMapper submissionMapper;
-    private final ExcelUtil excelUtil;
+
+    /**
+     * cai nay de lay thong tin classroom cua assignment
+     * goi participantInfo.getClassroom()
+     * **/
+    private final ParticipantInfo participantInfo;
+
 
     @PostMapping("create")
     public ResponseEntity<AssignmentDto> addAssignment(@RequestBody Assignment assignment

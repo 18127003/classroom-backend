@@ -37,12 +37,19 @@ public class AssignmentServiceImpl implements AssignmentService {
     }
 
     @Override
-    public StudentInfo getStudentInfo(String studentId) {
-        var result = studentInfoRepository.findByStudentId(studentId);
+    public StudentInfo getStudentInfo(String studentId, Long classroomId) {
+        var result = studentInfoRepository.findByStudentId(studentId, classroomId);
         if(result == null){
             throw new RTException(new RecordNotFoundException(studentId, StudentInfo.class.getSimpleName()));
         }
         return result;
+    }
+
+    @Override
+    public void deleteAllStudentInfo(Long classroomId) {
+        var old = getAllStudentInfo(classroomId);
+        old.stream().map(StudentInfo::getName).forEach(System.out::println);
+        studentInfoRepository.deleteAll(old);
     }
 
     @Override
@@ -53,6 +60,14 @@ public class AssignmentServiceImpl implements AssignmentService {
     @Override
     public void importStudentInfo(MultipartFile file, Classroom classroom) throws IOException {
         var students = excelUtil.importStudentInfo(file, classroom);
+        var old = getAllStudentInfo(classroom.getId())
+                .stream().collect(Collectors.toMap(StudentInfo::getStudentId,k->k));
+        students.forEach(studentInfo -> {
+            var key = studentInfo.getStudentId();
+            if(old.containsKey(key)){
+                studentInfo.setId(old.get(key).getId());
+            }
+        });
         studentInfoRepository.saveAll(students);
     }
 
@@ -102,7 +117,7 @@ public class AssignmentServiceImpl implements AssignmentService {
     @Override
     public Submission addSubmission(SubmissionDto submissionDto) {
         var assignment = getAssignment(submissionDto.getAssignmentId());
-        var studentInfo = getStudentInfo(submissionDto.getStudentId());
+        var studentInfo = getStudentInfo(submissionDto.getStudentId(), submissionDto.getClassroomId());
         var submission = new Submission(submissionDto.getGrade(), studentInfo, assignment);
         return submissionRepository.save(submission);
     }

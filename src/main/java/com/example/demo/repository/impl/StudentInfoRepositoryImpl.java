@@ -10,8 +10,11 @@ import java.util.List;
 @Repository
 public class StudentInfoRepositoryImpl extends AbstractRepositoryImpl<StudentInfo> implements StudentInfoCustomRepository {
     @Override
-    public StudentInfo findByStudentId(String studentId) {
-        return selectFrom(QStudentInfo.studentInfo).where(QStudentInfo.studentInfo.studentId.eq(studentId)).fetchOne();
+    public StudentInfo findByStudentId(String studentId, Long classroomId) {
+        return selectFrom(QStudentInfo.studentInfo)
+                .where(QStudentInfo.studentInfo.studentId.eq(studentId)
+                        .and(QStudentInfo.studentInfo.classroom.id.eq(classroomId)))
+                .fetchOne();
     }
 
     @Override
