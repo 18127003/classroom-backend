@@ -99,7 +99,7 @@ public class AssignmentController extends AbstractServiceEndpoint {
     }
 
     // for test only
-    @PostMapping("studentInfo/add")
+    @PostMapping("studentInfo/create")
     public ResponseEntity<StudentInfoDto> addStudentInfo(@RequestBody StudentInfo studentInfo){
         studentInfo.setClassroom(participantInfo.getClassroom());
         return ResponseEntity.ok(studentInfoMapper.toStudentInfoDto(assignmentService.addStudentInfo(studentInfo)));
@@ -114,7 +114,7 @@ public class AssignmentController extends AbstractServiceEndpoint {
         );
     }
 
-    @PostMapping("*/submission/add")
+    @PostMapping("*/submission/create")
     public ResponseEntity<SubmissionDto> addSubmission(@RequestBody SubmissionDto submission){
         return ResponseEntity.ok(submissionMapper.toSubmissionDto(assignmentService.addSubmission(submission)));
     }

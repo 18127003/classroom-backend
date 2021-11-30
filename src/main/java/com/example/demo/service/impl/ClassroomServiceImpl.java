@@ -5,12 +5,11 @@ import com.example.demo.common.exception.DuplicateRecordException;
 import com.example.demo.common.exception.RTException;
 import com.example.demo.common.exception.RecordNotFoundException;
 import com.example.demo.entity.Account;
-import com.example.demo.entity.Assignment;
 import com.example.demo.entity.Classroom;
 import com.example.demo.entity.Participant;
-import com.example.demo.repository.AssignmentRepository;
 import com.example.demo.repository.ClassroomRepository;
 import com.example.demo.repository.ParticipantRepository;
+import com.example.demo.repository.StudentInfoRepository;
 import com.example.demo.service.ClassroomService;
 import com.example.demo.util.EmailSender;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +29,7 @@ import static com.example.demo.common.constant.Constants.HOST_EMAIL;
 public class ClassroomServiceImpl implements ClassroomService {
     private final ClassroomRepository classroomRepository;
     private final ParticipantRepository participantRepository;
-    private final AssignmentRepository assignmentRepository;
+    private final StudentInfoRepository studentInfoRepository;
     private final StringEncryptor stringEncryptor;
     private final EmailSender emailSender;
 
@@ -143,6 +142,21 @@ public class ClassroomServiceImpl implements ClassroomService {
             throw new RTException(new RecordNotFoundException(classroomId.toString(), Classroom.class.getSimpleName()));
         }
         return participant;
+    }
+
+    @Override
+    public void updateStudentId(Long classroomId, Account account, String studentId) {
+        var participant = getAssignedClassroom(classroomId, account);
+        var duplicated = participantRepository.findByStudentId(classroomId, studentId);
+        if(duplicated!=null && !duplicated.getAccount().getEmail().equals(account.getEmail())){
+            throw new RTException(new DuplicateRecordException(studentId, Participant.class.getSimpleName()));
+        }
+        participant.setStudentId(studentId);
+        var studentInfo = studentInfoRepository.findByStudentId(studentId, classroomId);
+        if(studentInfo!=null){
+            studentInfo.setClassroomAccount(participant.getAccount());
+        }
+        participantRepository.save(participant);
     }
 
 

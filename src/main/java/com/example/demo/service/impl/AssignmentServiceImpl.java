@@ -5,6 +5,7 @@ import com.example.demo.common.exception.RecordNotFoundException;
 import com.example.demo.dto.SubmissionDto;
 import com.example.demo.entity.*;
 import com.example.demo.repository.AssignmentRepository;
+import com.example.demo.repository.ParticipantRepository;
 import com.example.demo.repository.StudentInfoRepository;
 import com.example.demo.repository.SubmissionRepository;
 import com.example.demo.service.AssignmentService;
@@ -28,6 +29,7 @@ public class AssignmentServiceImpl implements AssignmentService {
     private final AssignmentRepository assignmentRepository;
     private final StudentInfoRepository studentInfoRepository;
     private final SubmissionRepository submissionRepository;
+    private final ParticipantRepository participantRepository;
     private final ExcelUtil excelUtil;
 
     @Override
@@ -60,12 +62,23 @@ public class AssignmentServiceImpl implements AssignmentService {
     @Override
     public void importStudentInfo(MultipartFile file, Classroom classroom) throws IOException {
         var students = excelUtil.importStudentInfo(file, classroom);
+
+        // update old student info instead of remove completely
         var old = getAllStudentInfo(classroom.getId())
                 .stream().collect(Collectors.toMap(StudentInfo::getStudentId,k->k));
+
+        // auto sync with participant accounts
+        var syncParticipants = participantRepository.getParticipants(classroom.getId())
+                .stream().filter(participant -> participant.getStudentId()!=null)
+                .collect(Collectors.toMap(Participant::getStudentId,Participant::getAccount));
+
         students.forEach(studentInfo -> {
             var key = studentInfo.getStudentId();
             if(old.containsKey(key)){
                 studentInfo.setId(old.get(key).getId());
+            }
+            if(syncParticipants.containsKey(key)){
+                studentInfo.setClassroomAccount(syncParticipants.get(key));
             }
         });
         studentInfoRepository.saveAll(students);

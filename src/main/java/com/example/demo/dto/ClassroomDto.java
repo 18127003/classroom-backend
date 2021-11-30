@@ -12,5 +12,6 @@ public class ClassroomDto {
     private String room;
     private String description;
     private String role;
+    private String studentId;
     private String creator;
 }

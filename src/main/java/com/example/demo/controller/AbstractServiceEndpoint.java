@@ -24,6 +24,6 @@ public class AbstractServiceEndpoint {
     );
 
     public static final Set<String> STUDENT_PROTECTED_PATH = Set.of(
-            CLASS_PATH + "**/test**"
+            CLASS_PATH + "**participant/studentId/update"
     );
 }

@@ -105,4 +105,15 @@ public class CommonController extends AbstractServiceEndpoint{
                                    @RequestParam String role) {
         classroomService.sendInvitation(invitations, id, Role.valueOf(role.toUpperCase()));
     }
+
+    @PatchMapping("{id}/participant/studentId/update")
+    public ResponseEntity<Void> updateStudentId(@PathVariable Long id, @RequestBody String studentId,
+                                                @AuthenticationPrincipal Account account){
+        try {
+            classroomService.updateStudentId(id, account, studentId);
+            return ResponseEntity.ok().build();
+        } catch (RTException e){
+            return ResponseEntity.badRequest().build();
+        }
+    }
 }

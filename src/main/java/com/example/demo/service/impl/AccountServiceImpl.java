@@ -41,18 +41,18 @@ public class AccountServiceImpl implements AccountService {
             }
         }
 
-        var studentId = update.getStudentId();
-        if(studentId!=null && !studentId.equals(account.getStudentId())){
-            if(accountRepository.findByStudentId(studentId)!=null){
-                throw new RTException(new DuplicateRecordException(studentId, Account.class.getSimpleName()));
-            }
-        }
+//        var studentId = update.getStudentId();
+//        if(studentId!=null && !studentId.equals(account.getStudentId())){
+//            if(accountRepository.findByStudentId(studentId)!=null){
+//                throw new RTException(new DuplicateRecordException(studentId, Account.class.getSimpleName()));
+//            }
+//        }
 
         account.setFirstName(update.getFirstName());
         account.setLastName(update.getLastName());
         account.setName(update.getFirstName()+" "+update.getLastName());
         account.setEmail(update.getEmail());
-        account.setStudentId(studentId);
+//        account.setStudentId(studentId);
 
         return accountRepository.save(account);
     }

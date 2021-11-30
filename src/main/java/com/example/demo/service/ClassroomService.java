@@ -29,5 +29,5 @@ public interface ClassroomService {
 
     Participant getAssignedClassroom(Long classroomId, Account account);
 
-
+    void updateStudentId(Long classroomId, Account account, String studentId);
 }

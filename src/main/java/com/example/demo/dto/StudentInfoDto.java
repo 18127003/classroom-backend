@@ -11,5 +11,6 @@ public class StudentInfoDto {
     private Long id;
     private String studentId;
     private String name;
+    private String accountMail;
     private List<SubmissionDto> submissions;
 }

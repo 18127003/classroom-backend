@@ -13,6 +13,11 @@ public class StudentInfoDecorator implements StudentInfoMapper {
 
     @Override
     public StudentInfoDto toStudentInfoDto(StudentInfo studentInfo) {
-        return delegate.toStudentInfoDto(studentInfo);
+        var result = delegate.toStudentInfoDto(studentInfo);
+        var mappedAccount = studentInfo.getClassroomAccount();
+        if(mappedAccount!=null){
+            result.setAccountMail(mappedAccount.getEmail());
+        }
+        return result;
     }
 }

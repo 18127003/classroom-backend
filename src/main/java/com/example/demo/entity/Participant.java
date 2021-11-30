@@ -17,6 +17,9 @@ public class Participant extends AbstractEntity{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "student_id")
+    private String studentId;
+
     @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "account_id", referencedColumnName = "id")
     private Account account;
@@ -36,11 +39,19 @@ public class Participant extends AbstractEntity{
         this.account = account;
         this.classroom = classroom;
         this.hidden = hidden;
-        this.role=role;
+        this.role = role;
     }
 
-    public Participant(Long id, Account account, Classroom classroom, Role role, Boolean hidden){
-        this(account, classroom, role, hidden);
+    public Participant(Account account, Classroom classroom, Role role, Boolean hidden, String studentId){
+        this.account = account;
+        this.classroom = classroom;
+        this.hidden = hidden;
+        this.role = role;
+        this.studentId = studentId;
+    }
+
+    public Participant(Long id, Account account, Classroom classroom, Role role, Boolean hidden, String studentId){
+        this(account, classroom, role, hidden, studentId);
         this.id = id;
     }
 

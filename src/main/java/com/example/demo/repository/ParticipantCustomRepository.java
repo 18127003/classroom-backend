@@ -10,4 +10,6 @@ public interface ParticipantCustomRepository {
     List<Participant> getAssignedClassroom(Long accountId);
 
     Participant findParticipant(Long classId, Long accountId);
+
+    Participant findByStudentId(Long classId, String studentId);
 }
