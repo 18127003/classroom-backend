@@ -151,6 +151,13 @@ public class ClassroomServiceImpl implements ClassroomService {
         if(duplicated!=null && !duplicated.getAccount().getEmail().equals(account.getEmail())){
             throw new RTException(new DuplicateRecordException(studentId, Participant.class.getSimpleName()));
         }
+        // detach old student info if has
+        var oldInfo = participant.getStudentInfo();
+        if(oldInfo!=null){
+            participant.setStudentInfo(null);
+            oldInfo.setClassroomAccount(null);
+        }
+
         participant.setStudentId(studentId);
         var studentInfo = studentInfoRepository.findByStudentId(studentId, classroomId);
         if(studentInfo!=null){

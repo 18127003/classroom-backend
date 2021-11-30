@@ -35,6 +35,9 @@ public class Participant extends AbstractEntity{
     @Enumerated(value = EnumType.STRING)
     private Role role;
 
+    @OneToOne(mappedBy = "classroomAccount")
+    private StudentInfo studentInfo;
+
     public Participant(Account account, Classroom classroom, Role role, Boolean hidden){
         this.account = account;
         this.classroom = classroom;
@@ -42,16 +45,19 @@ public class Participant extends AbstractEntity{
         this.role = role;
     }
 
-    public Participant(Account account, Classroom classroom, Role role, Boolean hidden, String studentId){
+    public Participant(Account account, Classroom classroom, Role role, Boolean hidden, String studentId,
+                       StudentInfo studentInfo){
         this.account = account;
         this.classroom = classroom;
         this.hidden = hidden;
         this.role = role;
         this.studentId = studentId;
+        this.studentInfo = studentInfo;
     }
 
-    public Participant(Long id, Account account, Classroom classroom, Role role, Boolean hidden, String studentId){
-        this(account, classroom, role, hidden, studentId);
+    public Participant(Long id, Account account, Classroom classroom, Role role, Boolean hidden, String studentId,
+                       StudentInfo studentInfo){
+        this(account, classroom, role, hidden, studentId, studentInfo);
         this.id = id;
     }
 
