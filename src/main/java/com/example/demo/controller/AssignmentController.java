@@ -130,10 +130,10 @@ public class AssignmentController extends AbstractServiceEndpoint {
         }
 
     }
-    @GetMapping("export")
-    public  ResponseEntity<Void> download(final HttpServletResponse response){
+    @GetMapping("/template/export")
+    public void download(final HttpServletResponse response){
         assignmentService.exportStudentAssignment(response,participantInfo.getClassroom().getId());
-        return ResponseEntity.ok().build();
+//        return ResponseEntity.ok().build();
     }
 
 }

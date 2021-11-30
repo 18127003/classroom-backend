@@ -82,7 +82,7 @@ public class AuthController extends AbstractServiceEndpoint{
         return ResponseCookie.from(JWT_COOKIE_TEXT, jwtService.generateJwtToken(account))
                 .maxAge(cookieMaxAge)
                 .httpOnly(true)
-//                .secure(true)
+                .secure(true)
                 .sameSite("None")
                 .path(WEBAPP_API_PATH)
                 .build();

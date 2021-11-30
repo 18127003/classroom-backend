@@ -83,14 +83,13 @@ public class ExcelUtil {
             studentRow.createCell(colId++,CellType.STRING).setCellValue(student.getStudentId());
             studentRow.createCell(colId,CellType.STRING).setCellValue(student.getName());
         }
-        for (var i = 0; i < EXCEL_STUDENT_LIST_HEADERS.length-1; i++) {
+        for (var i = 0; i < EXCEL_STUDENT_LIST_HEADERS.length; i++) {
             sheet.autoSizeColumn(i);
         }
 
     }
     public void exportExcel(final HttpServletResponse response, List<StudentInfo> studentInfoList,List<Assignment> assignments){
         final var workbook = new SXSSFWorkbook();
-        workbook.createName().setNameName("TEST");
         exportStudentList(workbook,studentInfoList);
         for(var i=0;i<assignments.size();++i){
             exportAssignmentGrades(assignments.get(i),workbook );
