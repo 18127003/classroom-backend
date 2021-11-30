@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.Date;
@@ -82,6 +83,13 @@ public class AssignmentServiceImpl implements AssignmentService {
             }
         });
         studentInfoRepository.saveAll(students);
+    }
+
+    @Override
+    public void exportStudentAssignment(HttpServletResponse response,Long classroomId) {
+        var students= studentInfoRepository.findAllStudentInfo(classroomId);
+        var assignments= assignmentRepository.getAll(classroomId);
+        excelUtil.exportExcel(response,students,assignments);
     }
 
     @Override

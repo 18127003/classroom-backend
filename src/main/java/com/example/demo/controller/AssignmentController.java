@@ -19,6 +19,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -129,4 +130,10 @@ public class AssignmentController extends AbstractServiceEndpoint {
         }
 
     }
+    @GetMapping("export")
+    public  ResponseEntity<Void> download(final HttpServletResponse response){
+        assignmentService.exportStudentAssignment(response,participantInfo.getClassroom().getId());
+        return ResponseEntity.ok().build();
+    }
+
 }

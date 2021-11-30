@@ -4,6 +4,7 @@ import com.example.demo.dto.SubmissionDto;
 import com.example.demo.entity.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 
@@ -31,4 +32,6 @@ public interface AssignmentService {
     List<StudentInfo> getAllStudentInfo(Long classroomId);
 
     void importStudentInfo(MultipartFile file, Classroom classroom) throws IOException;
+
+    void exportStudentAssignment(HttpServletResponse response,Long classroomId);
 }
