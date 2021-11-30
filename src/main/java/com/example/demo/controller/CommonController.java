@@ -107,10 +107,10 @@ public class CommonController extends AbstractServiceEndpoint{
     }
 
     @PatchMapping("{id}/participant/studentId/update")
-    public ResponseEntity<Void> updateStudentId(@PathVariable Long id, @RequestBody String studentId,
+    public ResponseEntity<Void> updateStudentId(@PathVariable Long id, @RequestParam String v,
                                                 @AuthenticationPrincipal Account account){
         try {
-            classroomService.updateStudentId(id, account, studentId);
+            classroomService.updateStudentId(id, account, v);
             return ResponseEntity.ok().build();
         } catch (RTException e){
             return ResponseEntity.badRequest().build();
