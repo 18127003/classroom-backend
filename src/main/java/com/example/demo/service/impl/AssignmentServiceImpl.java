@@ -86,10 +86,27 @@ public class AssignmentServiceImpl implements AssignmentService {
     }
 
     @Override
-    public void exportStudentAssignment(HttpServletResponse response,Long classroomId) {
+    public void exportTemplateFile(HttpServletResponse response, Long classroomId) throws IOException {
         var students= studentInfoRepository.findAllStudentInfo(classroomId);
         var assignments= assignmentRepository.getAll(classroomId);
-        excelUtil.exportExcel(response,students,assignments);
+        excelUtil.exportTemplate(response,students,assignments);
+    }
+
+    @Override
+    public void importSubmission(MultipartFile file, Classroom classroom, Long assignmentId) throws IOException {
+        var assignment = getAssignment(assignmentId);
+        var data = excelUtil.importSubmission(file, assignment);
+        var studentInfos = getAllStudentInfo(classroom.getId())
+                .stream().filter(studentInfo -> data.containsKey(studentInfo.getStudentId()))
+                .collect(Collectors.toList());
+        var submissions = studentInfos
+                .stream().map(studentInfo->
+                        new Submission(data.get(studentInfo.getStudentId()), studentInfo, assignment))
+                .collect(Collectors.toList());
+        // delete old
+        var old = submissionRepository.getAllSubmission(assignmentId);
+        submissionRepository.deleteAll(old);
+        submissionRepository.saveAll(submissions);
     }
 
     @Override

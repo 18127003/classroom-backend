@@ -11,4 +11,5 @@ public class SubmissionDto {
     private String studentId;
     private Long classroomId;
     private Integer grade;
+    private Integer maxGrade;
 }

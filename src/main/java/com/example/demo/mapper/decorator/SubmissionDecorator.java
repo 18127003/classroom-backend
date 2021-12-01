@@ -17,6 +17,7 @@ public class SubmissionDecorator implements SubmissionMapper {
         result.setAssignmentId(submission.getAssignment().getId());
         result.setStudentId(submission.getStudentInfo().getStudentId());
         result.setClassroomId(submission.getStudentInfo().getClassroom().getId());
+        result.setMaxGrade(submission.getAssignment().getPoints());
         return result;
     }
 }

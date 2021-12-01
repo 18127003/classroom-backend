@@ -130,10 +130,25 @@ public class AssignmentController extends AbstractServiceEndpoint {
         }
 
     }
+
     @GetMapping("/template/export")
-    public void download(final HttpServletResponse response){
-        assignmentService.exportStudentAssignment(response,participantInfo.getClassroom().getId());
-//        return ResponseEntity.ok().build();
+    public ResponseEntity<Void> exportTemplate(final HttpServletResponse response){
+        try {
+            assignmentService.exportTemplateFile(response,participantInfo.getClassroom().getId());
+            return ResponseEntity.ok().build();
+        } catch (IOException e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @PostMapping("{id}/submission/import")
+    public ResponseEntity<Void> importSubmission(@PathVariable Long id, @RequestParam("file") MultipartFile file){
+        try {
+            assignmentService.importSubmission(file, participantInfo.getClassroom(), id);
+            return ResponseEntity.ok().build();
+        } catch (IOException e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
 }

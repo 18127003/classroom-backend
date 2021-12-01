@@ -33,5 +33,7 @@ public interface AssignmentService {
 
     void importStudentInfo(MultipartFile file, Classroom classroom) throws IOException;
 
-    void exportStudentAssignment(HttpServletResponse response,Long classroomId);
+    void exportTemplateFile(HttpServletResponse response, Long classroomId) throws IOException;
+
+    void importSubmission(MultipartFile file, Classroom classroom, Long assignmentId) throws IOException;
 }
