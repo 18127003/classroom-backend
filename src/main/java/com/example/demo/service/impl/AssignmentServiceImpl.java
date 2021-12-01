@@ -18,9 +18,9 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.Instant;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 
 @Service
@@ -87,9 +87,12 @@ public class AssignmentServiceImpl implements AssignmentService {
 
     @Override
     public void exportTemplateFile(HttpServletResponse response, Long classroomId) throws IOException {
-        var students= studentInfoRepository.findAllStudentInfo(classroomId);
-        var assignments= assignmentRepository.getAll(classroomId);
-        excelUtil.exportTemplate(response,students,assignments);
+        var assignmentData = submissionRepository.getSubmissionExcel(classroomId);
+        var data = assignmentData.stream()
+                .collect(Collectors.toMap(k->k.get(0,Long.class), Arrays::asList,
+                        (o, n)-> Stream.of(o,n).flatMap(Collection::stream).collect(Collectors.toList())));
+        var studentInfos = studentInfoRepository.findAllStudentInfo(classroomId);
+        excelUtil.exportTemplate(response,data, studentInfos);
     }
 
     @Override
@@ -107,6 +110,20 @@ public class AssignmentServiceImpl implements AssignmentService {
         var old = submissionRepository.getAllSubmission(assignmentId);
         submissionRepository.deleteAll(old);
         submissionRepository.saveAll(submissions);
+    }
+
+    @Override
+    public Submission updateSubmissionGrade(Long submissionId, Integer grade) {
+        var submission = submissionRepository.findById(submissionId)
+                .orElseThrow(()->new RTException(new RecordNotFoundException(submissionId.toString(), Submission.class.getSimpleName())));
+        submission.setGrade(grade);
+        return submissionRepository.save(submission);
+    }
+
+    @Override
+    public void test() {
+        var data = submissionRepository.getSubmissionExcel(1L);
+        data.forEach(tuple -> System.out.println(tuple.get(0, String.class)+tuple.get(1,String.class)+tuple.get(2, Integer.class)));
     }
 
     @Override

@@ -117,7 +117,22 @@ public class AssignmentController extends AbstractServiceEndpoint {
 
     @PostMapping("*/submission/create")
     public ResponseEntity<SubmissionDto> addSubmission(@RequestBody SubmissionDto submission){
-        return ResponseEntity.ok(submissionMapper.toSubmissionDto(assignmentService.addSubmission(submission)));
+        try{
+            return ResponseEntity.ok(submissionMapper.toSubmissionDto(assignmentService.addSubmission(submission)));
+        } catch (RTException e){
+            return ResponseEntity.badRequest().build();
+        }
+
+    }
+
+    @PatchMapping("*/submission/{id}/update")
+    public ResponseEntity<SubmissionDto> updateSubmission(@PathVariable Long id, @RequestParam String grade){
+        try{
+            var gradeNum = Integer.valueOf(grade);
+            return ResponseEntity.ok(submissionMapper.toSubmissionDto(assignmentService.updateSubmissionGrade(id, gradeNum)));
+        } catch (NumberFormatException | RTException numberFormatException){
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @PostMapping("studentInfo/import")
@@ -151,4 +166,8 @@ public class AssignmentController extends AbstractServiceEndpoint {
         }
     }
 
+    @GetMapping("test")
+    public void test(){
+        assignmentService.test();
+    }
 }
