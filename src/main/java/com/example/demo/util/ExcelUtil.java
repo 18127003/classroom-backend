@@ -4,9 +4,7 @@ import com.example.demo.entity.Assignment;
 import com.example.demo.entity.Classroom;
 import com.example.demo.entity.StudentInfo;
 import com.querydsl.core.Tuple;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.streaming.SXSSFRow;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
@@ -47,7 +45,7 @@ public class ExcelUtil {
         return data;
     }
 
-    public void exportAssignmentGrades(List<Tuple> data, SXSSFWorkbook workbook){
+    public void exportAssignmentGrades(List<Tuple> data, SXSSFWorkbook workbook, CellStyle textStyle){
         var assignmentName = data.get(0).get(1,String.class);
         final SXSSFSheet sheet = workbook.createSheet(assignmentName);
         final var rowId = 0;
@@ -62,7 +60,9 @@ public class ExcelUtil {
             final  SXSSFRow submissionRow=sheet.createRow(i+1);
             var colId=0;
             tuple = data.get(i);
-            submissionRow.createCell(colId++,CellType.STRING).setCellValue(tuple.get(2, String.class));
+            final var studentIdCell = submissionRow.createCell(colId++,CellType.STRING);
+            studentIdCell.setCellStyle(textStyle);
+            studentIdCell.setCellValue(tuple.get(2, String.class));
             grade = tuple.get(3, Integer.class);
             if(grade==null){
                 submissionRow.createCell(colId,CellType.NUMERIC).setCellValue("");
@@ -72,7 +72,7 @@ public class ExcelUtil {
         }
 
     }
-    public void exportStudentList(SXSSFWorkbook workbook,List<StudentInfo> students){
+    public void exportStudentList(SXSSFWorkbook workbook,List<StudentInfo> students, CellStyle textStyle){
         final SXSSFSheet sheet = workbook.createSheet(STUDENT_LIST_SHEET_NAME);
         final var rowId = 0;
         final SXSSFRow headerRow = sheet.createRow(rowId);
@@ -84,7 +84,9 @@ public class ExcelUtil {
             final  SXSSFRow studentRow=sheet.createRow(i+1);
             var colId=0;
             final var student=students.get(i);
-            studentRow.createCell(colId++,CellType.STRING).setCellValue(student.getStudentId());
+            final var studentIdCell = studentRow.createCell(colId++,CellType.STRING);
+            studentIdCell.setCellStyle(textStyle);
+            studentIdCell.setCellValue(student.getStudentId());
             studentRow.createCell(colId,CellType.STRING).setCellValue(student.getName());
         }
         for (var i = 0; i < EXCEL_STUDENT_LIST_HEADERS.length; i++) {
@@ -94,8 +96,11 @@ public class ExcelUtil {
     }
     public void exportTemplate(final HttpServletResponse response, Map<Long,List<Tuple>> data, List<StudentInfo> studentInfos) throws IOException {
         final var workbook = new SXSSFWorkbook();
-        exportStudentList(workbook,studentInfos);
-        data.forEach((key, value) -> exportAssignmentGrades(value, workbook));
+        DataFormat fmt = workbook.createDataFormat();
+        CellStyle cellStyle = workbook.createCellStyle();
+        cellStyle.setDataFormat(fmt.getFormat("@"));
+        exportStudentList(workbook,studentInfos, cellStyle);
+        data.forEach((key, value) -> exportAssignmentGrades(value, workbook, cellStyle));
         ServletOutputStream outputStream = response.getOutputStream();
         workbook.write(outputStream);
         workbook.close();

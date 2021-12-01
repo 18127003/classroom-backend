@@ -64,7 +64,7 @@ public class AssignmentServiceImpl implements AssignmentService {
     public void importStudentInfo(MultipartFile file, Classroom classroom) throws IOException {
         var students = excelUtil.importStudentInfo(file, classroom);
 
-        // update old student info instead of remove completely
+        // ignore existed student info
         var old = getAllStudentInfo(classroom.getId())
                 .stream().collect(Collectors.toMap(StudentInfo::getStudentId,k->k));
 
@@ -73,6 +73,8 @@ public class AssignmentServiceImpl implements AssignmentService {
                 .stream().filter(participant -> participant.getStudentId()!=null)
                 .collect(Collectors.toMap(Participant::getStudentId,Participant::getAccount));
 
+        students = students.stream()
+                .filter(studentInfo -> !old.containsKey(studentInfo.getStudentId())).collect(Collectors.toList());
         students.forEach(studentInfo -> {
             var key = studentInfo.getStudentId();
             if(old.containsKey(key)){
