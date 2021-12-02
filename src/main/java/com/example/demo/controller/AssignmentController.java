@@ -165,9 +165,4 @@ public class AssignmentController extends AbstractServiceEndpoint {
             return ResponseEntity.badRequest().build();
         }
     }
-
-    @GetMapping("test")
-    public void test(){
-        assignmentService.test();
-    }
 }

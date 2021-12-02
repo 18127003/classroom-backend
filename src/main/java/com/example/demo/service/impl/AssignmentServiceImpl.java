@@ -89,7 +89,7 @@ public class AssignmentServiceImpl implements AssignmentService {
 
     @Override
     public void exportTemplateFile(HttpServletResponse response, Long classroomId) throws IOException {
-        var assignmentData = submissionRepository.getSubmissionExcel(classroomId);
+        var assignmentData = studentInfoRepository.getExcelData(classroomId);
         var data = assignmentData.stream()
                 .collect(Collectors.toMap(k->k.get(0,Long.class), Arrays::asList,
                         (o, n)-> Stream.of(o,n).flatMap(Collection::stream).collect(Collectors.toList())));
@@ -120,12 +120,6 @@ public class AssignmentServiceImpl implements AssignmentService {
                 .orElseThrow(()->new RTException(new RecordNotFoundException(submissionId.toString(), Submission.class.getSimpleName())));
         submission.setGrade(grade);
         return submissionRepository.save(submission);
-    }
-
-    @Override
-    public void test() {
-        var data = submissionRepository.getSubmissionExcel(1L);
-        data.forEach(tuple -> System.out.println(tuple.get(0, String.class)+tuple.get(1,String.class)+tuple.get(2, Integer.class)));
     }
 
     @Override

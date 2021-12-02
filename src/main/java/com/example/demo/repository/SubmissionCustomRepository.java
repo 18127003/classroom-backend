@@ -8,5 +8,5 @@ import java.util.List;
 public interface SubmissionCustomRepository {
     List<Submission> getAllSubmission(Long assignmentId);
 
-    List<Tuple> getSubmissionExcel(Long classId);
+
 }

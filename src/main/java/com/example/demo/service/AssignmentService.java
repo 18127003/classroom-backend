@@ -38,6 +38,4 @@ public interface AssignmentService {
     void importSubmission(MultipartFile file, Classroom classroom, Long assignmentId) throws IOException;
 
     Submission updateSubmissionGrade(Long submissionId, Integer grade);
-
-    void test();
 }
