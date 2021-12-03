@@ -26,8 +26,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     @Autowired
     private JwtTokenService jwtService;
 
-    @Autowired
-    private AuthService authService;
+//    @Autowired
+//    private AuthService authService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -45,11 +45,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         }
         try{
             var jwtToken = jwtCookie.getValue();
-            var userId = jwtService.getUserIdFromToken(jwtToken);
-            UserDetails userDetails = authService.loadUserByUsername(userId);
-            if (jwtService.validateToken(jwtToken, userDetails)) {
+//            var userId = jwtService.getUserIdFromToken(jwtToken);
+//            UserDetails userDetails = authService.loadUserByUsername(userId);
+            var userId = jwtService.validateToken(jwtToken);
+            if (userId != null) {
                 UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
-                        userDetails, null, userDetails.getAuthorities());
+                        Long.valueOf(userId), null, null);
                 usernamePasswordAuthenticationToken
                         .setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);

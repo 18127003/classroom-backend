@@ -20,7 +20,10 @@ public class AbstractServiceEndpoint {
             CLASS_PATH + "**/regenerateCode**",
             ASSIGNMENT_PATH + "**create**",
             ASSIGNMENT_PATH + "**remove**",
-            ASSIGNMENT_PATH + "**update**"
+            ASSIGNMENT_PATH + "**update**",
+            ASSIGNMENT_PATH + "**updatePosition",
+            ASSIGNMENT_PATH + "**studentInfo/**",
+            ASSIGNMENT_PATH + "**submission/**/update"
     );
 
     public static final Set<String> STUDENT_PROTECTED_PATH = Set.of(

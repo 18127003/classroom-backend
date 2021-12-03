@@ -41,7 +41,7 @@ public class ClassroomServiceImpl implements ClassroomService {
 
     @Override
     public List<Participant> getAssignedClassrooms(Long accountId) {
-        return participantRepository.getAssignedClassroom(accountId);
+        return participantRepository.getAssignedClassrooms(accountId);
     }
 
     @Override
@@ -136,8 +136,8 @@ public class ClassroomServiceImpl implements ClassroomService {
     }
 
     @Override
-    public Participant getAssignedClassroom(Long classroomId, Account account) {
-        var participant = participantRepository.findParticipant(classroomId, account.getId());
+    public Participant getAssignedClassroom(Long classroomId, Long accountId) {
+        var participant = participantRepository.findParticipant(classroomId, accountId);
         if(participant==null){
             throw new RTException(new RecordNotFoundException(classroomId.toString(), Classroom.class.getSimpleName()));
         }
@@ -145,10 +145,10 @@ public class ClassroomServiceImpl implements ClassroomService {
     }
 
     @Override
-    public void updateStudentId(Long classroomId, Account account, String studentId) {
-        var participant = getAssignedClassroom(classroomId, account);
+    public void updateStudentId(Long classroomId, Long accountId, String studentId) {
+        var participant = getAssignedClassroom(classroomId, accountId);
         var duplicated = participantRepository.findByStudentId(classroomId, studentId);
-        if(duplicated!=null && !duplicated.getAccount().getEmail().equals(account.getEmail())){
+        if(duplicated!=null && !duplicated.getAccount().getId().equals(accountId)){
             throw new RTException(new DuplicateRecordException(studentId, Participant.class.getSimpleName()));
         }
         // detach old student info if has

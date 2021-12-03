@@ -46,12 +46,12 @@ public class ApiAccessFilter extends OncePerRequestFilter {
         if(antPathMatcher.match(CLASSROOM_URL_PATTERN, requestUrl)){
             Map<String, String> pathVariables = antPathMatcher.extractUriTemplateVariables(CLASSROOM_URL_PATTERN, requestUrl);
             var classroomId = Long.valueOf(pathVariables.get("id"));
-            Account account = (Account) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            Long accountId = (Long) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             try{
-                var participant = classroomService.getAssignedClassroom(classroomId, account);
+                var participant = classroomService.getAssignedClassroom(classroomId, accountId);
                 participantInfo.setParticipant(participant);
                 UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
-                        account,
+                        accountId,
                         null,
                         Collections.singletonList(new SimpleGrantedAuthority(participant.getRole().toString())));
                 usernamePasswordAuthenticationToken

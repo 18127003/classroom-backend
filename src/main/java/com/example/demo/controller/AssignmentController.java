@@ -4,13 +4,13 @@ import com.example.demo.common.exception.RTException;
 import com.example.demo.dto.AssignmentDto;
 import com.example.demo.dto.StudentInfoDto;
 import com.example.demo.dto.SubmissionDto;
-import com.example.demo.entity.Account;
 import com.example.demo.entity.Assignment;
 import com.example.demo.entity.StudentInfo;
 import com.example.demo.mapper.AssignmentMapper;
 import com.example.demo.mapper.StudentInfoMapper;
 import com.example.demo.mapper.SubmissionMapper;
 import com.example.demo.security.ParticipantInfo;
+import com.example.demo.service.AccountService;
 import com.example.demo.service.AssignmentService;
 import com.example.demo.service.ClassroomService;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +31,7 @@ public class AssignmentController extends AbstractServiceEndpoint {
 
     private final AssignmentService assignmentService;
     private final ClassroomService classroomService;
+    private final AccountService accountService;
     private final AssignmentMapper assignmentMapper;
     private final StudentInfoMapper studentInfoMapper;
     private final SubmissionMapper submissionMapper;
@@ -44,8 +45,9 @@ public class AssignmentController extends AbstractServiceEndpoint {
 
     @PostMapping("create")
     public ResponseEntity<AssignmentDto> addAssignment(@RequestBody Assignment assignment
-            , @AuthenticationPrincipal Account account){
+            , @AuthenticationPrincipal Long accountId){
         try {
+            var account = accountService.getAccountById(accountId);
             var classroom = classroomService.getClassroom(participantInfo.getClassroom().getId());
             return ResponseEntity.ok(assignmentMapper.toAssignmentDto(
                     assignmentService.addAssignment(assignment, account, classroom)));

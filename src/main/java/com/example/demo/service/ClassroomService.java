@@ -27,7 +27,7 @@ public interface ClassroomService {
 
     void sendInvitation(List<String> invitations, Long classroomId, Role role);
 
-    Participant getAssignedClassroom(Long classroomId, Account account);
+    Participant getAssignedClassroom(Long classroomId, Long accountId);
 
-    void updateStudentId(Long classroomId, Account account, String studentId);
+    void updateStudentId(Long classroomId, Long accountId, String studentId);
 }

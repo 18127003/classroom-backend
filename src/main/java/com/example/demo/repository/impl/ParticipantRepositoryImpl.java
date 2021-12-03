@@ -18,7 +18,7 @@ public class ParticipantRepositoryImpl extends AbstractRepositoryImpl<Participan
     }
 
     @Override
-    public List<Participant> getAssignedClassroom(Long accountId) {
+    public List<Participant> getAssignedClassrooms(Long accountId) {
         return selectFrom(QParticipant.participant)
                 .where(QParticipant.participant.account.id.eq(accountId))
                 .fetch();

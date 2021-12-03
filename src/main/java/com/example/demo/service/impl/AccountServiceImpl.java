@@ -20,6 +20,12 @@ public class AccountServiceImpl implements AccountService {
     private final PasswordUtil passwordUtil;
 
     @Override
+    public Account getAccountById(Long accountId) {
+        return accountRepository.findById(accountId)
+                .orElseThrow(()->new RTException(new RecordNotFoundException(accountId.toString(),Account.class.getSimpleName())));
+    }
+
+    @Override
     public Account createAccount(Account account) {
         var existedAccount = accountRepository.findByEmail(account.getEmail());
         if(existedAccount!=null){
@@ -32,8 +38,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public Account updateAccount(Long id, Account update) {
-        var account = accountRepository.findById(id)
-                .orElseThrow(()->new RTException(new RecordNotFoundException(id.toString(), Account.class.getSimpleName())));
+        var account = getAccountById(id);
         if (!update.getEmail().equals(account.getEmail())){
             var email = accountRepository.findByEmail(update.getEmail());
             if(email!=null){
@@ -59,8 +64,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public boolean changePassword(Long id, String oldPassword, String newPassword) {
-        var account = accountRepository.findById(id)
-                .orElseThrow(()->new RTException(new RecordNotFoundException(id.toString(), Account.class.getSimpleName())));
+        var account = getAccountById(id);
         if(passwordUtil.checkPassword(oldPassword, account.getPassword())){
             account.setPassword(passwordUtil.encodePassword(newPassword));
             accountRepository.save(account);

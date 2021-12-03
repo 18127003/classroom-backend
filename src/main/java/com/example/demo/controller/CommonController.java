@@ -4,10 +4,10 @@ import com.example.demo.common.enums.Role;
 import com.example.demo.common.exception.RTException;
 import com.example.demo.dto.AccountDto;
 import com.example.demo.dto.ClassroomDto;
-import com.example.demo.entity.Account;
 import com.example.demo.entity.Classroom;
 import com.example.demo.mapper.AccountMapper;
 import com.example.demo.mapper.ClassroomMapper;
+import com.example.demo.service.AccountService;
 import com.example.demo.service.ClassroomService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 public class CommonController extends AbstractServiceEndpoint{
     private final ClassroomService classroomService;
     private final ClassroomMapper classroomMapper;
+    private final AccountService accountService;
     private final AccountMapper accountMapper;
 
     @GetMapping("test")
@@ -32,19 +33,25 @@ public class CommonController extends AbstractServiceEndpoint{
 
     @PostMapping("create")
     public ResponseEntity<ClassroomDto> createClass(@RequestBody Classroom classroom,
-                                                    @AuthenticationPrincipal Account account){
-        return ResponseEntity.ok(classroomMapper.toAssignedClassroomDto(classroomService.createClassroom(classroom, account)));
+                                                    @AuthenticationPrincipal Long accountId){
+        try {
+            var account = accountService.getAccountById(accountId);
+            return ResponseEntity.ok(classroomMapper.toAssignedClassroomDto(classroomService.createClassroom(classroom, account)));
+        } catch (RTException e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @PostMapping("join")
     public ResponseEntity<ClassroomDto> joinClass(@RequestParam String code,
                                                   @RequestParam(required = false) String role,
-                                                    @AuthenticationPrincipal Account account){
+                                                    @AuthenticationPrincipal Long accountId){
         if(role==null){
             role = Role.STUDENT.name();
         }
         code = code.replaceAll(" ","+");
         try{
+            var account = accountService.getAccountById(accountId);
             var classroom = classroomService.joinClassroom(code, Role.valueOf(role.toUpperCase()), account);
             return ResponseEntity.ok(classroomMapper.toAssignedClassroomDto(classroom));
         } catch (RTException e){
@@ -78,16 +85,16 @@ public class CommonController extends AbstractServiceEndpoint{
     }
 
     @GetMapping("all")
-    public ResponseEntity<List<ClassroomDto>> getClasses(@AuthenticationPrincipal Account account){
-        return ResponseEntity.ok(classroomService.getAssignedClassrooms(account.getId())
+    public ResponseEntity<List<ClassroomDto>> getClasses(@AuthenticationPrincipal Long accountId){
+        return ResponseEntity.ok(classroomService.getAssignedClassrooms(accountId)
                 .stream().map(classroomMapper::toAssignedClassroomDto)
                 .collect(Collectors.toList()));
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<ClassroomDto> getClassroom(@PathVariable Long id, @AuthenticationPrincipal Account account){
+    public ResponseEntity<ClassroomDto> getClassroom(@PathVariable Long id, @AuthenticationPrincipal Long accountId){
         try{
-            var participant = classroomService.getAssignedClassroom(id, account);
+            var participant = classroomService.getAssignedClassroom(id, accountId);
             return ResponseEntity.ok(classroomMapper.toAssignedClassroomDto(participant));
         } catch (RTException e){
             return ResponseEntity.badRequest().build();
@@ -108,9 +115,9 @@ public class CommonController extends AbstractServiceEndpoint{
 
     @PatchMapping("{id}/participant/studentId/update")
     public ResponseEntity<Void> updateStudentId(@PathVariable Long id, @RequestParam String v,
-                                                @AuthenticationPrincipal Account account){
+                                                @AuthenticationPrincipal Long accountId){
         try {
-            classroomService.updateStudentId(id, account, v);
+            classroomService.updateStudentId(id, accountId, v);
             return ResponseEntity.ok().build();
         } catch (RTException e){
             return ResponseEntity.badRequest().build();

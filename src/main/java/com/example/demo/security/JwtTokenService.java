@@ -78,14 +78,14 @@ public class JwtTokenService {
         return expiration.before(new Date());
     }
 
-    public boolean validateToken(String token, UserDetails userDetails) {
+    public String validateToken(String token) {
         final String username = getUserIdFromToken(token);
-        boolean usernameValid = username.equals(userDetails.getUsername());
+//        boolean usernameValid = username.equals(userDetails.getUsername());
         boolean tokenNotExpired = !isTokenExpired(token);
         boolean tokenNotRefreshed = tokenData.stream()
                 .anyMatch(tokenItem -> tokenItem.getSessionId().equals(getSessionIdFromToken(token))
                         && tokenItem.isValid());
-        return usernameValid && tokenNotExpired && tokenNotRefreshed;
+        return (tokenNotExpired && tokenNotRefreshed)?username:null;
     }
 
     public void invalidToken(String tokenId) {
