@@ -2,8 +2,10 @@ package com.example.demo.controller;
 
 import com.example.demo.common.exception.RTException;
 import com.example.demo.dto.AccountDto;
+import com.example.demo.dto.AdminDto;
 import com.example.demo.dto.jwt.JwtRequest;
 import com.example.demo.mapper.AccountMapper;
+import com.example.demo.mapper.AdminMapper;
 import com.example.demo.security.JwtTokenService;
 import com.example.demo.service.AuthService;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +28,7 @@ public class AuthController extends AbstractServiceEndpoint{
     private final JwtTokenService jwtService;
     private final AuthService authService;
     private final AccountMapper accountMapper;
+    private final AdminMapper adminMapper;
 
     @Value("${com.demo.cookieMaxAge}")
     private int cookieMaxAge;
@@ -36,6 +39,17 @@ public class AuthController extends AbstractServiceEndpoint{
             var user = authService.validatePassword(jwtRequest);
             response.addHeader(HttpHeaders.SET_COOKIE, generateJwtCookies(user).toString());
             return ResponseEntity.ok(accountMapper.toAccountDto(user));
+        } catch (RTException e){
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @PostMapping(value = "login/admin")
+    public ResponseEntity<AdminDto> authenticateAdmin(@RequestBody final JwtRequest jwtRequest, final HttpServletResponse response) {
+        try{
+            var user = authService.validatePasswordAdmin(jwtRequest);
+            response.addHeader(HttpHeaders.SET_COOKIE, generateJwtCookies(user).toString());
+            return ResponseEntity.ok(adminMapper.toAdminDto(user));
         } catch (RTException e){
             return ResponseEntity.badRequest().build();
         }

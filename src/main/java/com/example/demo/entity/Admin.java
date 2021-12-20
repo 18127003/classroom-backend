@@ -10,23 +10,16 @@ import org.springframework.security.core.userdetails.UserDetails;
 import javax.persistence.*;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
-@Table(name = "ACCOUNT")
-public class Account extends AbstractEntity implements UserDetails {
+@Table(name = "ADMIN")
+public class Admin extends AbstractEntity implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(name = "first_name")
-    private String firstName;
-
-    @Column(name = "last_name")
-    private String lastName;
 
     @Column
     private String name;
@@ -37,37 +30,20 @@ public class Account extends AbstractEntity implements UserDetails {
     @Column
     private String email;
 
-    @OneToOne(mappedBy = "classroomAccount")
-    private StudentInfo studentInfo;
-
-    @OneToMany(mappedBy = "account")
-    private List<Participant> assignedClasses;
-
-    public Account(String firstName, String lastName, String password, String email) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.name = firstName + " " + lastName;
+    public Admin(String name, String password, String email) {
+        this.name =name;
         this.password = password;
         this.email = email;
     }
 
-    public Account(String firstName, String lastName, String password, String email, StudentInfo studentInfo) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.name = firstName + " " + lastName;
-        this.password = password;
-        this.email = email;
-        this.studentInfo = studentInfo;
-    }
-
-    public Account(long id, String firstName, String lastName, String password, String email, StudentInfo studentInfo){
-        this(firstName, lastName, password, email, studentInfo);
+    public Admin(long id, String name, String password, String email){
+        this(name, password, email);
         this.id = id;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        return Collections.singletonList(new SimpleGrantedAuthority("ADMIN"));
     }
 
     @Override

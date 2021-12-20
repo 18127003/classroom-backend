@@ -1,6 +1,5 @@
 package com.example.demo.security;
 
-import com.example.demo.common.enums.AccountRole;
 import com.example.demo.common.enums.Role;
 import com.example.demo.controller.AbstractServiceEndpoint;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +16,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.util.AntPathMatcher;
 
 import static com.example.demo.controller.AbstractServiceEndpoint.*;
 
@@ -41,6 +41,11 @@ public class ApiSecurityConfig extends WebSecurityConfigurerAdapter {
         return new BCryptPasswordEncoder();
     }
 
+    @Bean
+    public AntPathMatcher antPathMatcher() {
+        return new AntPathMatcher();
+    }
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
 
@@ -48,13 +53,13 @@ public class ApiSecurityConfig extends WebSecurityConfigurerAdapter {
                 .exceptionHandling().authenticationEntryPoint(unauthorizedHandler)
                 .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and().authorizeRequests().antMatchers(
-                    "/"+ AbstractServiceEndpoint.AUTH_PATH+"login",
+                    "/"+ AbstractServiceEndpoint.AUTH_PATH+"login**",
                     "/"+ AbstractServiceEndpoint.AUTH_PATH+"socialLogin",
                     "/"+ AbstractServiceEndpoint.ACCOUNT_PATH+"create"
                 ).permitAll()
                 .antMatchers(TEACHER_PROTECTED_PATH.toArray(String[]::new)).hasAnyAuthority(Role.TEACHER.name())
                 .antMatchers(STUDENT_PROTECTED_PATH.toArray(String[]::new)).hasAnyAuthority(Role.STUDENT.name())
-                .antMatchers(ADMIN_PROTECTED_PATH.toArray(String[]::new)).hasAnyAuthority(AccountRole.ADMIN.name())
+                .antMatchers(ADMIN_PROTECTED_PATH.toArray(String[]::new)).hasAnyAuthority("ADMIN")
                 .anyRequest().authenticated();
         http.addFilterBefore(apiAccessFilter, UsernamePasswordAuthenticationFilter.class)
         .addFilterBefore(authenticateFilter, ApiAccessFilter.class);

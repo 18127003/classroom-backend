@@ -6,7 +6,6 @@ create table ACCOUNT
     name varchar(255) character set utf8 collate utf8_unicode_ci,
     password varchar(255) not null,
     email varchar(255) unique not null,
-    account_role varchar(20) not null default 'USER',
     version  integer default 0
 );
 
@@ -88,6 +87,15 @@ create table ASSIGNMENT_SUBMISSION
     constraint fk_submission_assignment foreign key (assignment_id) references ASSIGNMENT (id)
 );
 
+create table ADMIN
+(
+    id bigint not null auto_increment primary key,
+    name varchar(255) character set utf8 collate utf8_unicode_ci,
+    password varchar(255) not null,
+    email varchar(255) unique not null,
+    version  integer default 0
+);
+
 create table LOCKED_ACCOUNT
 (
     id bigint not null auto_increment primary key,
@@ -121,7 +129,7 @@ create table COMMENT
     constraint fk_comment_author foreign key (author) references ACCOUNT (id)
 );
 
-insert into ACCOUNT (id, first_name, last_name,name, email, password, account_role, version) values
-    (1, 'Hai', 'Dang', 'Hai Dang', 'hdang@gmail.com','','ADMIN', 0)
+insert into ADMIN (id,name, email, password, version) values
+    (1, 'Hai Dang', 'hdang@gmail.com','', 0)
 ;
 

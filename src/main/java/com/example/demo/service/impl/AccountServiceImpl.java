@@ -1,6 +1,5 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.common.enums.AccountRole;
 import com.example.demo.common.exception.DuplicateRecordException;
 import com.example.demo.common.exception.RTException;
 import com.example.demo.common.exception.RecordNotFoundException;
@@ -9,7 +8,6 @@ import com.example.demo.repository.AccountRepository;
 import com.example.demo.service.AccountService;
 import com.example.demo.util.PasswordUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -72,10 +70,5 @@ public class AccountServiceImpl implements AccountService {
             return true;
         }
         return false;
-    }
-
-    @Override
-    public AccountRole getAccountRole(Long id) {
-        return accountRepository.getAccountRole(id);
     }
 }

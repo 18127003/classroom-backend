@@ -29,9 +29,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     @Autowired
     private JwtTokenService jwtService;
 
-    @Autowired
-    private AccountService accountService;
-
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         var cookies = request.getCookies();
@@ -48,14 +45,10 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         }
         try{
             var jwtToken = jwtCookie.getValue();
-//            var userId = jwtService.getUserIdFromToken(jwtToken);
-//            UserDetails userDetails = authService.loadUserByUsername(userId);
             var userId = jwtService.validateToken(jwtToken);
             if (userId != null) {
-                var accountRole = accountService.getAccountRole(Long.valueOf(userId));
                 UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
-                        Long.valueOf(userId), null,
-                        Collections.singletonList(new SimpleGrantedAuthority(accountRole.name())));
+                        Long.valueOf(userId), null, null);
                 usernamePasswordAuthenticationToken
                         .setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);

@@ -26,11 +26,6 @@ public class ApiAccessFilter extends OncePerRequestFilter {
 
     public static final String CLASSROOM_URL_PATTERN = "**/classroom/{id:[\\d+]}/**";
 
-    @Bean
-    public AntPathMatcher antPathMatcher() {
-        return new AntPathMatcher();
-    }
-
     @Autowired
     private AntPathMatcher antPathMatcher;
 
