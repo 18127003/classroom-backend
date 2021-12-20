@@ -6,6 +6,7 @@ create table ACCOUNT
     name varchar(255) character set utf8 collate utf8_unicode_ci,
     password varchar(255) not null,
     email varchar(255) unique not null,
+    account_role varchar(20) not null default 'USER',
     version  integer default 0
 );
 
@@ -86,4 +87,41 @@ create table ASSIGNMENT_SUBMISSION
     constraint fk_submission_student foreign key (student_id, classroom_id) references STUDENT_INFO (student_id, classroom_id),
     constraint fk_submission_assignment foreign key (assignment_id) references ASSIGNMENT (id)
 );
+
+create table LOCKED_ACCOUNT
+(
+    id bigint not null auto_increment primary key,
+    account_id bigint not null,
+    version integer default 0,
+    key fk_locked_account_id (account_id),
+    constraint fk_locked_account_id foreign key (account_id) references ACCOUNT (id)
+);
+
+create table GRADE_REVIEW
+(
+    id bigint not null auto_increment primary key,
+    request_by bigint not null,
+    submission bigint not null,
+    expect_grade integer,
+    explanation text character set utf8 collate utf8_unicode_ci,
+    version integer default 0,
+    key fk_request_account (request_by),
+    key fk_review_submission (submission),
+    constraint fk_request_account foreign key (request_by) references ACCOUNT (id),
+    constraint fk_review_submission foreign key (submission) references ASSIGNMENT_SUBMISSION (id)
+);
+
+create table COMMENT
+(
+    id bigint not null auto_increment primary key,
+    grade_review bigint not null,
+    author bigint not null,
+    content text character set utf8 collate utf8_unicode_ci,
+    version integer default 0,
+    constraint fk_comment_author foreign key (author) references ACCOUNT (id)
+);
+
+insert into ACCOUNT (id, first_name, last_name,name, email, password, account_role, version) values
+    (1, 'Hai', 'Dang', 'Hai Dang', 'hdang@gmail.com','','ADMIN', 0)
+;
 

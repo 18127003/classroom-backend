@@ -1,5 +1,6 @@
 package com.example.demo.security;
 
+import com.example.demo.common.enums.AccountRole;
 import com.example.demo.common.enums.Role;
 import com.example.demo.controller.AbstractServiceEndpoint;
 import lombok.RequiredArgsConstructor;
@@ -17,8 +18,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import static com.example.demo.controller.AbstractServiceEndpoint.STUDENT_PROTECTED_PATH;
-import static com.example.demo.controller.AbstractServiceEndpoint.TEACHER_PROTECTED_PATH;
+import static com.example.demo.controller.AbstractServiceEndpoint.*;
 
 @Configuration
 @EnableWebSecurity
@@ -54,8 +54,9 @@ public class ApiSecurityConfig extends WebSecurityConfigurerAdapter {
                 ).permitAll()
                 .antMatchers(TEACHER_PROTECTED_PATH.toArray(String[]::new)).hasAnyAuthority(Role.TEACHER.name())
                 .antMatchers(STUDENT_PROTECTED_PATH.toArray(String[]::new)).hasAnyAuthority(Role.STUDENT.name())
+                .antMatchers(ADMIN_PROTECTED_PATH.toArray(String[]::new)).hasAnyAuthority(AccountRole.ADMIN.name())
                 .anyRequest().authenticated();
-        http.addFilterBefore(apiAccessFilter, UsernamePasswordAuthenticationFilter.class);
-        http.addFilterBefore(authenticateFilter, ApiAccessFilter.class);
+        http.addFilterBefore(apiAccessFilter, UsernamePasswordAuthenticationFilter.class)
+        .addFilterBefore(authenticateFilter, ApiAccessFilter.class);
     }
 }

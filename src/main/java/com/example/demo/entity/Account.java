@@ -1,13 +1,16 @@
 package com.example.demo.entity;
 
+import com.example.demo.common.enums.AccountRole;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 @Entity
@@ -35,37 +38,45 @@ public class Account extends AbstractEntity implements UserDetails {
     @Column
     private String email;
 
+    @Column(name = "account_role")
+    @Enumerated(value = EnumType.STRING)
+    private AccountRole accountRole;
+
     @OneToOne(mappedBy = "classroomAccount")
     private StudentInfo studentInfo;
 
     @OneToMany(mappedBy = "account")
     private List<Participant> assignedClasses;
 
-    public Account(String firstName, String lastName, String password, String email) {
+    public Account(String firstName, String lastName, String password, String email, AccountRole accountRole) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.name = firstName + " " + lastName;
         this.password = password;
         this.email = email;
+        this.accountRole = accountRole;
     }
 
-    public Account(String firstName, String lastName, String password, String email, StudentInfo studentInfo) {
+    public Account(String firstName, String lastName, String password, String email, StudentInfo studentInfo,
+                   AccountRole accountRole) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.name = firstName + " " + lastName;
         this.password = password;
         this.email = email;
         this.studentInfo = studentInfo;
+        this.accountRole = accountRole;
     }
 
-    public Account(long id, String firstName, String lastName, String password, String email, StudentInfo studentInfo){
-        this(firstName, lastName, password, email, studentInfo);
+    public Account(long id, String firstName, String lastName, String password, String email, StudentInfo studentInfo,
+                   AccountRole accountRole){
+        this(firstName, lastName, password, email, studentInfo, accountRole);
         this.id = id;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        return Collections.singletonList(new SimpleGrantedAuthority(accountRole.name()));
     }
 
     @Override

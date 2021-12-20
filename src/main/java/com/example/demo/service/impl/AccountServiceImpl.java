@@ -1,5 +1,6 @@
 package com.example.demo.service.impl;
 
+import com.example.demo.common.enums.AccountRole;
 import com.example.demo.common.exception.DuplicateRecordException;
 import com.example.demo.common.exception.RTException;
 import com.example.demo.common.exception.RecordNotFoundException;
@@ -71,5 +72,10 @@ public class AccountServiceImpl implements AccountService {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public AccountRole getAccountRole(Long id) {
+        return accountRepository.getAccountRole(id);
     }
 }

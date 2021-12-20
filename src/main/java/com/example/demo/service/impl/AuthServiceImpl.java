@@ -1,5 +1,6 @@
 package com.example.demo.service.impl;
 
+import com.example.demo.common.enums.AccountRole;
 import com.example.demo.common.exception.RTException;
 import com.example.demo.common.exception.RecordNotFoundException;
 import com.example.demo.dto.jwt.JwtRequest;
@@ -43,23 +44,14 @@ public class AuthServiceImpl implements AuthService {
 
         if (idToken != null) {
             GoogleIdToken.Payload payload = idToken.getPayload();
-
-            // Print user identifier
-//            String userId = payload.getSubject();
-
-            // Get profile information from payload
             String email = payload.getEmail();
-//            boolean emailVerified = payload.getEmailVerified();
-//            String name = (String) payload.get("name");
-//            String pictureUrl = (String) payload.get("picture");
-//            String locale = (String) payload.get("locale");
             String familyName = (String) payload.get("family_name");
             String givenName = (String) payload.get("given_name");
 
             // find account in app db
             var account = accountRepository.findByEmail(email);
             if(account==null){
-                return accountRepository.save(new Account(familyName, givenName, "", email));
+                return accountRepository.save(new Account(familyName, givenName, "", email, AccountRole.USER));
             }
             return account;
         } else {
