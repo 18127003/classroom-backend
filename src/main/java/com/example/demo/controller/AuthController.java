@@ -44,7 +44,7 @@ public class AuthController extends AbstractServiceEndpoint{
         }
     }
 
-    @PostMapping(value = "login/admin")
+    @PostMapping(value = "loginAdmin")
     public ResponseEntity<AdminDto> authenticateAdmin(@RequestBody final JwtRequest jwtRequest, final HttpServletResponse response) {
         try{
             var user = authService.validatePasswordAdmin(jwtRequest);
