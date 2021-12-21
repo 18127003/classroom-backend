@@ -2,6 +2,7 @@ package com.example.demo.service.impl;
 
 import com.example.demo.common.exception.RTException;
 import com.example.demo.common.exception.RecordNotFoundException;
+import com.example.demo.dto.OverallGradeDto;
 import com.example.demo.dto.SubmissionDto;
 import com.example.demo.entity.*;
 import com.example.demo.repository.AssignmentRepository;
@@ -120,6 +121,12 @@ public class AssignmentServiceImpl implements AssignmentService {
                 .orElseThrow(()->new RTException(new RecordNotFoundException(submissionId.toString(), Submission.class.getSimpleName())));
         submission.setGrade(grade);
         return submissionRepository.save(submission);
+    }
+
+    @Override
+    public OverallGradeDto getOverallGrade(Long accountId, Long classroomId) {
+        var result = submissionRepository.getStudentOverallGrade(accountId, classroomId);
+        return new OverallGradeDto(result.get(0, Integer.class), result.get(1, Integer.class));
     }
 
     @Override

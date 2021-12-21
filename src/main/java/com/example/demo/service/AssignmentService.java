@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import com.example.demo.dto.OverallGradeDto;
 import com.example.demo.dto.SubmissionDto;
 import com.example.demo.entity.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -38,4 +39,6 @@ public interface AssignmentService {
     void importSubmission(MultipartFile file, Classroom classroom, Long assignmentId) throws IOException;
 
     Submission updateSubmissionGrade(Long submissionId, Integer grade);
+
+    OverallGradeDto getOverallGrade(Long accountId, Long classroomId);
 }

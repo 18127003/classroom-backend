@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import com.example.demo.common.exception.RTException;
 import com.example.demo.dto.AssignmentDto;
+import com.example.demo.dto.OverallGradeDto;
 import com.example.demo.dto.StudentInfoDto;
 import com.example.demo.dto.SubmissionDto;
 import com.example.demo.entity.Assignment;
@@ -148,7 +149,7 @@ public class AssignmentController extends AbstractServiceEndpoint {
 
     }
 
-    @GetMapping("/template/export")
+    @GetMapping("template/export")
     public ResponseEntity<Void> exportTemplate(final HttpServletResponse response){
         try {
             assignmentService.exportTemplateFile(response,participantInfo.getClassroom().getId());
@@ -166,5 +167,11 @@ public class AssignmentController extends AbstractServiceEndpoint {
         } catch (IOException e) {
             return ResponseEntity.badRequest().build();
         }
+    }
+
+    @GetMapping("overallGrade")
+    public ResponseEntity<OverallGradeDto> getStudentOverallGrade(@AuthenticationPrincipal Long accountId){
+        var result = assignmentService.getOverallGrade(accountId, participantInfo.getClassroom().getId());
+        return ResponseEntity.ok(result);
     }
 }

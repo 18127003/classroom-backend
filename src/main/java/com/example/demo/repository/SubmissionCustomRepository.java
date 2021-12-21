@@ -8,5 +8,5 @@ import java.util.List;
 public interface SubmissionCustomRepository {
     List<Submission> getAllSubmission(Long assignmentId);
 
-
+    Tuple getStudentOverallGrade(Long accountId, Long classroomId);
 }
