@@ -82,6 +82,12 @@ public class AccountServiceImpl implements AccountService {
         if (account==null){
             throw new RTException(new RecordNotFoundException(accountId.toString(), Account.class.getSimpleName()));
         }
+        // detach previous linked student info
+        var existedStudentInfo = account.getStudentInfo();
+        if (existedStudentInfo!=null){
+            existedStudentInfo.setClassroomAccount(null);
+        }
+
         // find existed student info
         var info = studentInfoRepository.findByStudentId(studentId);
         if (info != null){

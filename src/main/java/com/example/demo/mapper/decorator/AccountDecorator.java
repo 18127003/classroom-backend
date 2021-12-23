@@ -14,7 +14,11 @@ public class AccountDecorator implements AccountMapper {
 
     @Override
     public AccountDto toAccountDto(Account account) {
-        return delegate.toAccountDto(account);
+        var result = delegate.toAccountDto(account);
+        if(account.getStudentInfo()!=null){
+            result.setStudentId(account.getStudentInfo().getStudentId());
+        }
+        return result;
     }
 
     @Override
