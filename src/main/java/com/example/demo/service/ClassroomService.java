@@ -1,11 +1,10 @@
 package com.example.demo.service;
 
 import com.example.demo.common.enums.Role;
-import com.example.demo.entity.Account;
-import com.example.demo.entity.Assignment;
-import com.example.demo.entity.Classroom;
-import com.example.demo.entity.Participant;
+import com.example.demo.entity.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface ClassroomService {
@@ -29,5 +28,9 @@ public interface ClassroomService {
 
     Participant getAssignedClassroom(Long classroomId, Long accountId);
 
-    void updateStudentId(Long classroomId, Long accountId, String studentId);
+    StudentInfoClassroom getStudentInfo(String studentId, Long classroomId);
+
+    List<StudentInfoClassroom> getAllStudentInfo(Long classroomId);
+
+    void importStudentInfo(MultipartFile file, Classroom classroom) throws IOException;
 }

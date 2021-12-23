@@ -4,18 +4,20 @@ import com.example.demo.common.enums.Role;
 import com.example.demo.common.exception.DuplicateRecordException;
 import com.example.demo.common.exception.RTException;
 import com.example.demo.common.exception.RecordNotFoundException;
-import com.example.demo.entity.Account;
-import com.example.demo.entity.Classroom;
-import com.example.demo.entity.Participant;
+import com.example.demo.entity.*;
 import com.example.demo.repository.ClassroomRepository;
 import com.example.demo.repository.ParticipantRepository;
+import com.example.demo.repository.StudentInfoClassroomRepository;
 import com.example.demo.repository.StudentInfoRepository;
 import com.example.demo.service.ClassroomService;
 import com.example.demo.util.EmailSender;
+import com.example.demo.util.ExcelUtil;
+import com.example.demo.util.dto.StudentInfoData;
 import lombok.RequiredArgsConstructor;
 import org.jasypt.encryption.StringEncryptor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
@@ -30,8 +32,10 @@ public class ClassroomServiceImpl implements ClassroomService {
     private final ClassroomRepository classroomRepository;
     private final ParticipantRepository participantRepository;
     private final StudentInfoRepository studentInfoRepository;
+    private final StudentInfoClassroomRepository studentInfoClassroomRepository;
     private final StringEncryptor stringEncryptor;
     private final EmailSender emailSender;
+    private final ExcelUtil excelUtil;
 
     @Override
     public Classroom getClassroom(Long classroomId) {
@@ -145,26 +149,50 @@ public class ClassroomServiceImpl implements ClassroomService {
     }
 
     @Override
-    public void updateStudentId(Long classroomId, Long accountId, String studentId) {
-        var participant = getAssignedClassroom(classroomId, accountId);
-        var duplicated = participantRepository.findByStudentId(classroomId, studentId);
-        if(duplicated!=null && !duplicated.getAccount().getId().equals(accountId)){
-            throw new RTException(new DuplicateRecordException(studentId, Participant.class.getSimpleName()));
+    public StudentInfoClassroom getStudentInfo(String studentId, Long classroomId) {
+        var result = studentInfoClassroomRepository.findByStudentId(studentId, classroomId);
+        if(result == null){
+            throw new RTException(new RecordNotFoundException(studentId, StudentInfo.class.getSimpleName()));
         }
-        // detach old student info if has
-        var oldInfo = participant.getStudentInfo();
-        if(oldInfo!=null){
-            participant.setStudentInfo(null);
-            oldInfo.setClassroomAccount(null);
-        }
-
-        participant.setStudentId(studentId);
-        var studentInfo = studentInfoRepository.findByStudentId(studentId, classroomId);
-        if(studentInfo!=null){
-            studentInfo.setClassroomAccount(participant.getAccount());
-        }
-        participantRepository.save(participant);
+        return result;
     }
 
 
+    @Override
+    public List<StudentInfoClassroom> getAllStudentInfo(Long classroomId) {
+        return studentInfoClassroomRepository.findAllStudentInfo(classroomId);
+    }
+
+    @Override
+    public void importStudentInfo(MultipartFile file, Classroom classroom) throws IOException {
+        var students = excelUtil.importStudentInfo(file);
+
+        // get existed system student info
+        var existedInfo = studentInfoRepository.findByListStudentId(
+                students.stream().map(StudentInfoData::getStudentId).collect(Collectors.toList()));
+
+        var existedIds = existedInfo.stream().map(StudentInfo::getStudentId)
+                .collect(Collectors.toList());
+
+        var newInfo = students.stream().filter(info->!existedIds.contains(info.getStudentId()))
+                .map(info->new StudentInfo(info.getStudentId(), info.getName()))
+                .collect(Collectors.toList());
+        // save new infos
+        newInfo = studentInfoRepository.saveAll(newInfo);
+        newInfo.addAll(existedInfo);
+
+        // get existed classroom student info
+        var existedClassInfo = studentInfoClassroomRepository.findByListStudentId(
+                newInfo.stream().map(StudentInfo::getStudentId).collect(Collectors.toList()), classroom.getId()
+        );
+
+        var infosWithExistedClassInfo = existedClassInfo.stream()
+                .map(StudentInfoClassroom::getStudentInfo).collect(Collectors.toList());
+
+        var newClassInfo = newInfo.stream().filter(info->!infosWithExistedClassInfo.contains(info))
+                .map(info->new StudentInfoClassroom(classroom, info))
+                .collect(Collectors.toList());
+
+        studentInfoClassroomRepository.saveAll(newClassInfo);
+    }
 }

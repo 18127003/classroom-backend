@@ -37,6 +37,9 @@ public class Assignment extends AbstractEntity{
     @Column
     private Integer position;
 
+    @OneToOne(mappedBy = "assignment", cascade = CascadeType.REMOVE)
+    private GradeComposition gradeComposition;
+
     public Assignment(String name, String description, Integer points, LocalDateTime deadline, Date createdAt, Integer position) {
         this.name = name;
         this.description = description;
@@ -61,8 +64,4 @@ public class Assignment extends AbstractEntity{
     @ManyToOne(targetEntity = Account.class)
     @JoinColumn(name = "creator", referencedColumnName = "id")
     private Account creator;
-
-    // for removal purpose only
-    @OneToMany(mappedBy = "assignment", cascade = CascadeType.REMOVE)
-    private List<Submission> submissions;
 }

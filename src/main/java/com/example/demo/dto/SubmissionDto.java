@@ -9,7 +9,6 @@ public class SubmissionDto {
     private Long id;
     private Long assignmentId;
     private String studentId;
-    private Long classroomId;
     private Integer grade;
     private Integer maxGrade;
 }

@@ -1,16 +1,15 @@
 package com.example.demo.service.impl;
 
+import com.example.demo.common.enums.GradeCompositionStatus;
 import com.example.demo.common.exception.RTException;
 import com.example.demo.common.exception.RecordNotFoundException;
 import com.example.demo.dto.OverallGradeDto;
 import com.example.demo.dto.SubmissionDto;
 import com.example.demo.entity.*;
-import com.example.demo.repository.AssignmentRepository;
-import com.example.demo.repository.ParticipantRepository;
-import com.example.demo.repository.StudentInfoRepository;
-import com.example.demo.repository.SubmissionRepository;
+import com.example.demo.repository.*;
 import com.example.demo.service.AssignmentService;
 import com.example.demo.util.ExcelUtil;
+import com.example.demo.util.dto.StudentInfoData;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,9 +28,9 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 public class AssignmentServiceImpl implements AssignmentService {
     private final AssignmentRepository assignmentRepository;
-    private final StudentInfoRepository studentInfoRepository;
+    private final StudentInfoClassroomRepository studentInfoClassroomRepository;
     private final SubmissionRepository submissionRepository;
-    private final ParticipantRepository participantRepository;
+    private final GradeCompositionRepository gradeCompositionRepository;
     private final ExcelUtil excelUtil;
 
     @Override
@@ -41,76 +40,32 @@ public class AssignmentServiceImpl implements AssignmentService {
     }
 
     @Override
-    public StudentInfo getStudentInfo(String studentId, Long classroomId) {
-        var result = studentInfoRepository.findByStudentId(studentId, classroomId);
-        if(result == null){
-            throw new RTException(new RecordNotFoundException(studentId, StudentInfo.class.getSimpleName()));
-        }
-        return result;
-    }
-
-    @Override
-    public void deleteAllStudentInfo(Long classroomId) {
-        var old = getAllStudentInfo(classroomId);
-        old.stream().map(StudentInfo::getName).forEach(System.out::println);
-        studentInfoRepository.deleteAll(old);
-    }
-
-    @Override
-    public List<StudentInfo> getAllStudentInfo(Long classroomId) {
-        return studentInfoRepository.findAllStudentInfo(classroomId);
-    }
-
-    @Override
-    public void importStudentInfo(MultipartFile file, Classroom classroom) throws IOException {
-        var students = excelUtil.importStudentInfo(file, classroom);
-
-        // ignore existed student info
-        var old = getAllStudentInfo(classroom.getId())
-                .stream().collect(Collectors.toMap(StudentInfo::getStudentId,k->k));
-
-        // auto sync with participant accounts
-        var syncParticipants = participantRepository.getParticipants(classroom.getId())
-                .stream().filter(participant -> participant.getStudentId()!=null)
-                .collect(Collectors.toMap(Participant::getStudentId,Participant::getAccount));
-
-        students = students.stream()
-                .filter(studentInfo -> !old.containsKey(studentInfo.getStudentId())).collect(Collectors.toList());
-        students.forEach(studentInfo -> {
-            var key = studentInfo.getStudentId();
-            if(old.containsKey(key)){
-                studentInfo.setId(old.get(key).getId());
-            }
-            if(syncParticipants.containsKey(key)){
-                studentInfo.setClassroomAccount(syncParticipants.get(key));
-            }
-        });
-        studentInfoRepository.saveAll(students);
-    }
-
-    @Override
     public void exportTemplateFile(HttpServletResponse response, Long classroomId) throws IOException {
-        var assignmentData = studentInfoRepository.getExcelData(classroomId);
+        var assignmentData = studentInfoClassroomRepository.getExcelData(classroomId);
         var data = assignmentData.stream()
                 .collect(Collectors.toMap(k->k.get(0,Long.class), Arrays::asList,
                         (o, n)-> Stream.of(o,n).flatMap(Collection::stream).collect(Collectors.toList())));
-        var studentInfos = studentInfoRepository.findAllStudentInfo(classroomId);
+        var studentInfos = studentInfoClassroomRepository.findAllStudentInfo(classroomId);
         excelUtil.exportTemplate(response,data, studentInfos);
     }
 
     @Override
     public void importSubmission(MultipartFile file, Classroom classroom, Long assignmentId) throws IOException {
         var assignment = getAssignment(assignmentId);
-        var data = excelUtil.importSubmission(file, assignment);
-        var studentInfos = getAllStudentInfo(classroom.getId())
-                .stream().filter(studentInfo -> data.containsKey(studentInfo.getStudentId()))
-                .collect(Collectors.toList());
-        var submissions = studentInfos
+        var data = excelUtil.importSubmission(file, assignment.getName());
+
+        // get student class info of submitted ids
+        var submittedInfos = studentInfoClassroomRepository.findByListStudentId(
+                data.keySet(), classroom.getId()
+        );
+
+        var gradeComposition = assignment.getGradeComposition();
+        var submissions = submittedInfos
                 .stream().map(studentInfo->
-                        new Submission(data.get(studentInfo.getStudentId()), studentInfo, assignment))
+                        new Submission(data.get(studentInfo.getStudentInfo().getStudentId()), studentInfo, gradeComposition))
                 .collect(Collectors.toList());
-        // delete old
-        var old = submissionRepository.getAllSubmission(assignmentId);
+        // delete old and rewrite
+        var old = submissionRepository.getSubmissionByInfoList(submittedInfos, assignmentId);
         submissionRepository.deleteAll(old);
         submissionRepository.saveAll(submissions);
     }
@@ -140,7 +95,9 @@ public class AssignmentServiceImpl implements AssignmentService {
         assignment.setCreator(creator);
         Date current = Date.from(Instant.now());
         assignment.setCreatedAt(current);
-        return assignmentRepository.save(assignment);
+        GradeComposition gradeComposition = new GradeComposition(assignment, GradeCompositionStatus.GRADING);
+        gradeCompositionRepository.save(gradeComposition);
+        return assignment;
     }
 
     @Override
@@ -168,15 +125,17 @@ public class AssignmentServiceImpl implements AssignmentService {
     }
 
     @Override
-    public StudentInfo addStudentInfo(StudentInfo studentInfo) {
-        return studentInfoRepository.save(studentInfo);
+    public StudentInfoClassroom addStudentInfo(StudentInfoClassroom studentInfo) {
+        //TODO: fix
+        return studentInfoClassroomRepository.save(studentInfo);
     }
 
     @Override
-    public Submission addSubmission(SubmissionDto submissionDto) {
+    public Submission addSubmission(SubmissionDto submissionDto, Long classroomId) {
         var assignment = getAssignment(submissionDto.getAssignmentId());
-        var studentInfo = getStudentInfo(submissionDto.getStudentId(), submissionDto.getClassroomId());
-        var submission = new Submission(submissionDto.getGrade(), studentInfo, assignment);
+        System.out.println(assignment.getGradeComposition().getId());
+        var studentInfo = studentInfoClassroomRepository.findByStudentId(submissionDto.getStudentId(), classroomId);
+        var submission = new Submission(submissionDto.getGrade(), studentInfo, assignment.getGradeComposition());
         return submissionRepository.save(submission);
     }
 }

@@ -22,7 +22,9 @@ public class AccountDecorator implements AccountMapper {
         var user = delegate.toAccountDto(participant.getAccount());
         user.setRole(participant.getRole().name());
         user.setHidden(participant.getHidden());
-        user.setStudentId(participant.getStudentId());
+        if(participant.getAccount().getStudentInfo()!=null){
+            user.setStudentId(participant.getAccount().getStudentInfo().getStudentId());
+        }
         return user;
     }
 }

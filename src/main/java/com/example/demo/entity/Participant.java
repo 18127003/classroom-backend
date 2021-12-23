@@ -17,9 +17,6 @@ public class Participant extends AbstractEntity{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "student_id")
-    private String studentId;
-
     @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "account_id", referencedColumnName = "id")
     private Account account;
@@ -35,9 +32,6 @@ public class Participant extends AbstractEntity{
     @Enumerated(value = EnumType.STRING)
     private Role role;
 
-    @OneToOne(mappedBy = "classroomAccount")
-    private StudentInfo studentInfo;
-
     public Participant(Account account, Classroom classroom, Role role, Boolean hidden){
         this.account = account;
         this.classroom = classroom;
@@ -45,19 +39,8 @@ public class Participant extends AbstractEntity{
         this.role = role;
     }
 
-    public Participant(Account account, Classroom classroom, Role role, Boolean hidden, String studentId,
-                       StudentInfo studentInfo){
-        this.account = account;
-        this.classroom = classroom;
-        this.hidden = hidden;
-        this.role = role;
-        this.studentId = studentId;
-        this.studentInfo = studentInfo;
-    }
-
-    public Participant(Long id, Account account, Classroom classroom, Role role, Boolean hidden, String studentId,
-                       StudentInfo studentInfo){
-        this(account, classroom, role, hidden, studentId, studentInfo);
+    public Participant(Long id, Account account, Classroom classroom, Role role, Boolean hidden){
+        this(account, classroom, role, hidden);
         this.id = id;
     }
 

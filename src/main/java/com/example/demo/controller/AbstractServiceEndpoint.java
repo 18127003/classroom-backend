@@ -29,7 +29,8 @@ public class AbstractServiceEndpoint {
     );
 
     public static final Set<String> STUDENT_PROTECTED_PATH = Set.of(
-            CLASS_PATH + "**participant/studentId/update"
+            CLASS_PATH + "**participant/studentId/update",
+            ASSIGNMENT_PATH + "**overallGrade**"
     );
 
     public static final Set<String> ADMIN_PROTECTED_PATH = Set.of(

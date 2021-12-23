@@ -3,6 +3,8 @@ package com.example.demo.util;
 import com.example.demo.entity.Assignment;
 import com.example.demo.entity.Classroom;
 import com.example.demo.entity.StudentInfo;
+import com.example.demo.entity.StudentInfoClassroom;
+import com.example.demo.util.dto.StudentInfoData;
 import com.querydsl.core.Tuple;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.streaming.SXSSFRow;
@@ -30,17 +32,17 @@ public class ExcelUtil {
     private static final String[] EXCEL_STUDENT_LIST_HEADERS = new String[]{"Student ID","Name"};
     private static final String[] EXCEL_ASSIGNMENT_GRADE_HEADERS = new String[]{"ID","Grades"};
 
-    public List<StudentInfo> importStudentInfo(MultipartFile file, Classroom classroom) throws IOException {
+    public List<StudentInfoData> importStudentInfo(MultipartFile file) throws IOException {
         Workbook workbook = new XSSFWorkbook(file.getInputStream());
         var sheet = workbook.getSheet(STUDENT_LIST_SHEET_NAME);
-        List<StudentInfo> data = new ArrayList<>();
+        List<StudentInfoData> data = new ArrayList<>();
         sheet.forEach(row->{
             if(row.getRowNum()==0){
                 return;
             }
             var studentId = getStringValue(row.getCell(0));
             var name = row.getCell(1).getStringCellValue();
-            data.add(new StudentInfo(studentId, name, classroom));
+            data.add(new StudentInfoData(studentId, name));
         });
         return data;
     }
@@ -72,7 +74,7 @@ public class ExcelUtil {
         }
 
     }
-    public void exportStudentList(SXSSFWorkbook workbook,List<StudentInfo> students, CellStyle textStyle){
+    public void exportStudentList(SXSSFWorkbook workbook,List<StudentInfoClassroom> students, CellStyle textStyle){
         final SXSSFSheet sheet = workbook.createSheet(STUDENT_LIST_SHEET_NAME);
         final var rowId = 0;
         final SXSSFRow headerRow = sheet.createRow(rowId);
@@ -86,15 +88,16 @@ public class ExcelUtil {
             final var student=students.get(i);
             final var studentIdCell = studentRow.createCell(colId++,CellType.STRING);
             studentIdCell.setCellStyle(textStyle);
-            studentIdCell.setCellValue(student.getStudentId());
-            studentRow.createCell(colId,CellType.STRING).setCellValue(student.getName());
+            studentIdCell.setCellValue(student.getStudentInfo().getStudentId());
+            studentRow.createCell(colId,CellType.STRING).setCellValue(student.getStudentInfo().getName());
         }
         for (var i = 0; i < EXCEL_STUDENT_LIST_HEADERS.length; i++) {
             sheet.autoSizeColumn(i);
         }
 
     }
-    public void exportTemplate(final HttpServletResponse response, Map<Long,List<Tuple>> data, List<StudentInfo> studentInfos) throws IOException {
+    public void exportTemplate(final HttpServletResponse response, Map<Long,List<Tuple>> data,
+                               List<StudentInfoClassroom> studentInfos) throws IOException {
         final var workbook = new SXSSFWorkbook();
         DataFormat fmt = workbook.createDataFormat();
         CellStyle cellStyle = workbook.createCellStyle();
@@ -106,9 +109,9 @@ public class ExcelUtil {
         workbook.close();
     }
 
-    public Map<String, Integer> importSubmission(MultipartFile file, Assignment assignment) throws IOException {
+    public Map<String, Integer> importSubmission(MultipartFile file, String sheetName) throws IOException {
         Workbook workbook = new XSSFWorkbook(file.getInputStream());
-        var sheet = workbook.getSheet(assignment.getName());
+        var sheet = workbook.getSheet(sheetName);
         Map<String, Integer> data = new HashMap<>();
         sheet.forEach(row->{
             if(row.getRowNum()==0){

@@ -6,6 +6,7 @@ import com.example.demo.dto.OverallGradeDto;
 import com.example.demo.dto.StudentInfoDto;
 import com.example.demo.dto.SubmissionDto;
 import com.example.demo.entity.Assignment;
+import com.example.demo.entity.GradeReview;
 import com.example.demo.entity.StudentInfo;
 import com.example.demo.mapper.AssignmentMapper;
 import com.example.demo.mapper.StudentInfoMapper;
@@ -34,7 +35,6 @@ public class AssignmentController extends AbstractServiceEndpoint {
     private final ClassroomService classroomService;
     private final AccountService accountService;
     private final AssignmentMapper assignmentMapper;
-    private final StudentInfoMapper studentInfoMapper;
     private final SubmissionMapper submissionMapper;
 
     /**
@@ -102,26 +102,10 @@ public class AssignmentController extends AbstractServiceEndpoint {
         }
     }
 
-    // for test only
-    @PostMapping("studentInfo/create")
-    public ResponseEntity<StudentInfoDto> addStudentInfo(@RequestBody StudentInfo studentInfo){
-        studentInfo.setClassroom(participantInfo.getClassroom());
-        return ResponseEntity.ok(studentInfoMapper.toStudentInfoDto(assignmentService.addStudentInfo(studentInfo)));
-    }
-
-    @GetMapping("studentInfo/all")
-    public ResponseEntity<List<StudentInfoDto>> getStudentInfo(){
-        return ResponseEntity.ok(
-                assignmentService.getAllStudentInfo(participantInfo.getClassroom().getId())
-                .stream().map(studentInfoMapper::toStudentInfoDto)
-                .collect(Collectors.toList())
-        );
-    }
-
     @PostMapping("*/submission/create")
     public ResponseEntity<SubmissionDto> addSubmission(@RequestBody SubmissionDto submission){
         try{
-            return ResponseEntity.ok(submissionMapper.toSubmissionDto(assignmentService.addSubmission(submission)));
+            return ResponseEntity.ok(submissionMapper.toSubmissionDto(assignmentService.addSubmission(submission, participantInfo.getClassroom().getId())));
         } catch (RTException e){
             return ResponseEntity.badRequest().build();
         }
@@ -136,17 +120,6 @@ public class AssignmentController extends AbstractServiceEndpoint {
         } catch (NumberFormatException | RTException numberFormatException){
             return ResponseEntity.badRequest().build();
         }
-    }
-
-    @PostMapping("studentInfo/import")
-    public ResponseEntity<Void> upload(@RequestParam("file") final MultipartFile file) {
-        try{
-            assignmentService.importStudentInfo(file, participantInfo.getClassroom());
-            return ResponseEntity.ok().build();
-        } catch (IOException e){
-            return ResponseEntity.badRequest().build();
-        }
-
     }
 
     @GetMapping("template/export")
@@ -173,5 +146,10 @@ public class AssignmentController extends AbstractServiceEndpoint {
     public ResponseEntity<OverallGradeDto> getStudentOverallGrade(@AuthenticationPrincipal Long accountId){
         var result = assignmentService.getOverallGrade(accountId, participantInfo.getClassroom().getId());
         return ResponseEntity.ok(result);
+    }
+
+    @PostMapping("gradeReview/create")
+    public ResponseEntity createGradeReview(@RequestBody GradeReview gradeReview){
+        return null;
     }
 }

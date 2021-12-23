@@ -1,5 +1,6 @@
 package com.example.demo.entity;
 
+import com.example.demo.common.enums.GradeReviewStatus;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -30,15 +31,22 @@ public class GradeReview extends AbstractEntity{
     @Column(columnDefinition = "text")
     private String explanation;
 
-    public GradeReview(Account requestBy, Submission submission, Integer expectGrade, String explanation) {
+    @Column
+    @Enumerated(EnumType.STRING)
+    private GradeReviewStatus status;
+
+    public GradeReview(Account requestBy, Submission submission, Integer expectGrade, String explanation,
+                       GradeReviewStatus status) {
         this.requestBy = requestBy;
         this.submission = submission;
         this.expectGrade = expectGrade;
         this.explanation = explanation;
+        this.status = status;
     }
 
-    public GradeReview(Long id, Account requestBy, Submission submission, Integer expectGrade, String explanation) {
-        this(requestBy, submission, expectGrade, explanation);
+    public GradeReview(Long id, Account requestBy, Submission submission, Integer expectGrade,
+                       String explanation, GradeReviewStatus status) {
+        this(requestBy, submission, expectGrade, explanation, status);
         this.id = id;
     }
 }

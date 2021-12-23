@@ -14,10 +14,10 @@ public class SubmissionDecorator implements SubmissionMapper {
     @Override
     public SubmissionDto toSubmissionDto(Submission submission) {
         var result = delegate.toSubmissionDto(submission);
-        result.setAssignmentId(submission.getAssignment().getId());
-        result.setStudentId(submission.getStudentInfo().getStudentId());
-        result.setClassroomId(submission.getStudentInfo().getClassroom().getId());
-        result.setMaxGrade(submission.getAssignment().getPoints());
+        var assignment = submission.getGradeComposition().getAssignment();
+        result.setAssignmentId(assignment.getId());
+        result.setStudentId(submission.getStudentInfoClassroom().getStudentInfo().getStudentId());
+        result.setMaxGrade(assignment.getPoints());
         return result;
     }
 }

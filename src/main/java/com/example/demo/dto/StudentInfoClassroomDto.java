@@ -5,15 +5,12 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
-
-/***
- * Not exposed
- */
 @Data
 @RequiredArgsConstructor
-public class StudentInfoDto {
+public class StudentInfoClassroomDto {
     private Long id;
     private String studentId;
     private String name;
     private String accountMail;
+    private List<SubmissionDto> submissions;
 }

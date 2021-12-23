@@ -23,7 +23,6 @@ public class ClassroomDecorator implements ClassroomMapper {
         var classroom = delegate.toClassroomDto(participant.getClassroom());
         classroom.setRole(participant.getRole().name());
         classroom.setCreator(participant.getClassroom().getCreator().getName());
-        classroom.setStudentId(participant.getStudentId());
         return classroom;
     }
 }

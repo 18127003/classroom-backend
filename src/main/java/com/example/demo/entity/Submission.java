@@ -15,7 +15,7 @@ import javax.persistence.*;
 @Setter
 @Getter
 @NoArgsConstructor
-@Table(name = "ASSIGNMENT_SUBMISSION")
+@Table(name = "SUBMISSION")
 public class Submission extends AbstractEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,25 +24,25 @@ public class Submission extends AbstractEntity{
     @Column
     private Integer grade;
 
-    @ManyToOne(targetEntity = StudentInfo.class)
+    @ManyToOne(targetEntity = StudentInfoClassroom.class)
     @JoinColumns({
-        @JoinColumn(name = "student_id", referencedColumnName = "student_id"),
+        @JoinColumn(name = "student_info", referencedColumnName = "student_info"),
         @JoinColumn(name = "classroom_id", referencedColumnName = "classroom_id")
     })
-    private StudentInfo studentInfo;
+    private StudentInfoClassroom studentInfoClassroom;
 
-    @ManyToOne(targetEntity = Assignment.class)
-    @JoinColumn(name = "assignment_id", referencedColumnName = "id")
-    private Assignment assignment;
+    @ManyToOne(targetEntity = GradeComposition.class)
+    @JoinColumn(name = "grade_composition", referencedColumnName = "id")
+    private GradeComposition gradeComposition;
 
-    public Submission(Integer grade, StudentInfo studentInfo, Assignment assignment) {
+    public Submission(Integer grade, StudentInfoClassroom studentInfo, GradeComposition gradeComposition) {
         this.grade = grade;
-        this.studentInfo = studentInfo;
-        this.assignment = assignment;
+        this.studentInfoClassroom = studentInfo;
+        this.gradeComposition = gradeComposition;
     }
 
-    public Submission(Long id, Integer grade, StudentInfo studentInfo, Assignment assignment) {
-        this(grade, studentInfo, assignment);
+    public Submission(Long id, Integer grade, StudentInfoClassroom studentInfo, GradeComposition gradeComposition) {
+        this(grade, studentInfo, gradeComposition);
         this.id = id;
     }
 }

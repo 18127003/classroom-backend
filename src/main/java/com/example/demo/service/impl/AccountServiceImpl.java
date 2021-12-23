@@ -4,7 +4,10 @@ import com.example.demo.common.exception.DuplicateRecordException;
 import com.example.demo.common.exception.RTException;
 import com.example.demo.common.exception.RecordNotFoundException;
 import com.example.demo.entity.Account;
+import com.example.demo.entity.Participant;
+import com.example.demo.entity.StudentInfo;
 import com.example.demo.repository.AccountRepository;
+import com.example.demo.repository.StudentInfoRepository;
 import com.example.demo.service.AccountService;
 import com.example.demo.util.PasswordUtil;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class AccountServiceImpl implements AccountService {
     private final AccountRepository accountRepository;
+    private final StudentInfoRepository studentInfoRepository;
     private final PasswordUtil passwordUtil;
 
     @Override
@@ -70,5 +74,26 @@ public class AccountServiceImpl implements AccountService {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public void updateStudentId(Long accountId, String studentId, String name) {
+        var account = getAccountById(accountId);
+        if (account==null){
+            throw new RTException(new RecordNotFoundException(accountId.toString(), Account.class.getSimpleName()));
+        }
+        // find existed student info
+        var info = studentInfoRepository.findByStudentId(studentId);
+        if (info != null){
+            if(info.getClassroomAccount()!=null){
+                throw new RTException(new DuplicateRecordException(studentId, StudentInfo.class.getSimpleName()));
+            } else {
+                info.setClassroomAccount(account);
+            }
+        } else {
+            info = new StudentInfo(studentId, name);
+            info.setClassroomAccount(account);
+        }
+        studentInfoRepository.save(info);
     }
 }

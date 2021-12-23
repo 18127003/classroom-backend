@@ -10,4 +10,6 @@ public interface AccountService {
     Account updateAccount(Long id, Account update);
 
     boolean changePassword(Long id, String oldPassword, String newPassword);
+
+    void updateStudentId(Long accountId, String studentId, String name);
 }

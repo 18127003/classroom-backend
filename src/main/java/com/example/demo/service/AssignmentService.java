@@ -22,17 +22,9 @@ public interface AssignmentService {
 
     void updatePosition(Long id, List<Long> update);
 
-    StudentInfo addStudentInfo(StudentInfo studentInfo);
+    StudentInfoClassroom addStudentInfo(StudentInfoClassroom studentInfo);
 
-    Submission addSubmission(SubmissionDto submissionDto);
-
-    StudentInfo getStudentInfo(String studentId, Long classroomId);
-
-    void deleteAllStudentInfo(Long classroomId);
-
-    List<StudentInfo> getAllStudentInfo(Long classroomId);
-
-    void importStudentInfo(MultipartFile file, Classroom classroom) throws IOException;
+    Submission addSubmission(SubmissionDto submissionDto, Long classroomId);
 
     void exportTemplateFile(HttpServletResponse response, Long classroomId) throws IOException;
 
