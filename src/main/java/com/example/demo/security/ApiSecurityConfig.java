@@ -30,6 +30,7 @@ public class ApiSecurityConfig extends WebSecurityConfigurerAdapter {
     private final AuthEntryPointJwt unauthorizedHandler;
     private final JwtAuthFilter authenticateFilter;
     private final ApiAccessFilter apiAccessFilter;
+    private final AdminAccessFilter adminAccessFilter;
 
     @Override
     protected final void configure(AuthenticationManagerBuilder auth) {
@@ -41,10 +42,7 @@ public class ApiSecurityConfig extends WebSecurityConfigurerAdapter {
         return new BCryptPasswordEncoder();
     }
 
-    @Bean
-    public AntPathMatcher antPathMatcher() {
-        return new AntPathMatcher();
-    }
+
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -62,6 +60,7 @@ public class ApiSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(ADMIN_PROTECTED_PATH.toArray(String[]::new)).hasAnyAuthority("ADMIN")
                 .anyRequest().authenticated();
         http.addFilterBefore(apiAccessFilter, UsernamePasswordAuthenticationFilter.class)
-        .addFilterBefore(authenticateFilter, ApiAccessFilter.class);
+                .addFilterBefore(adminAccessFilter, ApiAccessFilter.class)
+                .addFilterBefore(authenticateFilter, AdminAccessFilter.class);
     }
 }

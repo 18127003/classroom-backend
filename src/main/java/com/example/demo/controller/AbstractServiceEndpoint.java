@@ -25,14 +25,18 @@ public class AbstractServiceEndpoint {
             ASSIGNMENT_PATH + "**update**",
             ASSIGNMENT_PATH + "**updatePosition",
             ASSIGNMENT_PATH + "**studentInfo/**",
-            ASSIGNMENT_PATH + "**submission/**",
-            ASSIGNMENT_PATH + "**template/export**"
+            ASSIGNMENT_PATH + "**submission/import",
+            ASSIGNMENT_PATH + "**submission/**/update",
+            ASSIGNMENT_PATH + "**submission/create**",
+            ASSIGNMENT_PATH + "**template/export**",
+            ASSIGNMENT_PATH + "**submission/finalize**"
     );
 
     public static final Set<String> STUDENT_PROTECTED_PATH = Set.of(
             CLASS_PATH + "**participant/studentId/update",
             ASSIGNMENT_PATH + "**overallGrade**",
-            ASSIGNMENT_PATH + "**gradeReview/create"
+            ASSIGNMENT_PATH + "**submission/all**",
+            ASSIGNMENT_PATH + "**submission/review/create"
     );
 
     public static final Set<String> ADMIN_PROTECTED_PATH = Set.of(

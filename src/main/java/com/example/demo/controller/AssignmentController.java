@@ -1,14 +1,13 @@
 package com.example.demo.controller;
 
+import com.example.demo.common.enums.Role;
 import com.example.demo.common.exception.RTException;
-import com.example.demo.dto.AssignmentDto;
-import com.example.demo.dto.OverallGradeDto;
-import com.example.demo.dto.StudentInfoDto;
-import com.example.demo.dto.SubmissionDto;
+import com.example.demo.dto.*;
 import com.example.demo.entity.Assignment;
 import com.example.demo.entity.GradeReview;
 import com.example.demo.entity.StudentInfo;
 import com.example.demo.mapper.AssignmentMapper;
+import com.example.demo.mapper.GradeReviewMapper;
 import com.example.demo.mapper.StudentInfoMapper;
 import com.example.demo.mapper.SubmissionMapper;
 import com.example.demo.security.ParticipantInfo;
@@ -36,6 +35,7 @@ public class AssignmentController extends AbstractServiceEndpoint {
     private final AccountService accountService;
     private final AssignmentMapper assignmentMapper;
     private final SubmissionMapper submissionMapper;
+    private final GradeReviewMapper gradeReviewMapper;
 
     /**
      * cai nay de lay thong tin classroom cua assignment
@@ -45,10 +45,9 @@ public class AssignmentController extends AbstractServiceEndpoint {
 
 
     @PostMapping("create")
-    public ResponseEntity<AssignmentDto> addAssignment(@RequestBody Assignment assignment
-            , @AuthenticationPrincipal Long accountId){
+    public ResponseEntity<AssignmentDto> addAssignment(@RequestBody Assignment assignment){
         try {
-            var account = accountService.getAccountById(accountId);
+            var account = participantInfo.getAccount();
             var classroom = classroomService.getClassroom(participantInfo.getClassroom().getId());
             return ResponseEntity.ok(assignmentMapper.toAssignmentDto(
                     assignmentService.addAssignment(assignment, account, classroom)));
@@ -142,14 +141,68 @@ public class AssignmentController extends AbstractServiceEndpoint {
         }
     }
 
-    @GetMapping("overallGrade")
+    @PatchMapping("{id}/submission/finalize")
+    public ResponseEntity<Void> finalizeGradeComposition(@PathVariable Long id){
+        try {
+            assignmentService.finalizeGrade(id);
+            return ResponseEntity.ok().build();
+        } catch (RTException e){
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    // For student only
+    @GetMapping("submission/overall")
     public ResponseEntity<OverallGradeDto> getStudentOverallGrade(@AuthenticationPrincipal Long accountId){
         var result = assignmentService.getOverallGrade(accountId, participantInfo.getClassroom().getId());
         return ResponseEntity.ok(result);
     }
 
-    @PostMapping("gradeReview/create")
-    public ResponseEntity createGradeReview(@RequestBody GradeReview gradeReview){
-        return null;
+    // For student only
+    @GetMapping("submission/all")
+    public ResponseEntity<List<SubmissionDto>> getStudentGrade(){
+        try{
+            var account = participantInfo.getAccount();
+            var classroomId = participantInfo.getClassroom().getId();
+            var result = assignmentService.getGradeOfClassByStudent(account, classroomId);
+            return ResponseEntity.ok(result.stream().map(submissionMapper::toSubmissionDto).collect(Collectors.toList()));
+        } catch (RTException e){
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @PostMapping("{id}/submission/review/create")
+    public ResponseEntity<GradeReviewDto> createGradeReview(@RequestBody GradeReview gradeReview, @PathVariable Long id){
+        var account = participantInfo.getAccount();
+        var studentInfo = account.getStudentInfo();
+        if (studentInfo == null){
+            return ResponseEntity.badRequest().build();
+        }
+        var existedPendingReview = assignmentService.getPendingGradeReview(id, studentInfo.getStudentId());
+        if (existedPendingReview != null){
+            return ResponseEntity.badRequest().build();
+        }
+        var submission = assignmentService.getSubmission(id, studentInfo.getStudentId());
+        var created = assignmentService.addGradeReview(gradeReview, submission, account);
+        return ResponseEntity.ok(gradeReviewMapper.toGradeReviewDto(created));
+    }
+
+    @GetMapping("submission/review/all")
+    public ResponseEntity<List<GradeReviewDto>> getGradeReview(){
+        var account = participantInfo.getAccount();
+        var classroomId = participantInfo.getClassroom().getId();
+        List<GradeReview> gradeReviews;
+        if (participantInfo.getRole().equals(Role.STUDENT)){
+            var studentInfo = account.getStudentInfo();
+            if (studentInfo==null){
+                return ResponseEntity.badRequest().build();
+            }
+            var studentId = studentInfo.getStudentId();
+            gradeReviews = assignmentService.getAllGradeReviewOfAccount(studentId, classroomId);
+        } else {
+            gradeReviews = assignmentService.getAllGradeReviewOfClass(classroomId);
+        }
+        return ResponseEntity.ok(gradeReviews.stream().map(gradeReviewMapper::toGradeReviewDto)
+                .collect(Collectors.toList()));
     }
 }

@@ -35,6 +35,9 @@ public class Submission extends AbstractEntity{
     @JoinColumn(name = "grade_composition", referencedColumnName = "id")
     private GradeComposition gradeComposition;
 
+    @OneToOne(mappedBy = "submission", cascade = CascadeType.REMOVE)
+    private GradeReview gradeReview;
+
     public Submission(Integer grade, StudentInfoClassroom studentInfo, GradeComposition gradeComposition) {
         this.grade = grade;
         this.studentInfoClassroom = studentInfo;

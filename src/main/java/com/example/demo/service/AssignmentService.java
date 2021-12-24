@@ -33,4 +33,20 @@ public interface AssignmentService {
     Submission updateSubmissionGrade(Long submissionId, Integer grade);
 
     OverallGradeDto getOverallGrade(Long accountId, Long classroomId);
+
+    List<Submission> getGradeOfClassByStudent(Account account, Long classroomId);
+
+    void finalizeGrade(Long assignmentId);
+
+    Submission getSubmission(Long assignmentId, String studentId);
+
+    GradeReview addGradeReview(GradeReview gradeReview, Submission submission, Account account);
+
+    GradeReview getPendingGradeReview(Long assignmentId, String studentId);
+
+    List<GradeReview> getAllGradeReview(Long assignmentId);
+
+    List<GradeReview> getAllGradeReviewOfClass(Long classroomId);
+
+    List<GradeReview> getAllGradeReviewOfAccount(String studentId, Long classroomId);
 }

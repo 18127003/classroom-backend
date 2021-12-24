@@ -6,9 +6,9 @@ import lombok.Data;
 public class GradeReviewDto {
     private Long id;
     private Integer expectGrade;
-    private Integer explanation;
+    private String explanation;
     private Integer currentGrade;
     private String assignment;
     private String status;
-    private String requestBy;
+    private String author;
 }

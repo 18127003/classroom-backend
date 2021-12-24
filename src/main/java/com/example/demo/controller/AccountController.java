@@ -29,19 +29,19 @@ public class AccountController extends AbstractServiceEndpoint{
         }
     }
 
-    @PutMapping("{id}/update")
-    public ResponseEntity<AccountDto> updateAccount(@RequestBody Account account, @PathVariable Long id){
+    @PutMapping("/update")
+    public ResponseEntity<AccountDto> updateAccount(@RequestBody Account account, @AuthenticationPrincipal Long accountId){
         try{
-            var updated = accountService.updateAccount(id, account);
+            var updated = accountService.updateAccount(accountId, account);
             return ResponseEntity.ok(accountMapper.toAccountDto(updated));
         } catch (RTException e){
             return ResponseEntity.badRequest().build();
         }
     }
 
-    @PatchMapping("{id}/change_password")
-    public ResponseEntity<Boolean> changePassword(@RequestBody PasswordRequestDto request, @PathVariable Long id){
-        if(accountService.changePassword(id, request.getOldPassword(), request.getNewPassword())){
+    @PatchMapping("/change_password")
+    public ResponseEntity<Boolean> changePassword(@RequestBody PasswordRequestDto request, @AuthenticationPrincipal Long accountId){
+        if(accountService.changePassword(accountId, request.getOldPassword(), request.getNewPassword())){
             return ResponseEntity.ok(true);
         }
         return ResponseEntity.badRequest().body(false);

@@ -1,6 +1,7 @@
 package com.example.demo.service.impl;
 
 import com.example.demo.common.enums.GradeCompositionStatus;
+import com.example.demo.common.enums.GradeReviewStatus;
 import com.example.demo.common.exception.RTException;
 import com.example.demo.common.exception.RecordNotFoundException;
 import com.example.demo.dto.OverallGradeDto;
@@ -9,7 +10,6 @@ import com.example.demo.entity.*;
 import com.example.demo.repository.*;
 import com.example.demo.service.AssignmentService;
 import com.example.demo.util.ExcelUtil;
-import com.example.demo.util.dto.StudentInfoData;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +31,7 @@ public class AssignmentServiceImpl implements AssignmentService {
     private final StudentInfoClassroomRepository studentInfoClassroomRepository;
     private final SubmissionRepository submissionRepository;
     private final GradeCompositionRepository gradeCompositionRepository;
+    private final GradeReviewRepository gradeReviewRepository;
     private final ExcelUtil excelUtil;
 
     @Override
@@ -83,6 +84,62 @@ public class AssignmentServiceImpl implements AssignmentService {
         var result = submissionRepository.getStudentOverallGrade(accountId, classroomId);
         return new OverallGradeDto(result.get(0, Integer.class), result.get(1, Integer.class));
     }
+
+    @Override
+    public List<Submission> getGradeOfClassByStudent(Account account, Long classroomId) {
+        var studentInfo = account.getStudentInfo();
+        if (studentInfo==null){
+            throw new RTException(new RecordNotFoundException(null, StudentInfo.class.getSimpleName()));
+        }
+        return submissionRepository.getSubmissionOfStudentByStatus(classroomId, studentInfo.getStudentId(),
+                GradeCompositionStatus.FINAL);
+    }
+
+    @Override
+    public void finalizeGrade(Long assignmentId) {
+        var assignment = getAssignment(assignmentId);
+        var grade = assignment.getGradeComposition();
+        grade.setStatus(GradeCompositionStatus.FINAL);
+        gradeCompositionRepository.save(grade);
+    }
+
+    @Override
+    public Submission getSubmission(Long assignmentId, String studentId) {
+        var result = submissionRepository.getSubmissionByStudentId(assignmentId, studentId);
+        if (result == null){
+            throw new RTException(new RecordNotFoundException(null, Submission.class.getSimpleName()));
+        }
+        return result;
+    }
+
+    @Override
+    public GradeReview addGradeReview(GradeReview gradeReview, Submission submission, Account account) {
+        gradeReview.setSubmission(submission);
+        gradeReview.setRequestBy(account);
+        gradeReview.setStatus(GradeReviewStatus.PENDING);
+        return gradeReviewRepository.save(gradeReview);
+    }
+
+    @Override
+    public GradeReview getPendingGradeReview(Long assignmentId, String studentId) {
+        return gradeReviewRepository.getByStatus(assignmentId, studentId, GradeReviewStatus.PENDING);
+    }
+
+    @Override
+    public List<GradeReview> getAllGradeReview(Long assignmentId) {
+        return null;
+    }
+
+    @Override
+    public List<GradeReview> getAllGradeReviewOfClass(Long classroomId) {
+        return gradeReviewRepository.getAllOfClassroom(classroomId);
+    }
+
+    @Override
+    public List<GradeReview> getAllGradeReviewOfAccount(String studentId, Long classroomId) {
+        return gradeReviewRepository.getAllOfStudent(studentId, classroomId);
+    }
+
 
     @Override
     public List<Assignment> getAllAssignments(Long classroomId) {
