@@ -50,6 +50,7 @@ create table ASSIGNMENT
     position int not null,
     classroom bigint not null,
     creator bigint not null,
+    status varchar(20) default 'GRADING',
     version integer default 0,
     key fk_assignment_classroom (classroom),
     key fk_assignment_creator (creator),
@@ -81,28 +82,18 @@ create table STUDENT_INFO_CLASSROOM
     constraint fk_student_classroom foreign key (classroom_id) references CLASSROOM (id)
 );
 
-create table GRADE_COMPOSITION
-(
-    id bigint not null auto_increment primary key,
-    assignment_id bigint,
-    status varchar(20) default 'GRADING',
-    version integer default 0,
-    key fk_grade_assignment (assignment_id),
-    constraint fk_grade_assignment foreign key (assignment_id) references ASSIGNMENT(id)
-);
-
 create table SUBMISSION
 (
     id bigint not null auto_increment primary key,
     student_info bigint not null,
     classroom_id bigint not null,
     grade integer,
-    grade_composition bigint not null,
+    assignment bigint not null,
     version integer default 0,
     key fk_submission_student (student_info, classroom_id),
-    key fk_submission_assignment (grade_composition),
+    key fk_submission_assignment (assignment),
     constraint fk_submission_student foreign key (student_info, classroom_id) references STUDENT_INFO_CLASSROOM (student_info, classroom_id),
-    constraint fk_submission_assignment foreign key (grade_composition) references GRADE_COMPOSITION (id)
+    constraint fk_submission_assignment foreign key (assignment) references ASSIGNMENT (id)
 );
 
 create table ADMIN

@@ -1,6 +1,6 @@
 package com.example.demo.common.enums;
 
-public enum GradeCompositionStatus {
+public enum AssignmentStatus {
     GRADING,
     FINAL
 }

@@ -14,7 +14,7 @@ public class SubmissionDecorator implements SubmissionMapper {
     @Override
     public SubmissionDto toSubmissionDto(Submission submission) {
         var result = delegate.toSubmissionDto(submission);
-        var assignment = submission.getGradeComposition().getAssignment();
+        var assignment = submission.getAssignment();
         result.setAssignmentId(assignment.getId());
         result.setAssignmentName(assignment.getName());
         result.setStudentId(submission.getStudentInfoClassroom().getStudentInfo().getStudentId());

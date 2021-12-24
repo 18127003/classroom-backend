@@ -1,6 +1,6 @@
 package com.example.demo.repository.impl;
 
-import com.example.demo.common.enums.GradeCompositionStatus;
+import com.example.demo.common.enums.AssignmentStatus;
 import com.example.demo.entity.*;
 import com.example.demo.repository.SubmissionCustomRepository;
 import com.querydsl.core.Tuple;
@@ -15,7 +15,7 @@ public class SubmissionRepositoryImpl extends AbstractRepositoryImpl<Submission>
     @Override
     public Submission getSubmissionByStudentId(Long assignmentId, String studentId) {
         return selectFrom(QSubmission.submission)
-                .where(QSubmission.submission.gradeComposition.assignment.id.eq(assignmentId)
+                .where(QSubmission.submission.assignment.id.eq(assignmentId)
                         .and(QSubmission.submission.studentInfoClassroom.studentInfo.studentId.eq(studentId)))
                 .select(QSubmission.submission)
                 .fetchOne();
@@ -24,7 +24,7 @@ public class SubmissionRepositoryImpl extends AbstractRepositoryImpl<Submission>
     @Override
     public List<Submission> getAllSubmission(Long assignmentId) {
         return selectFrom(QSubmission.submission)
-                .where(QSubmission.submission.gradeComposition.assignment.id.eq(assignmentId))
+                .where(QSubmission.submission.assignment.id.eq(assignmentId))
                 .select(QSubmission.submission)
                 .fetch();
     }
@@ -32,7 +32,7 @@ public class SubmissionRepositoryImpl extends AbstractRepositoryImpl<Submission>
     @Override
     public List<Submission> getSubmissionByInfoList(Collection<StudentInfoClassroom> studentInfoClassrooms, Long assignmentId) {
         return selectFrom(QSubmission.submission)
-                .where(QSubmission.submission.gradeComposition.assignment.id.eq(assignmentId)
+                .where(QSubmission.submission.assignment.id.eq(assignmentId)
                     .and(QSubmission.submission.studentInfoClassroom.in(studentInfoClassrooms)))
                 .select(QSubmission.submission)
                 .fetch();
@@ -49,10 +49,8 @@ public class SubmissionRepositoryImpl extends AbstractRepositoryImpl<Submission>
 
     private JPAQuery<Submission> getSubmissionJoined() {
         return selectFrom(QSubmission.submission)
-                .join(QGradeComposition.gradeComposition)
-                .on(QSubmission.submission.gradeComposition.id.eq(QGradeComposition.gradeComposition.id))
                 .join(QAssignment.assignment)
-                .on(QGradeComposition.gradeComposition.assignment.id.eq(QAssignment.assignment.id))
+                .on(QSubmission.submission.assignment.id.eq(QAssignment.assignment.id))
                 .join(QStudentInfoClassroom.studentInfoClassroom)
                 .on(QSubmission.submission.studentInfoClassroom.studentInfo.id
                         .eq(QStudentInfoClassroom.studentInfoClassroom.id)
@@ -63,11 +61,11 @@ public class SubmissionRepositoryImpl extends AbstractRepositoryImpl<Submission>
     }
 
     @Override
-    public List<Submission> getSubmissionOfStudentByStatus(Long classroomId, String studentId, GradeCompositionStatus status) {
+    public List<Submission> getSubmissionOfStudentByStatus(Long classroomId, String studentId, AssignmentStatus status) {
         return getSubmissionJoined()
                 .where(QSubmission.submission.studentInfoClassroom.classroom.id.eq(classroomId)
                         .and(QStudentInfo.studentInfo.studentId.eq(studentId))
-                        .and(QGradeComposition.gradeComposition.status.eq(status)))
+                        .and(QAssignment.assignment.status.eq(status)))
                 .select(QSubmission.submission)
                 .fetch();
     }

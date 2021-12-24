@@ -14,8 +14,8 @@ public class GradeReviewRepositoryImpl extends AbstractRepositoryImpl<GradeRevie
         return selectFrom(QGradeReview.gradeReview)
                 .join(QSubmission.submission)
                 .on(QGradeReview.gradeReview.submission.id.eq(QSubmission.submission.id))
-                .join(QGradeComposition.gradeComposition)
-                .on(QSubmission.submission.gradeComposition.id.eq(QGradeComposition.gradeComposition.id))
+                .join(QAssignment.assignment)
+                .on(QSubmission.submission.assignment.id.eq(QAssignment.assignment.id))
                 .join(QStudentInfoClassroom.studentInfoClassroom)
                 .on(QSubmission.submission.studentInfoClassroom.studentInfo.id
                         .eq(QStudentInfoClassroom.studentInfoClassroom.id)
@@ -23,7 +23,7 @@ public class GradeReviewRepositoryImpl extends AbstractRepositoryImpl<GradeRevie
                                 .eq(QStudentInfoClassroom.studentInfoClassroom.classroom.id)))
                 .join(QStudentInfo.studentInfo)
                 .on(QStudentInfoClassroom.studentInfoClassroom.studentInfo.id.eq(QStudentInfo.studentInfo.id))
-                .where(QGradeComposition.gradeComposition.assignment.id.eq(assignmentId)
+                .where(QAssignment.assignment.id.eq(assignmentId)
                         .and(QStudentInfo.studentInfo.studentId.eq(studentId))
                         .and(QGradeReview.gradeReview.status.eq(status)))
                 .fetchOne();

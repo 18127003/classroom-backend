@@ -1,6 +1,6 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.common.enums.GradeCompositionStatus;
+import com.example.demo.common.enums.AssignmentStatus;
 import com.example.demo.common.enums.GradeReviewStatus;
 import com.example.demo.common.exception.RTException;
 import com.example.demo.common.exception.RecordNotFoundException;
@@ -30,7 +30,6 @@ public class AssignmentServiceImpl implements AssignmentService {
     private final AssignmentRepository assignmentRepository;
     private final StudentInfoClassroomRepository studentInfoClassroomRepository;
     private final SubmissionRepository submissionRepository;
-    private final GradeCompositionRepository gradeCompositionRepository;
     private final GradeReviewRepository gradeReviewRepository;
     private final ExcelUtil excelUtil;
 
@@ -60,10 +59,9 @@ public class AssignmentServiceImpl implements AssignmentService {
                 data.keySet(), classroom.getId()
         );
 
-        var gradeComposition = assignment.getGradeComposition();
         var submissions = submittedInfos
                 .stream().map(studentInfo->
-                        new Submission(data.get(studentInfo.getStudentInfo().getStudentId()), studentInfo, gradeComposition))
+                        new Submission(data.get(studentInfo.getStudentInfo().getStudentId()), studentInfo, assignment))
                 .collect(Collectors.toList());
         // delete old and rewrite
         var old = submissionRepository.getSubmissionByInfoList(submittedInfos, assignmentId);
@@ -92,15 +90,14 @@ public class AssignmentServiceImpl implements AssignmentService {
             throw new RTException(new RecordNotFoundException(null, StudentInfo.class.getSimpleName()));
         }
         return submissionRepository.getSubmissionOfStudentByStatus(classroomId, studentInfo.getStudentId(),
-                GradeCompositionStatus.FINAL);
+                AssignmentStatus.FINAL);
     }
 
     @Override
     public void finalizeGrade(Long assignmentId) {
         var assignment = getAssignment(assignmentId);
-        var grade = assignment.getGradeComposition();
-        grade.setStatus(GradeCompositionStatus.FINAL);
-        gradeCompositionRepository.save(grade);
+        assignment.setStatus(AssignmentStatus.FINAL);
+        assignmentRepository.save(assignment);
     }
 
     @Override
@@ -152,9 +149,8 @@ public class AssignmentServiceImpl implements AssignmentService {
         assignment.setCreator(creator);
         Date current = Date.from(Instant.now());
         assignment.setCreatedAt(current);
-        GradeComposition gradeComposition = new GradeComposition(assignment, GradeCompositionStatus.GRADING);
-        gradeCompositionRepository.save(gradeComposition);
-        return assignment;
+        assignment.setStatus(AssignmentStatus.GRADING);
+        return assignmentRepository.save(assignment);
     }
 
     @Override
@@ -190,9 +186,8 @@ public class AssignmentServiceImpl implements AssignmentService {
     @Override
     public Submission addSubmission(SubmissionDto submissionDto, Long classroomId) {
         var assignment = getAssignment(submissionDto.getAssignmentId());
-        System.out.println(assignment.getGradeComposition().getId());
         var studentInfo = studentInfoClassroomRepository.findByStudentId(submissionDto.getStudentId(), classroomId);
-        var submission = new Submission(submissionDto.getGrade(), studentInfo, assignment.getGradeComposition());
+        var submission = new Submission(submissionDto.getGrade(), studentInfo, assignment);
         return submissionRepository.save(submission);
     }
 }

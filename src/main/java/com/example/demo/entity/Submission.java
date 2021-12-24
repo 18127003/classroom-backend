@@ -31,21 +31,21 @@ public class Submission extends AbstractEntity{
     })
     private StudentInfoClassroom studentInfoClassroom;
 
-    @ManyToOne(targetEntity = GradeComposition.class)
-    @JoinColumn(name = "grade_composition", referencedColumnName = "id")
-    private GradeComposition gradeComposition;
+    @ManyToOne(targetEntity = Assignment.class)
+    @JoinColumn(name = "assignment", referencedColumnName = "id")
+    private Assignment assignment;
 
     @OneToOne(mappedBy = "submission", cascade = CascadeType.REMOVE)
     private GradeReview gradeReview;
 
-    public Submission(Integer grade, StudentInfoClassroom studentInfo, GradeComposition gradeComposition) {
+    public Submission(Integer grade, StudentInfoClassroom studentInfo, Assignment assignment) {
         this.grade = grade;
         this.studentInfoClassroom = studentInfo;
-        this.gradeComposition = gradeComposition;
+        this.assignment = assignment;
     }
 
-    public Submission(Long id, Integer grade, StudentInfoClassroom studentInfo, GradeComposition gradeComposition) {
-        this(grade, studentInfo, gradeComposition);
+    public Submission(Long id, Integer grade, StudentInfoClassroom studentInfo, Assignment assignment) {
+        this(grade, studentInfo, assignment);
         this.id = id;
     }
 }

@@ -1,5 +1,6 @@
 package com.example.demo.entity;
 
+import com.example.demo.common.enums.AssignmentStatus;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -37,21 +38,27 @@ public class Assignment extends AbstractEntity{
     @Column
     private Integer position;
 
-    @OneToOne(mappedBy = "assignment", cascade = CascadeType.REMOVE)
-    private GradeComposition gradeComposition;
+    @Column
+    @Enumerated(EnumType.STRING)
+    private AssignmentStatus status;
 
-    public Assignment(String name, String description, Integer points, LocalDateTime deadline, Date createdAt, Integer position) {
+    @OneToMany(mappedBy = "assignment", cascade = CascadeType.REMOVE)
+    private List<Submission> submissions;
+
+    public Assignment(String name, String description, Integer points, LocalDateTime deadline, Date createdAt,
+                      Integer position, AssignmentStatus status) {
         this.name = name;
         this.description = description;
         this.points = points;
         this.deadline = deadline;
         this.createdAt = createdAt;
         this.position = position;
+        this.status = status;
     }
 
     public Assignment(Long id, String name, String description, Integer points, LocalDateTime deadline, Date createdAt,
-                      Classroom classroom, Account creator, Integer position) {
-        this(name, description, points, deadline, createdAt, position);
+                      Classroom classroom, Account creator, Integer position, AssignmentStatus status) {
+        this(name, description, points, deadline, createdAt, position, status);
         this.id = id;
         this.classroom = classroom;
         this.creator = creator;

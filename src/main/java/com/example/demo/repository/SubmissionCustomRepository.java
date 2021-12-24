@@ -1,6 +1,6 @@
 package com.example.demo.repository;
 
-import com.example.demo.common.enums.GradeCompositionStatus;
+import com.example.demo.common.enums.AssignmentStatus;
 import com.example.demo.entity.StudentInfoClassroom;
 import com.example.demo.entity.Submission;
 import com.querydsl.core.Tuple;
@@ -17,5 +17,5 @@ public interface SubmissionCustomRepository {
 
     Tuple getStudentOverallGrade(Long accountId, Long classroomId);
 
-    List<Submission> getSubmissionOfStudentByStatus(Long classroomId, String studentId, GradeCompositionStatus status);
+    List<Submission> getSubmissionOfStudentByStatus(Long classroomId, String studentId, AssignmentStatus status);
 }

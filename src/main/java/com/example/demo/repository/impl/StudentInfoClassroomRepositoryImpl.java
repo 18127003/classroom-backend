@@ -41,10 +41,8 @@ public class StudentInfoClassroomRepositoryImpl extends AbstractRepositoryImpl<S
                 .where(QStudentInfoClassroom.studentInfoClassroom.classroom.id.eq(classId))
                 .join(QAssignment.assignment)
                 .on(QStudentInfoClassroom.studentInfoClassroom.classroom.id.eq(QAssignment.assignment.classroom.id))
-                .join(QGradeComposition.gradeComposition)
-                .on(QAssignment.assignment.gradeComposition.id.eq(QGradeComposition.gradeComposition.id))
                 .leftJoin(QSubmission.submission)
-                .on(QGradeComposition.gradeComposition.id.eq(QSubmission.submission.gradeComposition.id))
+                .on(QAssignment.assignment.id.eq(QSubmission.submission.assignment.id))
                 .select(QAssignment.assignment.id,QAssignment.assignment.name,
                         QStudentInfo.studentInfo.studentId,
                         QSubmission.submission.grade)
