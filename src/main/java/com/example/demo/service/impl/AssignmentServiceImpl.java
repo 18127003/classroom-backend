@@ -137,6 +137,11 @@ public class AssignmentServiceImpl implements AssignmentService {
         return gradeReviewRepository.getAllOfStudent(studentId, classroomId);
     }
 
+    @Override
+    public List<String> checkFillSubmission(Long assignmentId) {
+        return submissionRepository.checkNotSubmitStudents(assignmentId);
+    }
+
 
     @Override
     public List<Assignment> getAllAssignments(Long classroomId) {

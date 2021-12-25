@@ -11,5 +11,6 @@ public class AssignmentDto {
     private String deadline;
     private String createdAt;
     private String creator;
+    private String status;
     private String classroom; //optional
 }

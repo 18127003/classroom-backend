@@ -49,4 +49,6 @@ public interface AssignmentService {
     List<GradeReview> getAllGradeReviewOfClass(Long classroomId);
 
     List<GradeReview> getAllGradeReviewOfAccount(String studentId, Long classroomId);
+
+    List<String> checkFillSubmission(Long assignmentId);
 }

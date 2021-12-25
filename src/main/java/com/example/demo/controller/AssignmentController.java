@@ -205,4 +205,11 @@ public class AssignmentController extends AbstractServiceEndpoint {
         return ResponseEntity.ok(gradeReviews.stream().map(gradeReviewMapper::toGradeReviewDto)
                 .collect(Collectors.toList()));
     }
+
+    @GetMapping("{id}/submission/filled")
+    public ResponseEntity<SubmissionFillCheckResponse> checkFilled(@PathVariable Long id){
+        var unFillStudents = assignmentService.checkFillSubmission(id);
+        boolean fill = unFillStudents.isEmpty();
+        return ResponseEntity.ok(new SubmissionFillCheckResponse(fill, unFillStudents));
+    }
 }

@@ -69,4 +69,22 @@ public class SubmissionRepositoryImpl extends AbstractRepositoryImpl<Submission>
                 .select(QSubmission.submission)
                 .fetch();
     }
+
+    @Override
+    public List<String> checkNotSubmitStudents(Long assignmentId) {
+        return selectFrom(QSubmission.submission)
+                .rightJoin(QStudentInfoClassroom.studentInfoClassroom)
+                .on(QSubmission.submission.studentInfoClassroom.studentInfo.id
+                        .eq(QStudentInfoClassroom.studentInfoClassroom.id)
+                        .and(QSubmission.submission.studentInfoClassroom.classroom.id
+                                .eq(QStudentInfoClassroom.studentInfoClassroom.classroom.id)))
+                .join(QAssignment.assignment)
+                .on(QStudentInfoClassroom.studentInfoClassroom.classroom.id.eq(QAssignment.assignment.classroom.id))
+                .join(QStudentInfo.studentInfo)
+                .on(QStudentInfoClassroom.studentInfoClassroom.studentInfo.id.eq(QStudentInfo.studentInfo.id))
+                .where(QAssignment.assignment.id.eq(assignmentId)
+                        .and(QSubmission.submission.id.isNull()))
+                .select(QStudentInfo.studentInfo.studentId)
+                .fetch();
+    }
 }

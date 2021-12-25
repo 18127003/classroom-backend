@@ -18,4 +18,6 @@ public interface SubmissionCustomRepository {
     Tuple getStudentOverallGrade(Long accountId, Long classroomId);
 
     List<Submission> getSubmissionOfStudentByStatus(Long classroomId, String studentId, AssignmentStatus status);
+
+    List<String> checkNotSubmitStudents(Long assignmentId);
 }
