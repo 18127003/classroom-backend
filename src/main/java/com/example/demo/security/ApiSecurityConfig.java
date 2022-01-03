@@ -50,11 +50,7 @@ public class ApiSecurityConfig extends WebSecurityConfigurerAdapter {
         http.cors().and().csrf().disable()
                 .exceptionHandling().authenticationEntryPoint(unauthorizedHandler)
                 .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and().authorizeRequests().antMatchers(
-                    "/"+ AbstractServiceEndpoint.AUTH_PATH+"login**",
-                    "/"+ AbstractServiceEndpoint.AUTH_PATH+"socialLogin",
-                    "/"+ AbstractServiceEndpoint.ACCOUNT_PATH+"create"
-                ).permitAll()
+                .and().authorizeRequests().antMatchers(UNPROTECTED_PATH.toArray(String[]::new)).permitAll()
                 .antMatchers(TEACHER_PROTECTED_PATH.toArray(String[]::new)).hasAnyAuthority(Role.TEACHER.name())
                 .antMatchers(STUDENT_PROTECTED_PATH.toArray(String[]::new)).hasAnyAuthority(Role.STUDENT.name())
                 .antMatchers(ADMIN_PROTECTED_PATH.toArray(String[]::new)).hasAnyAuthority("ADMIN")

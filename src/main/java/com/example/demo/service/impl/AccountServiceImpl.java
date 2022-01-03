@@ -1,18 +1,35 @@
 package com.example.demo.service.impl;
 
+import com.example.demo.common.enums.AccountStatus;
+import com.example.demo.common.enums.VerifyTokenType;
 import com.example.demo.common.exception.DuplicateRecordException;
+import com.example.demo.common.exception.InvalidVerifyTokenException;
 import com.example.demo.common.exception.RTException;
 import com.example.demo.common.exception.RecordNotFoundException;
 import com.example.demo.entity.Account;
 import com.example.demo.entity.Participant;
 import com.example.demo.entity.StudentInfo;
+import com.example.demo.entity.VerifyToken;
 import com.example.demo.repository.AccountRepository;
 import com.example.demo.repository.StudentInfoRepository;
+import com.example.demo.repository.VerifyTokenRepository;
 import com.example.demo.service.AccountService;
+import com.example.demo.service.VerifyTokenService;
+import com.example.demo.util.EmailSender;
 import com.example.demo.util.PasswordUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.io.IOException;
+import java.sql.Date;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.util.Calendar;
+import java.util.TimeZone;
+import java.util.UUID;
+
+import static com.example.demo.common.constant.Constants.HOST_EMAIL;
 
 @Service
 @Transactional(rollbackFor = {Throwable.class})
@@ -20,6 +37,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class AccountServiceImpl implements AccountService {
     private final AccountRepository accountRepository;
     private final StudentInfoRepository studentInfoRepository;
+    private final VerifyTokenService verifyTokenService;
+    private final EmailSender emailSender;
     private final PasswordUtil passwordUtil;
 
     @Override
@@ -101,5 +120,53 @@ public class AccountServiceImpl implements AccountService {
             info.setClassroomAccount(account);
         }
         studentInfoRepository.save(info);
+    }
+
+    @Override
+    public void sendResetPasswordEmail(String frontPath, Account account) throws IOException {
+        // create token
+        var token = verifyTokenService.createVerifyToken(account, VerifyTokenType.PASSWORD_RESET, 15);
+
+        // send email
+        var subject = "Reset password link for Classroom";
+        var content = "Please click the link below to reset your password: "+frontPath+"?token="+token;
+        emailSender.sendEmail(HOST_EMAIL, account.getEmail(), subject, content);
+    }
+
+    @Override
+    public Account getAccountByEmail(String email) {
+        var account = accountRepository.findByEmail(email);
+        if(account == null){
+            throw new RTException(new RecordNotFoundException(email, Account.class.getSimpleName()));
+        }
+        return account;
+    }
+
+    @Override
+    public void resetPassword(String tokenString, String password) {
+        var token = verifyTokenService.verifyToken(tokenString);
+        // set new password
+        var account = token.getAccount();
+        account.setPassword(passwordUtil.encodePassword(password));
+        accountRepository.save(account);
+    }
+
+    @Override
+    public void sendAccountActivateEmail(String frontPath, Account account) throws IOException {
+        // create token
+        var token = verifyTokenService.createVerifyToken(account, VerifyTokenType.ACCOUNT_ACTIVATE, 60);
+
+        // send email
+        var subject = "Activate account link for Classroom Account "+account.getName();
+        var content = "Please click the link below to activate your account: "+frontPath+"?token="+token;
+//        emailSender.sendEmail(HOST_EMAIL, account.getEmail(), subject, content);
+    }
+
+    @Override
+    public void activateAccount(String tokenString) {
+        var token = verifyTokenService.verifyToken(tokenString);
+        var account = token.getAccount();
+        account.setStatus(AccountStatus.ACTIVATED);
+        accountRepository.save(account);
     }
 }

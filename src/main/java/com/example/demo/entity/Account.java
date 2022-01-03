@@ -1,5 +1,6 @@
 package com.example.demo.entity;
 
+import com.example.demo.common.enums.AccountStatus;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -37,31 +38,39 @@ public class Account extends AbstractEntity implements UserDetails {
     @Column
     private String email;
 
+    @Column
+    @Enumerated(EnumType.STRING)
+    private AccountStatus status;
+
     @OneToOne(mappedBy = "classroomAccount")
     private StudentInfo studentInfo;
 
     @OneToMany(mappedBy = "account")
     private List<Participant> assignedClasses;
 
-    public Account(String firstName, String lastName, String password, String email) {
+    public Account(String firstName, String lastName, String password, String email, AccountStatus status) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.name = firstName + " " + lastName;
         this.password = password;
         this.email = email;
+        this.status = status;
     }
 
-    public Account(String firstName, String lastName, String password, String email, StudentInfo studentInfo) {
+    public Account(String firstName, String lastName, String password, String email, StudentInfo studentInfo,
+                   AccountStatus accountStatus) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.name = firstName + " " + lastName;
         this.password = password;
         this.email = email;
         this.studentInfo = studentInfo;
+        this.status = accountStatus;
     }
 
-    public Account(long id, String firstName, String lastName, String password, String email, StudentInfo studentInfo){
-        this(firstName, lastName, password, email, studentInfo);
+    public Account(long id, String firstName, String lastName, String password, String email, StudentInfo studentInfo,
+                   AccountStatus accountStatus){
+        this(firstName, lastName, password, email, studentInfo, accountStatus);
         this.id = id;
     }
 

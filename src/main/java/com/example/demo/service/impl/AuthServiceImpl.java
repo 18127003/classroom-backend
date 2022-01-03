@@ -1,5 +1,6 @@
 package com.example.demo.service.impl;
 
+import com.example.demo.common.enums.AccountStatus;
 import com.example.demo.common.exception.RTException;
 import com.example.demo.common.exception.RecordNotFoundException;
 import com.example.demo.dto.jwt.JwtRequest;
@@ -52,7 +53,7 @@ public class AuthServiceImpl implements AuthService {
             // find account in app db
             var account = accountRepository.findByEmail(email);
             if(account==null){
-                return accountRepository.save(new Account(familyName, givenName, "", email));
+                return accountRepository.save(new Account(familyName, givenName, "", email, AccountStatus.ACTIVATED));
             }
             return account;
         } else {

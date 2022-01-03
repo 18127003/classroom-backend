@@ -6,6 +6,7 @@ create table ACCOUNT
     name varchar(255) character set utf8 collate utf8_unicode_ci,
     password varchar(255) not null,
     email varchar(255) unique not null,
+    status varchar(20) not null default 'CREATED',
     version  integer default 0
 );
 
@@ -137,6 +138,18 @@ create table COMMENT
     content text character set utf8 collate utf8_unicode_ci,
     version integer default 0,
     constraint fk_comment_author foreign key (author) references ACCOUNT (id)
+);
+
+create table VERIFY_TOKEN
+(
+    id bigint not null auto_increment primary key,
+    account_id bigint not null ,
+    expiry datetime not null ,
+    token varchar(255) not null ,
+    token_type varchar(30) not null,
+    version integer default 0,
+    key fk_account_token (account_id),
+    constraint fk_account_token foreign key (account_id) references ACCOUNT(id)
 );
 
 insert into ADMIN (id,name, email, password, version) values
