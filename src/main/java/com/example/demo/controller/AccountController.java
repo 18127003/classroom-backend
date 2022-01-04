@@ -56,7 +56,7 @@ public class AccountController extends AbstractServiceEndpoint{
         }
     }
 
-    @PostMapping("reset_password/request")
+    @PostMapping("resetPassword/request")
     public ResponseEntity<Void> requestResetPassword(@RequestParam String email){
         System.out.println(email);
         try {
@@ -71,6 +71,8 @@ public class AccountController extends AbstractServiceEndpoint{
     @PatchMapping("resetPassword")
     public ResponseEntity<Void> resetPassword(@RequestBody ResetPasswordRequest request){
         try {
+            System.out.println(request.getPassword()
+            );
             accountService.resetPassword(request.getToken(), request.getPassword());
             return ResponseEntity.ok().build();
         } catch (RTException e){

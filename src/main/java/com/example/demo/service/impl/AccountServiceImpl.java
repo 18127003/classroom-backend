@@ -130,7 +130,8 @@ public class AccountServiceImpl implements AccountService {
         // send email
         var subject = "Reset password link for Classroom";
         var content = "Please click the link below to reset your password: "+frontPath+"?token="+token;
-        emailSender.sendEmail(HOST_EMAIL, account.getEmail(), subject, content);
+//        emailSender.sendEmail(HOST_EMAIL, account.getEmail(), subject, content);
+        System.out.println(token);
     }
 
     @Override
