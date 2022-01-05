@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import javax.persistence.*;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 
 @Entity
 @Getter
@@ -30,14 +31,18 @@ public class Admin extends AbstractEntity implements UserDetails {
     @Column
     private String email;
 
-    public Admin(String name, String password, String email) {
+    @Column(name = "created_at")
+    private Date createdAt;
+
+    public Admin(String name, String password, String email, Date createdAt) {
         this.name =name;
         this.password = password;
         this.email = email;
+        this.createdAt = createdAt;
     }
 
-    public Admin(long id, String name, String password, String email){
-        this(name, password, email);
+    public Admin(long id, String name, String password, String email, Date createdAt){
+        this(name, password, email, createdAt);
         this.id = id;
     }
 

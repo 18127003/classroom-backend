@@ -55,6 +55,7 @@ public class AccountServiceImpl implements AccountService {
         }
         account.setPassword(passwordUtil.encodePassword(account.getPassword()));
         account.setName(account.getFirstName()+" "+account.getLastName());
+        account.setCreatedAt(Date.from(Instant.now()));
         return accountRepository.save(account);
     }
 

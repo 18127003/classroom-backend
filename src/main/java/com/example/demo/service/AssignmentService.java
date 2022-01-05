@@ -54,7 +54,7 @@ public interface AssignmentService {
 
     Comment createReviewComment(Comment comment, Long reviewId, Account account);
 
-    void finalizeGradeReview(Long gradeReviewId, Integer grade);
+    Submission finalizeGradeReview(Long gradeReviewId, Integer grade);
 
     GradeReview getGradeReview(Long gradeReviewId);
 }

@@ -7,6 +7,7 @@ create table ACCOUNT
     password varchar(255) not null,
     email varchar(255) unique not null,
     status varchar(20) not null default 'CREATED',
+    created_at datetime not null,
     version  integer default 0
 );
 
@@ -20,6 +21,7 @@ create table CLASSROOM
     description text character set utf8 collate utf8_unicode_ci,
     code varchar(255) unique,
     creator bigint not null,
+    created_at datetime not null,
     version  integer default 0,
     key fk_creator (creator),
     constraint fk_creator foreign key (creator) references account (id)
@@ -103,6 +105,7 @@ create table ADMIN
     name varchar(255) character set utf8 collate utf8_unicode_ci,
     password varchar(255) not null,
     email varchar(255) unique not null,
+    created_at datetime,
     version  integer default 0
 );
 

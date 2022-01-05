@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import javax.persistence.*;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -45,20 +46,24 @@ public class Account extends AbstractEntity implements UserDetails {
     @OneToOne(mappedBy = "classroomAccount")
     private StudentInfo studentInfo;
 
+    @Column(name = "created_at")
+    private Date createdAt;
+
     @OneToMany(mappedBy = "account")
     private List<Participant> assignedClasses;
 
-    public Account(String firstName, String lastName, String password, String email, AccountStatus status) {
+    public Account(String firstName, String lastName, String password, String email, AccountStatus status, Date createdAt) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.name = firstName + " " + lastName;
         this.password = password;
         this.email = email;
         this.status = status;
+        this.createdAt = createdAt;
     }
 
     public Account(String firstName, String lastName, String password, String email, StudentInfo studentInfo,
-                   AccountStatus accountStatus) {
+                   AccountStatus accountStatus, Date createdAt) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.name = firstName + " " + lastName;
@@ -66,11 +71,12 @@ public class Account extends AbstractEntity implements UserDetails {
         this.email = email;
         this.studentInfo = studentInfo;
         this.status = accountStatus;
+        this.createdAt = createdAt;
     }
 
     public Account(long id, String firstName, String lastName, String password, String email, StudentInfo studentInfo,
-                   AccountStatus accountStatus){
-        this(firstName, lastName, password, email, studentInfo, accountStatus);
+                   AccountStatus accountStatus, Date createdAt){
+        this(firstName, lastName, password, email, studentInfo, accountStatus, createdAt);
         this.id = id;
     }
 

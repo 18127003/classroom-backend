@@ -19,6 +19,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.sql.Date;
+import java.time.Instant;
 
 @Service
 @Transactional(rollbackFor = {Throwable.class})
@@ -53,7 +55,8 @@ public class AuthServiceImpl implements AuthService {
             // find account in app db
             var account = accountRepository.findByEmail(email);
             if(account==null){
-                return accountRepository.save(new Account(familyName, givenName, "", email, AccountStatus.ACTIVATED));
+                return accountRepository.save(new Account(familyName, givenName, "", email,
+                        AccountStatus.ACTIVATED, Date.from(Instant.now())));
             }
             return account;
         } else {

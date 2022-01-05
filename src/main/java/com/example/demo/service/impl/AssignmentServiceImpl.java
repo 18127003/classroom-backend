@@ -152,12 +152,13 @@ public class AssignmentServiceImpl implements AssignmentService {
     }
 
     @Override
-    public void finalizeGradeReview(Long gradeReviewId, Integer grade) {
+    public Submission finalizeGradeReview(Long gradeReviewId, Integer grade) {
         var gradeReview = getGradeReview(gradeReviewId);
         var submission = gradeReview.getSubmission();
         submission.setGrade(grade);
         gradeReview.setStatus(GradeReviewStatus.ACCEPTED);
         gradeReviewRepository.save(gradeReview);
+        return submission;
     }
 
     @Override

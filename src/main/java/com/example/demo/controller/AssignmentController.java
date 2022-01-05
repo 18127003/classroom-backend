@@ -180,9 +180,13 @@ public class AssignmentController extends AbstractServiceEndpoint {
         if (existedPendingReview != null){
             return ResponseEntity.badRequest().build();
         }
-        var submission = assignmentService.getSubmission(id, studentInfo.getStudentId());
-        var created = assignmentService.addGradeReview(gradeReview, submission, account);
-        return ResponseEntity.ok(gradeReviewMapper.toGradeReviewDto(created));
+        try {
+            var submission = assignmentService.getSubmission(id, studentInfo.getStudentId());
+            var created = assignmentService.addGradeReview(gradeReview, submission, account);
+            return ResponseEntity.ok(gradeReviewMapper.toGradeReviewDto(created));
+        } catch (RTException e){
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @GetMapping("submission/review/all")
@@ -222,10 +226,10 @@ public class AssignmentController extends AbstractServiceEndpoint {
     }
 
     @PatchMapping("*/submission/review/{id}/finalize")
-    public ResponseEntity<Void> finalizeGradeReview(@PathVariable Long id, @RequestParam Integer grade){
+    public ResponseEntity<SubmissionDto> finalizeGradeReview(@PathVariable Long id, @RequestParam Integer grade){
         try {
-            assignmentService.finalizeGradeReview(id, grade);
-            return ResponseEntity.ok().build();
+            var submission = assignmentService.finalizeGradeReview(id, grade);
+            return ResponseEntity.ok(submissionMapper.toSubmissionDto(submission));
         } catch (RTException e){
             return ResponseEntity.badRequest().build();
         }
