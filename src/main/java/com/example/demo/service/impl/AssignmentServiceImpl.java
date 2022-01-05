@@ -145,11 +145,25 @@ public class AssignmentServiceImpl implements AssignmentService {
 
     @Override
     public Comment createReviewComment(Comment comment, Long reviewId, Account account) {
-        var gradeReview = gradeReviewRepository.findById(reviewId)
-                .orElseThrow(()->new RTException(new RecordNotFoundException(reviewId.toString(), GradeReview.class.getSimpleName())));
+        var gradeReview = getGradeReview(reviewId);
         comment.setGradeReview(gradeReview);
         comment.setAuthor(account);
         return commentRepository.save(comment);
+    }
+
+    @Override
+    public void finalizeGradeReview(Long gradeReviewId, Integer grade) {
+        var gradeReview = getGradeReview(gradeReviewId);
+        var submission = gradeReview.getSubmission();
+        submission.setGrade(grade);
+        gradeReview.setStatus(GradeReviewStatus.ACCEPTED);
+        gradeReviewRepository.save(gradeReview);
+    }
+
+    @Override
+    public GradeReview getGradeReview(Long gradeReviewId) {
+        return gradeReviewRepository.findById(gradeReviewId)
+                .orElseThrow(()->new RTException(new RecordNotFoundException(gradeReviewId.toString(), GradeReview.class.getSimpleName())));
     }
 
 

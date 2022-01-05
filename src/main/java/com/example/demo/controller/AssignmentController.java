@@ -220,4 +220,14 @@ public class AssignmentController extends AbstractServiceEndpoint {
             return ResponseEntity.badRequest().build();
         }
     }
+
+    @PatchMapping("*/submission/review/{id}/finalize")
+    public ResponseEntity<Void> finalizeGradeReview(@PathVariable Long id, @RequestParam Integer grade){
+        try {
+            assignmentService.finalizeGradeReview(id, grade);
+            return ResponseEntity.ok().build();
+        } catch (RTException e){
+            return ResponseEntity.badRequest().build();
+        }
+    }
 }

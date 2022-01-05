@@ -53,4 +53,8 @@ public interface AssignmentService {
     List<String> checkFillSubmission(Long assignmentId);
 
     Comment createReviewComment(Comment comment, Long reviewId, Account account);
+
+    void finalizeGradeReview(Long gradeReviewId, Integer grade);
+
+    GradeReview getGradeReview(Long gradeReviewId);
 }
