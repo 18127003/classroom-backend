@@ -2,7 +2,7 @@ package com.example.demo.repository.impl;
 
 import com.example.demo.entity.Participant;
 import com.example.demo.entity.QParticipant;
-import com.example.demo.repository.ParticipantCustomRepository;
+import com.example.demo.repository.custom.ParticipantCustomRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;

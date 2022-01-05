@@ -2,10 +2,8 @@ package com.example.demo.repository.impl;
 
 import com.example.demo.entity.Classroom;
 import com.example.demo.entity.QClassroom;
-import com.example.demo.repository.ClassroomCustomRepository;
+import com.example.demo.repository.custom.ClassroomCustomRepository;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
 
 @Repository
 public class ClassroomRepositoryImpl extends AbstractRepositoryImpl<Classroom> implements ClassroomCustomRepository {

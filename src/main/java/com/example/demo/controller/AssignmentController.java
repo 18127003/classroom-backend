@@ -4,12 +4,10 @@ import com.example.demo.common.enums.Role;
 import com.example.demo.common.exception.RTException;
 import com.example.demo.dto.*;
 import com.example.demo.entity.Assignment;
+import com.example.demo.entity.Comment;
 import com.example.demo.entity.GradeReview;
 import com.example.demo.entity.StudentInfo;
-import com.example.demo.mapper.AssignmentMapper;
-import com.example.demo.mapper.GradeReviewMapper;
-import com.example.demo.mapper.StudentInfoMapper;
-import com.example.demo.mapper.SubmissionMapper;
+import com.example.demo.mapper.*;
 import com.example.demo.security.ParticipantInfo;
 import com.example.demo.service.AccountService;
 import com.example.demo.service.AssignmentService;
@@ -32,10 +30,10 @@ public class AssignmentController extends AbstractServiceEndpoint {
 
     private final AssignmentService assignmentService;
     private final ClassroomService classroomService;
-    private final AccountService accountService;
     private final AssignmentMapper assignmentMapper;
     private final SubmissionMapper submissionMapper;
     private final GradeReviewMapper gradeReviewMapper;
+    private final CommentMapper commentMapper;
 
     /**
      * cai nay de lay thong tin classroom cua assignment
@@ -211,5 +209,15 @@ public class AssignmentController extends AbstractServiceEndpoint {
         var unFillStudents = assignmentService.checkFillSubmission(id);
         boolean fill = unFillStudents.isEmpty();
         return ResponseEntity.ok(new SubmissionFillCheckResponse(fill, unFillStudents));
+    }
+
+    @PostMapping("*/submission/review/{id}/comment/create")
+    public ResponseEntity<CommentDto> createGradeReviewComment(@PathVariable Long id, @RequestBody Comment comment){
+        try {
+            var createdComment = assignmentService.createReviewComment(comment, id, participantInfo.getAccount());
+            return ResponseEntity.ok(commentMapper.toCommentDto(createdComment));
+        } catch (RTException e){
+            return ResponseEntity.badRequest().build();
+        }
     }
 }

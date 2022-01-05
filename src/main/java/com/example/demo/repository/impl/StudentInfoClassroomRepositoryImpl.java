@@ -1,7 +1,7 @@
 package com.example.demo.repository.impl;
 
 import com.example.demo.entity.*;
-import com.example.demo.repository.StudentInfoClassroomCustomRepository;
+import com.example.demo.repository.custom.StudentInfoClassroomCustomRepository;
 import com.querydsl.core.Tuple;
 import org.springframework.stereotype.Repository;
 

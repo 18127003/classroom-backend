@@ -51,4 +51,6 @@ public interface AssignmentService {
     List<GradeReview> getAllGradeReviewOfAccount(String studentId, Long classroomId);
 
     List<String> checkFillSubmission(Long assignmentId);
+
+    Comment createReviewComment(Comment comment, Long reviewId, Account account);
 }

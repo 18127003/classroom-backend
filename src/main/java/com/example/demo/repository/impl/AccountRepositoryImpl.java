@@ -2,7 +2,7 @@ package com.example.demo.repository.impl;
 
 import com.example.demo.entity.Account;
 import com.example.demo.entity.QAccount;
-import com.example.demo.repository.AccountCustomRepository;
+import com.example.demo.repository.custom.AccountCustomRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository

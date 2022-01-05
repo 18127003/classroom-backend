@@ -2,7 +2,7 @@ package com.example.demo.repository.impl;
 
 import com.example.demo.entity.QVerifyToken;
 import com.example.demo.entity.VerifyToken;
-import com.example.demo.repository.VerifyTokenCustomRepository;
+import com.example.demo.repository.custom.VerifyTokenCustomRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository

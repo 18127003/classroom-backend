@@ -31,6 +31,7 @@ public class AssignmentServiceImpl implements AssignmentService {
     private final StudentInfoClassroomRepository studentInfoClassroomRepository;
     private final SubmissionRepository submissionRepository;
     private final GradeReviewRepository gradeReviewRepository;
+    private final CommentRepository commentRepository;
     private final ExcelUtil excelUtil;
 
     @Override
@@ -142,6 +143,15 @@ public class AssignmentServiceImpl implements AssignmentService {
         return submissionRepository.checkNotSubmitStudents(assignmentId);
     }
 
+    @Override
+    public Comment createReviewComment(Comment comment, Long reviewId, Account account) {
+        var gradeReview = gradeReviewRepository.findById(reviewId)
+                .orElseThrow(()->new RTException(new RecordNotFoundException(reviewId.toString(), GradeReview.class.getSimpleName())));
+        comment.setGradeReview(gradeReview);
+        comment.setAuthor(account);
+        return commentRepository.save(comment);
+    }
+
 
     @Override
     public List<Assignment> getAllAssignments(Long classroomId) {
@@ -184,7 +194,6 @@ public class AssignmentServiceImpl implements AssignmentService {
 
     @Override
     public StudentInfoClassroom addStudentInfo(StudentInfoClassroom studentInfo) {
-        //TODO: fix
         return studentInfoClassroomRepository.save(studentInfo);
     }
 

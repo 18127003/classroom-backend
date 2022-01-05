@@ -1,4 +1,4 @@
-package com.example.demo.repository;
+package com.example.demo.repository.custom;
 
 import com.example.demo.common.enums.AssignmentStatus;
 import com.example.demo.entity.StudentInfoClassroom;

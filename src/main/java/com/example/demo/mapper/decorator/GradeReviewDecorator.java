@@ -16,7 +16,9 @@ public class GradeReviewDecorator implements GradeReviewMapper {
         var result = delegate.toGradeReviewDto(gradeReview);
         result.setCurrentGrade(gradeReview.getSubmission().getGrade());
         result.setAuthor(gradeReview.getRequestBy().getName());
-        result.setAssignment(gradeReview.getSubmission().getAssignment().getName());
+        var assignment = gradeReview.getSubmission().getAssignment();
+        result.setAssignment(assignment.getName());
+        result.setAssignmentId(assignment.getId());
         return result;
     }
 }

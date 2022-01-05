@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Setter
@@ -34,6 +35,9 @@ public class GradeReview extends AbstractEntity{
     @Column
     @Enumerated(EnumType.STRING)
     private GradeReviewStatus status;
+
+    @OneToMany(mappedBy = "gradeReview")
+    private List<Comment> comments;
 
     public GradeReview(Account requestBy, Submission submission, Integer expectGrade, String explanation,
                        GradeReviewStatus status) {

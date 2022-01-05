@@ -2,7 +2,7 @@ package com.example.demo.repository.impl;
 
 import com.example.demo.entity.Assignment;
 import com.example.demo.entity.QAssignment;
-import com.example.demo.repository.AssignmentCustomRepository;
+import com.example.demo.repository.custom.AssignmentCustomRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;

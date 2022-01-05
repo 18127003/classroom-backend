@@ -2,7 +2,7 @@ package com.example.demo.repository.impl;
 
 import com.example.demo.entity.Admin;
 import com.example.demo.entity.QAdmin;
-import com.example.demo.repository.AdminCustomRepository;
+import com.example.demo.repository.custom.AdminCustomRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository

@@ -2,7 +2,7 @@ package com.example.demo.repository.impl;
 
 import com.example.demo.common.enums.AssignmentStatus;
 import com.example.demo.entity.*;
-import com.example.demo.repository.SubmissionCustomRepository;
+import com.example.demo.repository.custom.SubmissionCustomRepository;
 import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQuery;
 import org.springframework.stereotype.Repository;

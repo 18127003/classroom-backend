@@ -2,7 +2,7 @@ package com.example.demo.repository.impl;
 
 import com.example.demo.common.enums.GradeReviewStatus;
 import com.example.demo.entity.*;
-import com.example.demo.repository.GradeReviewCustomRepository;
+import com.example.demo.repository.custom.GradeReviewCustomRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
