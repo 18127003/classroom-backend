@@ -131,8 +131,7 @@ public class AccountServiceImpl implements AccountService {
         // send email
         var subject = "Reset password link for Classroom";
         var content = "Please click the link below to reset your password: "+frontPath+"?token="+token;
-//        emailSender.sendEmail(HOST_EMAIL, account.getEmail(), subject, content);
-        System.out.println(token);
+        emailSender.sendEmail(HOST_EMAIL, account.getEmail(), subject, content);
     }
 
     @Override
@@ -161,7 +160,7 @@ public class AccountServiceImpl implements AccountService {
         // send email
         var subject = "Activate account link for Classroom Account "+account.getName();
         var content = "Please click the link below to activate your account: "+frontPath+"?token="+token;
-//        emailSender.sendEmail(HOST_EMAIL, account.getEmail(), subject, content);
+        emailSender.sendEmail(HOST_EMAIL, account.getEmail(), subject, content);
     }
 
     @Override

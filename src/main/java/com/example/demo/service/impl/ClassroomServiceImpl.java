@@ -53,10 +53,10 @@ public class ClassroomServiceImpl implements ClassroomService {
     @Override
     public Participant createClassroom(Classroom classroom, Account account) {
         classroom.setCreator(account);
+        classroom.setCreatedAt(Date.from(Instant.now()));
         var participant = participantRepository.save(new Participant(account, classroom, Role.TEACHER, false));
         var createdClassroom = participant.getClassroom();
         createdClassroom.setCode(stringEncryptor.encrypt(createdClassroom.getId().toString()));
-        createdClassroom.setCreatedAt(Date.from(Instant.now()));
         return participant;
     }
 
