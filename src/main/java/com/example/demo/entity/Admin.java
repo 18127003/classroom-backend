@@ -3,6 +3,7 @@ package com.example.demo.entity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -32,6 +33,7 @@ public class Admin extends AbstractEntity implements UserDetails {
     private String email;
 
     @Column(name = "created_at")
+    @CreationTimestamp
     private Date createdAt;
 
     public Admin(String name, String password, String email, Date createdAt) {

@@ -56,7 +56,7 @@ public class AuthServiceImpl implements AuthService {
             var account = accountRepository.findByEmail(email);
             if(account==null){
                 return accountRepository.save(new Account(familyName, givenName, "", email,
-                        AccountStatus.ACTIVATED, Date.from(Instant.now())));
+                        AccountStatus.ACTIVATED));
             }
             return account;
         } else {

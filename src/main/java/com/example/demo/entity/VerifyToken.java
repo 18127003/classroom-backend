@@ -19,7 +19,7 @@ public class VerifyToken extends AbstractEntity{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
+    @Column(columnDefinition = "text")
     private String token;
 
     @Column

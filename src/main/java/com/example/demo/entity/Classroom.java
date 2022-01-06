@@ -3,6 +3,7 @@ package com.example.demo.entity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
@@ -38,6 +39,7 @@ public class Classroom extends AbstractEntity{
     private String description;
 
     @Column(name = "created_at")
+    @CreationTimestamp
     private Date createdAt;
 
     @ManyToOne(targetEntity = Account.class)

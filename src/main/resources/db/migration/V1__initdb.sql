@@ -148,11 +148,31 @@ create table VERIFY_TOKEN
     id bigint not null auto_increment primary key,
     account_id bigint not null ,
     expiry datetime not null ,
-    token varchar(255) not null ,
+    token text not null ,
     token_type varchar(30) not null,
     version integer default 0,
     key fk_account_token (account_id),
     constraint fk_account_token foreign key (account_id) references ACCOUNT(id)
+);
+
+create table NOTIFICATION
+(
+    id bigint not null auto_increment primary key,
+    content text character set utf8 collate utf8_unicode_ci not null ,
+    created_at datetime not null,
+    version integer default 0
+);
+
+create table NOTIFICATION_RECEIVER
+(
+    id bigint not null auto_increment primary key,
+    notification_id bigint not null,
+    receiver_id bigint not null,
+    version integer default 0,
+    key fk_receiver_notification (notification_id),
+    key fk_receiver_account (receiver_id),
+    constraint fk_receiver_notification foreign key (notification_id) references NOTIFICATION (id),
+    constraint fk_receiver_account foreign key (receiver_id) references ACCOUNT (id)
 );
 
 insert into ADMIN (id,name, email, password, version) values

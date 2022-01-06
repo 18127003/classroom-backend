@@ -2,6 +2,7 @@ package com.example.demo.service.impl;
 
 import com.example.demo.common.enums.AssignmentStatus;
 import com.example.demo.common.enums.GradeReviewStatus;
+import com.example.demo.common.enums.Role;
 import com.example.demo.common.exception.RTException;
 import com.example.demo.common.exception.RecordNotFoundException;
 import com.example.demo.dto.OverallGradeDto;
@@ -9,6 +10,7 @@ import com.example.demo.dto.SubmissionDto;
 import com.example.demo.entity.*;
 import com.example.demo.repository.*;
 import com.example.demo.service.AssignmentService;
+import com.example.demo.service.NotificationService;
 import com.example.demo.util.ExcelUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -32,6 +34,7 @@ public class AssignmentServiceImpl implements AssignmentService {
     private final SubmissionRepository submissionRepository;
     private final GradeReviewRepository gradeReviewRepository;
     private final CommentRepository commentRepository;
+    private final NotificationService notificationService;
     private final ExcelUtil excelUtil;
 
     @Override
@@ -99,6 +102,14 @@ public class AssignmentServiceImpl implements AssignmentService {
         var assignment = getAssignment(assignmentId);
         assignment.setStatus(AssignmentStatus.FINAL);
         assignmentRepository.save(assignment);
+        // Notify
+        var accounts = assignment.getClassroom().getParticipants().stream()
+                .filter(participant -> participant.getRole().equals(Role.STUDENT))
+                .map(Participant::getAccount)
+                .collect(Collectors.toList());
+        String content = String.format("%s - %s grade has been marked as final.",
+                assignment.getClassroom().getName(), assignment.getName());
+        notificationService.sendNotification(accounts, content);
     }
 
     @Override
@@ -115,6 +126,14 @@ public class AssignmentServiceImpl implements AssignmentService {
         gradeReview.setSubmission(submission);
         gradeReview.setRequestBy(account);
         gradeReview.setStatus(GradeReviewStatus.PENDING);
+        // Notify
+        String content = String.format("A grade review for %s has been requested.",
+                gradeReview.getSubmission().getAssignment().getName());
+        var accounts = submission.getAssignment().getClassroom().getParticipants()
+                .stream().filter(participant -> participant.getRole().equals(Role.TEACHER))
+                .map(Participant::getAccount)
+                .collect(Collectors.toList());
+        notificationService.sendNotification(accounts, content);
         return gradeReviewRepository.save(gradeReview);
     }
 
@@ -158,6 +177,9 @@ public class AssignmentServiceImpl implements AssignmentService {
         submission.setGrade(grade);
         gradeReview.setStatus(GradeReviewStatus.ACCEPTED);
         gradeReviewRepository.save(gradeReview);
+        // Notify
+        String content = String.format("Grade review for %s has been finalize.", submission.getAssignment().getName());
+        notificationService.sendNotification(Collections.singletonList(gradeReview.getRequestBy()), content);
         return submission;
     }
 
@@ -177,8 +199,8 @@ public class AssignmentServiceImpl implements AssignmentService {
     public Assignment addAssignment(Assignment assignment, Account creator, Classroom classroom) {
         assignment.setClassroom(classroom);
         assignment.setCreator(creator);
-        Date current = Date.from(Instant.now());
-        assignment.setCreatedAt(current);
+//        Date current = Date.from(Instant.now());
+//        assignment.setCreatedAt(current);
         assignment.setStatus(AssignmentStatus.GRADING);
         return assignmentRepository.save(assignment);
     }

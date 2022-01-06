@@ -4,6 +4,7 @@ import com.example.demo.common.enums.AccountStatus;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -47,19 +48,19 @@ public class Account extends AbstractEntity implements UserDetails {
     private StudentInfo studentInfo;
 
     @Column(name = "created_at")
+    @CreationTimestamp
     private Date createdAt;
 
     @OneToMany(mappedBy = "account")
     private List<Participant> assignedClasses;
 
-    public Account(String firstName, String lastName, String password, String email, AccountStatus status, Date createdAt) {
+    public Account(String firstName, String lastName, String password, String email, AccountStatus status) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.name = firstName + " " + lastName;
         this.password = password;
         this.email = email;
         this.status = status;
-        this.createdAt = createdAt;
     }
 
     public Account(String firstName, String lastName, String password, String email, StudentInfo studentInfo,

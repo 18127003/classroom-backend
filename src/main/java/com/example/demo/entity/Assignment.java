@@ -4,6 +4,7 @@ import com.example.demo.common.enums.AssignmentStatus;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -33,6 +34,7 @@ public class Assignment extends AbstractEntity{
     private LocalDateTime deadline;
 
     @Column(name = "created_at")
+    @CreationTimestamp
     private Date createdAt;
 
     @Column
