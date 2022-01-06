@@ -1,13 +1,16 @@
 package com.example.demo.controller;
 
+import com.example.demo.common.enums.VerifyTokenType;
 import com.example.demo.common.exception.RTException;
 import com.example.demo.dto.AccountDto;
 import com.example.demo.dto.AdminDto;
 import com.example.demo.dto.jwt.JwtRequest;
+import com.example.demo.dto.jwt.SignInResponse;
 import com.example.demo.mapper.AccountMapper;
 import com.example.demo.mapper.AdminMapper;
 import com.example.demo.security.JwtTokenService;
 import com.example.demo.service.AuthService;
+import com.example.demo.service.VerifyTokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -27,18 +30,23 @@ import static com.example.demo.common.constant.Constants.JWT_COOKIE_TEXT;
 public class AuthController extends AbstractServiceEndpoint{
     private final JwtTokenService jwtService;
     private final AuthService authService;
+    private final VerifyTokenService verifyTokenService;
     private final AccountMapper accountMapper;
     private final AdminMapper adminMapper;
 
     @Value("${com.demo.cookieMaxAge}")
     private int cookieMaxAge;
 
+    @Value("${auth.jwt.refreshTokenExpirationM}")
+    private int refreshTokenExpiry;
+
     @PostMapping(value = "login")
-    public ResponseEntity<AccountDto> authenticate(@RequestBody final JwtRequest jwtRequest, final HttpServletResponse response) {
+    public ResponseEntity<SignInResponse> authenticate(@RequestBody final JwtRequest jwtRequest, final HttpServletResponse response) {
         try{
             var user = authService.validatePassword(jwtRequest);
             response.addHeader(HttpHeaders.SET_COOKIE, generateJwtCookies(user).toString());
-            return ResponseEntity.ok(accountMapper.toAccountDto(user));
+            var refreshToken = verifyTokenService.getOrCreateToken(user, VerifyTokenType.REFRESH_TOKEN, refreshTokenExpiry);
+            return ResponseEntity.ok(new SignInResponse(accountMapper.toAccountDto(user), refreshToken.getToken()));
         } catch (RTException e){
             return ResponseEntity.badRequest().build();
         }
@@ -56,13 +64,14 @@ public class AuthController extends AbstractServiceEndpoint{
     }
 
     @PostMapping(value = "socialLogin")
-    public ResponseEntity<AccountDto> socialAuthenticate(@RequestBody final String tokenId, final HttpServletResponse response){
+    public ResponseEntity<SignInResponse> socialAuthenticate(@RequestBody final String tokenId, final HttpServletResponse response){
 
         try {
             var account = authService.validateSocialToken(tokenId);
             if (account != null){
                 response.addHeader(HttpHeaders.SET_COOKIE, generateJwtCookies(account).toString());
-                return ResponseEntity.ok(accountMapper.toAccountDto(account));
+                var refreshToken = verifyTokenService.getOrCreateToken(account, VerifyTokenType.REFRESH_TOKEN, refreshTokenExpiry);
+                return ResponseEntity.ok(new SignInResponse(accountMapper.toAccountDto(account), refreshToken.getToken()));
             }
 
         } catch (GeneralSecurityException | IOException ignored) {
@@ -86,10 +95,15 @@ public class AuthController extends AbstractServiceEndpoint{
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping(value = "/revokeToken/{tokenId}")
-    public ResponseEntity<Boolean> revokeToken(@PathVariable final String tokenId) {
-        jwtService.invalidToken(tokenId);
-        return ResponseEntity.ok(Boolean.TRUE);
+    @GetMapping(value = "/refreshToken/{tokenString}")
+    public ResponseEntity<String> refreshToken(@PathVariable final String tokenString) {
+        try{
+            var token = verifyTokenService.verifyToken(tokenString);
+            var newToken = verifyTokenService.rotateVerifyToken(token, refreshTokenExpiry);
+            return ResponseEntity.ok(newToken.getToken());
+        } catch (RTException e){
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     private ResponseCookie generateJwtCookies(UserDetails account){

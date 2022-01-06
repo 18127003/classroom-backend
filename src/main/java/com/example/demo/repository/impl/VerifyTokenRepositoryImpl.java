@@ -1,5 +1,6 @@
 package com.example.demo.repository.impl;
 
+import com.example.demo.common.enums.VerifyTokenType;
 import com.example.demo.entity.QVerifyToken;
 import com.example.demo.entity.VerifyToken;
 import com.example.demo.repository.custom.VerifyTokenCustomRepository;
@@ -10,5 +11,13 @@ public class VerifyTokenRepositoryImpl extends AbstractRepositoryImpl<VerifyToke
     @Override
     public VerifyToken getByToken(String token) {
         return selectFrom(QVerifyToken.verifyToken).where(QVerifyToken.verifyToken.token.eq(token)).fetchOne();
+    }
+
+    @Override
+    public VerifyToken getByAccount(Long accountId, VerifyTokenType type) {
+        return selectFrom(QVerifyToken.verifyToken)
+                .where(QVerifyToken.verifyToken.account.id.eq(accountId)
+                    .and(QVerifyToken.verifyToken.tokenType.eq(type)))
+                .fetchOne();
     }
 }

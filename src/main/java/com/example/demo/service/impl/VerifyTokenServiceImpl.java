@@ -12,8 +12,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.time.ZoneId;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.TimeZone;
 import java.util.UUID;
 
@@ -24,24 +26,55 @@ public class VerifyTokenServiceImpl implements VerifyTokenService {
     private final VerifyTokenRepository verifyTokenRepository;
 
     @Override
-    public String createVerifyToken(Account account, VerifyTokenType type, Integer expireMinute) {
+    public VerifyToken createVerifyToken(Account account, VerifyTokenType type, Integer expireMinute) {
         var tokenString = UUID.randomUUID().toString();
         var calendar = Calendar.getInstance(TimeZone.getTimeZone(ZoneId.systemDefault()));
         calendar.add(Calendar.MINUTE, expireMinute);
         var token = new VerifyToken(tokenString, Calendar.getInstance().getTime(), type, account);
-        verifyTokenRepository.save(token);
-        return tokenString;
+        return verifyTokenRepository.save(token);
     }
 
     @Override
     public VerifyToken verifyToken(String tokenString) {
+        var token = getByTokenString(tokenString);
+        if (token.getExpiry().before(Calendar.getInstance().getTime())){
+            throw new RTException(new InvalidVerifyTokenException(tokenString));
+        }
+        return token;
+    }
+
+    @Override
+    public VerifyToken rotateVerifyToken(VerifyToken token, Integer expireMinute) {
+        var newToken = createVerifyToken(token.getAccount(), token.getTokenType(), expireMinute);
+        verifyTokenRepository.save(newToken);
+        verifyTokenRepository.delete(token);
+        return newToken;
+    }
+
+    @Override
+    public VerifyToken getByTokenString(String tokenString) {
         var token = verifyTokenRepository.getByToken(tokenString);
         if (token==null){
             throw new RTException(new RecordNotFoundException(tokenString, VerifyToken.class.getSimpleName()));
         }
-        if (token.getExpiry().after(Calendar.getInstance().getTime())){
-            throw new RTException(new InvalidVerifyTokenException(tokenString));
-        }
         return token;
+    }
+
+    @Override
+    public VerifyToken getOrCreateToken(Account account, VerifyTokenType type, Integer expireMinute) {
+        var existedToken = verifyTokenRepository.getByAccount(account.getId(), type);
+        // No record
+        if(existedToken == null){
+            return createVerifyToken(account, type, expireMinute);
+        }
+        // Still valid token
+        if(existedToken.getExpiry().after(Date.from(Instant.now()))){
+            return existedToken;
+        }
+        // Reset expiry
+        var calendar = Calendar.getInstance(TimeZone.getTimeZone(ZoneId.systemDefault()));
+        calendar.add(Calendar.MINUTE, expireMinute);
+        existedToken.setExpiry(calendar.getTime());
+        return verifyTokenRepository.save(existedToken);
     }
 }
