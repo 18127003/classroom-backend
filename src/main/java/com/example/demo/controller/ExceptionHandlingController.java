@@ -25,4 +25,11 @@ public class ExceptionHandlingController {
     public String handleAccessDeniedException(Exception exception) {
         return "Access to forbidden data is not allowed.";
     }
+
+    @ResponseBody
+    @ExceptionHandler(RTException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public String handleRuntimeException(Exception exception){
+        return "Action fail";
+    }
 }

@@ -106,13 +106,14 @@ create table ADMIN
     password varchar(255) not null,
     email varchar(255) unique not null,
     created_at datetime,
+    status varchar(20) not null default 'CREATED',
     version  integer default 0
 );
 
 create table LOCKED_ACCOUNT
 (
     id bigint not null auto_increment primary key,
-    account_id bigint not null,
+    account_id bigint not null unique ,
     version integer default 0,
     key fk_locked_account_id (account_id),
     constraint fk_locked_account_id foreign key (account_id) references ACCOUNT (id)
@@ -175,7 +176,7 @@ create table NOTIFICATION_RECEIVER
     constraint fk_receiver_account foreign key (receiver_id) references ACCOUNT (id)
 );
 
-insert into ADMIN (id,name, email, password, version) values
-    (1, 'Hai Dang', 'hdang@gmail.com','', 0)
+insert into ADMIN (id,name, email, password, status, version) values
+    (1, 'Hai Dang', 'hdang@gmail.com','','ACTIVATED', 0)
 ;
 

@@ -20,7 +20,7 @@ import java.util.Collections;
 
 @Component
 public class AdminAccessFilter extends OncePerRequestFilter {
-    public static final String ADMIN_URL_PATTERN = "**/admin**";
+    public static final String ADMIN_URL_PATTERN = "**/admin/**";
 
     @Autowired
     private AntPathMatcher antPathMatcher;
@@ -32,6 +32,7 @@ public class AdminAccessFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain) throws ServletException, IOException {
         var requestUrl = httpServletRequest.getRequestURL().toString();
         if(antPathMatcher.match(ADMIN_URL_PATTERN, requestUrl)){
+            System.out.println("match");
             Long accountId = (Long) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             try{
                 if(adminService.checkExist(accountId)){
@@ -46,6 +47,7 @@ public class AdminAccessFilter extends OncePerRequestFilter {
 
             } catch (RTException e){
                 // ignore because unauthorized later
+                System.out.println("Admin unauthorized");
             }
         }
 

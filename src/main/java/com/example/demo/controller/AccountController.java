@@ -26,23 +26,15 @@ public class AccountController extends AbstractServiceEndpoint{
 
     @PostMapping("create")
     public ResponseEntity<AccountDto> createAccount(@RequestBody Account account){
-        try{
-            account.setStatus(AccountStatus.CREATED);
-            var createdAccount = accountService.createAccount(account);
-            return ResponseEntity.ok(accountMapper.toAccountDto(createdAccount));
-        } catch (RTException e){
-            return ResponseEntity.badRequest().build();
-        }
+        account.setStatus(AccountStatus.CREATED);
+        var createdAccount = accountService.createAccount(account);
+        return ResponseEntity.ok(accountMapper.toAccountDto(createdAccount));
     }
 
     @PatchMapping("activate")
     public ResponseEntity<Void> activateAccount(@RequestBody String token){
-        try {
-            accountService.activateAccount(token);
-            return ResponseEntity.ok().build();
-        } catch (RTException e){
-            return ResponseEntity.badRequest().build();
-        }
+        accountService.activateAccount(token);
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("activate/request")
@@ -51,7 +43,7 @@ public class AccountController extends AbstractServiceEndpoint{
             var account = accountService.getAccountByEmail(email);
             accountService.sendAccountActivateEmail("http://localhost:8085/#/activateAcocunt", account);
             return ResponseEntity.ok().build();
-        } catch (RTException | IOException e){
+        } catch (IOException e){
             return ResponseEntity.badRequest().build();
         }
     }
@@ -63,29 +55,21 @@ public class AccountController extends AbstractServiceEndpoint{
             var account = accountService.getAccountByEmail(email);
             accountService.sendResetPasswordEmail("http://localhost:8085/#/resetPassword", account);
             return ResponseEntity.ok().build();
-        } catch (IOException | RTException exception){
+        } catch (IOException exception){
             return ResponseEntity.badRequest().build();
         }
     }
 
     @PatchMapping("resetPassword")
     public ResponseEntity<Void> resetPassword(@RequestBody ResetPasswordRequest request){
-        try {
-            accountService.resetPassword(request.getToken(), request.getPassword());
-            return ResponseEntity.ok().build();
-        } catch (RTException e){
-            return ResponseEntity.badRequest().build();
-        }
+        accountService.resetPassword(request.getToken(), request.getPassword());
+        return ResponseEntity.ok().build();
     }
 
     @PutMapping("/update")
     public ResponseEntity<AccountDto> updateAccount(@RequestBody Account account, @AuthenticationPrincipal Long accountId){
-        try{
-            var updated = accountService.updateAccount(accountId, account);
-            return ResponseEntity.ok(accountMapper.toAccountDto(updated));
-        } catch (RTException e){
-            return ResponseEntity.badRequest().build();
-        }
+        var updated = accountService.updateAccount(accountId, account);
+        return ResponseEntity.ok(accountMapper.toAccountDto(updated));
     }
 
     @PatchMapping("/change_password")
@@ -98,11 +82,7 @@ public class AccountController extends AbstractServiceEndpoint{
 
     @PostMapping("/studentId/update")
     public ResponseEntity<Void> updateStudentId(@RequestBody StudentInfoDto studentInfo, @AuthenticationPrincipal Long accountId){
-        try {
-            accountService.updateStudentId(accountId, studentInfo.getStudentId(), studentInfo.getName());
-            return ResponseEntity.ok().build();
-        } catch (RTException e){
-            return ResponseEntity.badRequest().build();
-        }
+        accountService.updateStudentId(accountId, studentInfo.getStudentId(), studentInfo.getName());
+        return ResponseEntity.ok().build();
     }
 }

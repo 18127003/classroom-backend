@@ -6,11 +6,9 @@ import com.example.demo.common.exception.DuplicateRecordException;
 import com.example.demo.common.exception.InvalidVerifyTokenException;
 import com.example.demo.common.exception.RTException;
 import com.example.demo.common.exception.RecordNotFoundException;
-import com.example.demo.entity.Account;
-import com.example.demo.entity.Participant;
-import com.example.demo.entity.StudentInfo;
-import com.example.demo.entity.VerifyToken;
+import com.example.demo.entity.*;
 import com.example.demo.repository.AccountRepository;
+import com.example.demo.repository.LockedAccountRepository;
 import com.example.demo.repository.StudentInfoRepository;
 import com.example.demo.repository.VerifyTokenRepository;
 import com.example.demo.service.AccountService;
@@ -26,6 +24,7 @@ import java.sql.Date;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.Calendar;
+import java.util.List;
 import java.util.TimeZone;
 import java.util.UUID;
 
@@ -38,6 +37,7 @@ public class AccountServiceImpl implements AccountService {
     private final AccountRepository accountRepository;
     private final StudentInfoRepository studentInfoRepository;
     private final VerifyTokenService verifyTokenService;
+    private final LockedAccountRepository lockedAccountRepository;
     private final EmailSender emailSender;
     private final PasswordUtil passwordUtil;
 
@@ -168,5 +168,32 @@ public class AccountServiceImpl implements AccountService {
         var account = token.getAccount();
         account.setStatus(AccountStatus.ACTIVATED);
         accountRepository.save(account);
+    }
+
+    @Override
+    public List<Account> getAllAccount() {
+        return accountRepository.findAll();
+    }
+
+    @Override
+    public boolean checkLocked(Long accountId) {
+        var lockedAccount = lockedAccountRepository.getByAccountId(accountId);
+        return lockedAccount != null;
+    }
+
+    @Override
+    public void lockAccount(Long accountId) {
+        var account = getAccountById(accountId);
+        var lockedAccount = new LockedAccount(account);
+        lockedAccountRepository.save(lockedAccount);
+    }
+
+    @Override
+    public void unlockAccount(Long accountId) {
+        var locked = lockedAccountRepository.getByAccountId(accountId);
+        if (locked==null){
+            throw new RTException(new RecordNotFoundException(accountId.toString(), LockedAccount.class.getSimpleName()));
+        }
+        lockedAccountRepository.delete(locked);
     }
 }

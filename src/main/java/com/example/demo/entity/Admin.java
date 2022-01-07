@@ -1,5 +1,6 @@
 package com.example.demo.entity;
 
+import com.example.demo.common.enums.AccountStatus;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -36,15 +37,20 @@ public class Admin extends AbstractEntity implements UserDetails {
     @CreationTimestamp
     private Date createdAt;
 
-    public Admin(String name, String password, String email, Date createdAt) {
+    @Column
+    @Enumerated(EnumType.STRING)
+    private AccountStatus status;
+
+    public Admin(String name, String password, String email, Date createdAt, AccountStatus status) {
         this.name =name;
         this.password = password;
         this.email = email;
         this.createdAt = createdAt;
+        this.status = status;
     }
 
-    public Admin(long id, String name, String password, String email, Date createdAt){
-        this(name, password, email, createdAt);
+    public Admin(long id, String name, String password, String email, Date createdAt, AccountStatus status){
+        this(name, password, email, createdAt, status);
         this.id = id;
     }
 

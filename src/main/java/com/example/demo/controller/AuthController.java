@@ -42,25 +42,17 @@ public class AuthController extends AbstractServiceEndpoint{
 
     @PostMapping(value = "login")
     public ResponseEntity<SignInResponse> authenticate(@RequestBody final JwtRequest jwtRequest, final HttpServletResponse response) {
-        try{
-            var user = authService.validatePassword(jwtRequest);
-            response.addHeader(HttpHeaders.SET_COOKIE, generateJwtCookies(user).toString());
-            var refreshToken = verifyTokenService.getOrCreateToken(user, VerifyTokenType.REFRESH_TOKEN, refreshTokenExpiry);
-            return ResponseEntity.ok(new SignInResponse(accountMapper.toAccountDto(user), refreshToken.getToken()));
-        } catch (RTException e){
-            return ResponseEntity.badRequest().build();
-        }
+        var user = authService.validatePassword(jwtRequest);
+        response.addHeader(HttpHeaders.SET_COOKIE, generateJwtCookies(user).toString());
+        var refreshToken = verifyTokenService.getOrCreateToken(user, VerifyTokenType.REFRESH_TOKEN, refreshTokenExpiry);
+        return ResponseEntity.ok(new SignInResponse(accountMapper.toAccountDto(user), refreshToken.getToken()));
     }
 
     @PostMapping(value = "loginAdmin")
     public ResponseEntity<AdminDto> authenticateAdmin(@RequestBody final JwtRequest jwtRequest, final HttpServletResponse response) {
-        try{
-            var user = authService.validatePasswordAdmin(jwtRequest);
-            response.addHeader(HttpHeaders.SET_COOKIE, generateJwtCookies(user).toString());
-            return ResponseEntity.ok(adminMapper.toAdminDto(user));
-        } catch (RTException e){
-            return ResponseEntity.badRequest().build();
-        }
+        var user = authService.validatePasswordAdmin(jwtRequest);
+        response.addHeader(HttpHeaders.SET_COOKIE, generateJwtCookies(user).toString());
+        return ResponseEntity.ok(adminMapper.toAdminDto(user));
     }
 
     @PostMapping(value = "socialLogin")
@@ -97,13 +89,10 @@ public class AuthController extends AbstractServiceEndpoint{
 
     @GetMapping(value = "/refreshToken/{tokenString}")
     public ResponseEntity<String> refreshToken(@PathVariable final String tokenString) {
-        try{
-            var token = verifyTokenService.verifyToken(tokenString);
-            var newToken = verifyTokenService.rotateVerifyToken(token, refreshTokenExpiry);
-            return ResponseEntity.ok(newToken.getToken());
-        } catch (RTException e){
-            return ResponseEntity.badRequest().build();
-        }
+        var token = verifyTokenService.verifyToken(tokenString);
+        var newToken = verifyTokenService.rotateVerifyToken(token, refreshTokenExpiry);
+        return ResponseEntity.ok(newToken.getToken());
+
     }
 
     private ResponseCookie generateJwtCookies(UserDetails account){

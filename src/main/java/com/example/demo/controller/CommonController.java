@@ -41,12 +41,9 @@ public class CommonController extends AbstractServiceEndpoint{
     @PostMapping("create")
     public ResponseEntity<ClassroomDto> createClass(@RequestBody Classroom classroom,
                                                     @AuthenticationPrincipal Long accountId){
-        try {
-            var account = accountService.getAccountById(accountId);
-            return ResponseEntity.ok(classroomMapper.toAssignedClassroomDto(classroomService.createClassroom(classroom, account)));
-        } catch (RTException e) {
-            return ResponseEntity.badRequest().build();
-        }
+        var account = accountService.getAccountById(accountId);
+        return ResponseEntity.ok(classroomMapper.toAssignedClassroomDto(classroomService.createClassroom(classroom, account)));
+
     }
 
     @PostMapping("join")
@@ -57,33 +54,21 @@ public class CommonController extends AbstractServiceEndpoint{
             role = Role.STUDENT.name();
         }
         code = code.replaceAll(" ","+");
-        try{
-            var account = accountService.getAccountById(accountId);
-            var classroom = classroomService.joinClassroom(code, Role.valueOf(role.toUpperCase()), account);
-            return ResponseEntity.ok(classroomMapper.toAssignedClassroomDto(classroom));
-        } catch (RTException e){
-            return ResponseEntity.badRequest().build();
-        }
+        var account = accountService.getAccountById(accountId);
+        var classroom = classroomService.joinClassroom(code, Role.valueOf(role.toUpperCase()), account);
+        return ResponseEntity.ok(classroomMapper.toAssignedClassroomDto(classroom));
     }
     
     @DeleteMapping("{id}/removeParticipants")
     public ResponseEntity<Void> removeParticipants(@PathVariable Long id, @RequestBody List<Long> removals){
-        try{
-            classroomService.removeParticipants(id, removals);
-            return ResponseEntity.ok().build();
-        } catch (RTException e){
-            return ResponseEntity.badRequest().build();
-        }
+        classroomService.removeParticipants(id, removals);
+        return ResponseEntity.ok().build();
     }
 
     @PatchMapping("{id}/hideParticipants")
     public ResponseEntity<Void> hideParticipants(@PathVariable Long id, @RequestBody List<Long> participants){
-        try {
-            classroomService.hideParticipants(id, participants);
-            return ResponseEntity.ok().build();
-        } catch (RTException e){
-            return ResponseEntity.badRequest().build();
-        }
+        classroomService.hideParticipants(id, participants);
+        return ResponseEntity.ok().build();
     }
 
     @PatchMapping("{id}/regenerateCode")
@@ -100,12 +85,8 @@ public class CommonController extends AbstractServiceEndpoint{
 
     @GetMapping("{id}")
     public ResponseEntity<ClassroomDto> getClassroom(@PathVariable Long id, @AuthenticationPrincipal Long accountId){
-        try{
-            var participant = classroomService.getAssignedClassroom(id, accountId);
-            return ResponseEntity.ok(classroomMapper.toAssignedClassroomDto(participant));
-        } catch (RTException e){
-            return ResponseEntity.badRequest().build();
-        }
+        var participant = classroomService.getAssignedClassroom(id, accountId);
+        return ResponseEntity.ok(classroomMapper.toAssignedClassroomDto(participant));
     }
 
     @GetMapping("{id}/participant")
@@ -135,7 +116,7 @@ public class CommonController extends AbstractServiceEndpoint{
             var classroom = classroomService.getClassroom(id);
             classroomService.importStudentInfo(file, classroom);
             return ResponseEntity.ok().build();
-        } catch (IOException | RTException e){
+        } catch (IOException e){
             return ResponseEntity.badRequest().build();
         }
     }

@@ -3,6 +3,7 @@ package com.example.demo.service;
 import com.example.demo.entity.Account;
 
 import java.io.IOException;
+import java.util.List;
 
 public interface AccountService {
     Account getAccountById(Long accountId);
@@ -24,4 +25,12 @@ public interface AccountService {
     void sendAccountActivateEmail(String frontPath, Account account) throws IOException;
 
     void activateAccount(String tokenString);
+
+    List<Account> getAllAccount();
+
+    boolean checkLocked(Long accountId);
+
+    void lockAccount(Long accountId);
+
+    void unlockAccount(Long accountId);
 }

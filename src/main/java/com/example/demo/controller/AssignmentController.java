@@ -44,14 +44,10 @@ public class AssignmentController extends AbstractServiceEndpoint {
 
     @PostMapping("create")
     public ResponseEntity<AssignmentDto> addAssignment(@RequestBody Assignment assignment){
-        try {
-            var account = participantInfo.getAccount();
-            var classroom = classroomService.getClassroom(participantInfo.getClassroom().getId());
-            return ResponseEntity.ok(assignmentMapper.toAssignmentDto(
-                    assignmentService.addAssignment(assignment, account, classroom)));
-        } catch (RTException e){
-            return ResponseEntity.badRequest().build();
-        }
+        var account = participantInfo.getAccount();
+        var classroom = classroomService.getClassroom(participantInfo.getClassroom().getId());
+        return ResponseEntity.ok(assignmentMapper.toAssignmentDto(
+                assignmentService.addAssignment(assignment, account, classroom)));
     }
 
     @GetMapping("all")
@@ -71,42 +67,26 @@ public class AssignmentController extends AbstractServiceEndpoint {
 
     @GetMapping("{id}/detail")
     public ResponseEntity<AssignmentDto> getAssignment(@PathVariable Long id){
-        try{
-            var assignment = assignmentService.getAssignment(id);
-            return ResponseEntity.ok(assignmentMapper.toAssignmentDto(assignment));
-        } catch (RTException e){
-            return ResponseEntity.badRequest().build();
-        }
+        var assignment = assignmentService.getAssignment(id);
+        return ResponseEntity.ok(assignmentMapper.toAssignmentDto(assignment));
     }
 
     @DeleteMapping("{id}/remove")
     public ResponseEntity<Void> removeAssignment(@PathVariable Long id){
-        try{
-            assignmentService.removeAssignment(id);
-            return ResponseEntity.ok().build();
-        } catch (RTException e){
-            return ResponseEntity.badRequest().build();
-        }
+        assignmentService.removeAssignment(id);
+        return ResponseEntity.ok().build();
     }
 
     @PutMapping("{id}/update")
     public ResponseEntity<AssignmentDto> updateAssignment(@PathVariable Long id, @RequestBody Assignment update){
-        try{
-            var assignment = assignmentService.updateAssignment(id, update);
-            return ResponseEntity.ok(assignmentMapper.toAssignmentDto(assignment));
-        } catch (RTException e){
-            return ResponseEntity.badRequest().build();
-        }
+        var assignment = assignmentService.updateAssignment(id, update);
+        return ResponseEntity.ok(assignmentMapper.toAssignmentDto(assignment));
     }
 
     @PostMapping("*/submission/create")
     public ResponseEntity<SubmissionDto> addSubmission(@RequestBody SubmissionDto submission){
-        try{
-            return ResponseEntity.ok(submissionMapper.toSubmissionDto(assignmentService.addSubmission(submission, participantInfo.getClassroom().getId())));
-        } catch (RTException e){
-            return ResponseEntity.badRequest().build();
-        }
-
+        var created = assignmentService.addSubmission(submission, participantInfo.getClassroom().getId());
+        return ResponseEntity.ok(submissionMapper.toSubmissionDto(created));
     }
 
     @PatchMapping("*/submission/{id}/update")
@@ -114,7 +94,7 @@ public class AssignmentController extends AbstractServiceEndpoint {
         try{
             var gradeNum = Integer.valueOf(grade);
             return ResponseEntity.ok(submissionMapper.toSubmissionDto(assignmentService.updateSubmissionGrade(id, gradeNum)));
-        } catch (NumberFormatException | RTException numberFormatException){
+        } catch (NumberFormatException numberFormatException){
             return ResponseEntity.badRequest().build();
         }
     }
@@ -141,12 +121,8 @@ public class AssignmentController extends AbstractServiceEndpoint {
 
     @PatchMapping("{id}/submission/finalize")
     public ResponseEntity<Void> finalizeGradeComposition(@PathVariable Long id){
-        try {
-            assignmentService.finalizeGrade(id);
-            return ResponseEntity.ok().build();
-        } catch (RTException e){
-            return ResponseEntity.badRequest().build();
-        }
+        assignmentService.finalizeGrade(id);
+        return ResponseEntity.ok().build();
     }
 
     // For student only
@@ -159,14 +135,10 @@ public class AssignmentController extends AbstractServiceEndpoint {
     // For student only
     @GetMapping("submission/all")
     public ResponseEntity<List<SubmissionDto>> getStudentGrade(){
-        try{
-            var account = participantInfo.getAccount();
-            var classroomId = participantInfo.getClassroom().getId();
-            var result = assignmentService.getGradeOfClassByStudent(account, classroomId);
-            return ResponseEntity.ok(result.stream().map(submissionMapper::toSubmissionDto).collect(Collectors.toList()));
-        } catch (RTException e){
-            return ResponseEntity.badRequest().build();
-        }
+        var account = participantInfo.getAccount();
+        var classroomId = participantInfo.getClassroom().getId();
+        var result = assignmentService.getGradeOfClassByStudent(account, classroomId);
+        return ResponseEntity.ok(result.stream().map(submissionMapper::toSubmissionDto).collect(Collectors.toList()));
     }
 
     @PostMapping("{id}/submission/review/create")
@@ -180,13 +152,9 @@ public class AssignmentController extends AbstractServiceEndpoint {
         if (existedPendingReview != null){
             return ResponseEntity.badRequest().build();
         }
-        try {
-            var submission = assignmentService.getSubmission(id, studentInfo.getStudentId());
-            var created = assignmentService.addGradeReview(gradeReview, submission, account);
-            return ResponseEntity.ok(gradeReviewMapper.toGradeReviewDto(created));
-        } catch (RTException e){
-            return ResponseEntity.badRequest().build();
-        }
+        var submission = assignmentService.getSubmission(id, studentInfo.getStudentId());
+        var created = assignmentService.addGradeReview(gradeReview, submission, account);
+        return ResponseEntity.ok(gradeReviewMapper.toGradeReviewDto(created));
     }
 
     @GetMapping("submission/review/all")
@@ -217,21 +185,13 @@ public class AssignmentController extends AbstractServiceEndpoint {
 
     @PostMapping("*/submission/review/{id}/comment/create")
     public ResponseEntity<CommentDto> createGradeReviewComment(@PathVariable Long id, @RequestBody Comment comment){
-        try {
-            var createdComment = assignmentService.createReviewComment(comment, id, participantInfo.getAccount());
-            return ResponseEntity.ok(commentMapper.toCommentDto(createdComment));
-        } catch (RTException e){
-            return ResponseEntity.badRequest().build();
-        }
+        var createdComment = assignmentService.createReviewComment(comment, id, participantInfo.getAccount());
+        return ResponseEntity.ok(commentMapper.toCommentDto(createdComment));
     }
 
     @PatchMapping("*/submission/review/{id}/finalize")
     public ResponseEntity<SubmissionDto> finalizeGradeReview(@PathVariable Long id, @RequestParam Integer grade){
-        try {
-            var submission = assignmentService.finalizeGradeReview(id, grade);
-            return ResponseEntity.ok(submissionMapper.toSubmissionDto(submission));
-        } catch (RTException e){
-            return ResponseEntity.badRequest().build();
-        }
+        var submission = assignmentService.finalizeGradeReview(id, grade);
+        return ResponseEntity.ok(submissionMapper.toSubmissionDto(submission));
     }
 }

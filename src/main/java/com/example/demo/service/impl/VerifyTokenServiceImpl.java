@@ -45,10 +45,14 @@ public class VerifyTokenServiceImpl implements VerifyTokenService {
 
     @Override
     public VerifyToken rotateVerifyToken(VerifyToken token, Integer expireMinute) {
-        var newToken = createVerifyToken(token.getAccount(), token.getTokenType(), expireMinute);
-        verifyTokenRepository.save(newToken);
-        verifyTokenRepository.delete(token);
-        return newToken;
+//        var newToken = createVerifyToken(token.getAccount(), token.getTokenType(), expireMinute);
+//        verifyTokenRepository.save(newToken);
+//        verifyTokenRepository.delete(token);
+        token.setToken(UUID.randomUUID().toString());
+        var calendar = Calendar.getInstance(TimeZone.getTimeZone(ZoneId.systemDefault()));
+        calendar.add(Calendar.MINUTE, expireMinute);
+        token.setExpiry(calendar.getTime());
+        return verifyTokenRepository.save(token);
     }
 
     @Override

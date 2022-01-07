@@ -5,7 +5,7 @@ import java.util.Set;
 public class AbstractServiceEndpoint {
     public static final String WEBAPP_API_PATH = "/api";
 
-    public static final String ADMIN_PATH = "/admin";
+    public static final String ADMIN_PATH = WEBAPP_API_PATH + "/admin/";
 
     public static final String CLASS_PATH = WEBAPP_API_PATH + "/classroom/";
 
