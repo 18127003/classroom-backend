@@ -49,6 +49,8 @@ public class AbstractServiceEndpoint {
             AUTH_PATH+"socialLogin",
             ACCOUNT_PATH+"create",
             ACCOUNT_PATH+"resetPassword/**",
-            ACCOUNT_PATH+"activate/**"
+            ACCOUNT_PATH+"activate/**",
+            AUTH_PATH+"refreshToken/**",
+            AUTH_PATH+"logout**"
     );
 }

@@ -3,6 +3,7 @@ package com.example.demo.security;
 import com.example.demo.controller.AbstractServiceEndpoint;
 import com.example.demo.service.AccountService;
 import com.example.demo.service.AuthService;
+import io.jsonwebtoken.JwtException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -53,7 +54,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                         .setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
             }
-        } catch (UsernameNotFoundException exception){
+        } catch (UsernameNotFoundException | JwtException exception){
+            System.out.println("Here");
             final var cookie = new Cookie(JWT_COOKIE_TEXT, null);
             cookie.setHttpOnly(true);
             cookie.setMaxAge(0);

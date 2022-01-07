@@ -88,11 +88,11 @@ public class AuthController extends AbstractServiceEndpoint{
     }
 
     @GetMapping(value = "/refreshToken/{tokenString}")
-    public ResponseEntity<String> refreshToken(@PathVariable final String tokenString) {
+    public ResponseEntity<String> refreshToken(@PathVariable final String tokenString, final HttpServletResponse response) {
         var token = verifyTokenService.verifyToken(tokenString);
         var newToken = verifyTokenService.rotateVerifyToken(token, refreshTokenExpiry);
+        response.addHeader(HttpHeaders.SET_COOKIE, generateJwtCookies(token.getAccount()).toString());
         return ResponseEntity.ok(newToken.getToken());
-
     }
 
     private ResponseCookie generateJwtCookies(UserDetails account){
