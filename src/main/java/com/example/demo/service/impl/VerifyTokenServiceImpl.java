@@ -7,6 +7,7 @@ import com.example.demo.common.exception.RecordNotFoundException;
 import com.example.demo.entity.Account;
 import com.example.demo.entity.VerifyToken;
 import com.example.demo.repository.VerifyTokenRepository;
+import com.example.demo.service.AccountService;
 import com.example.demo.service.VerifyTokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class VerifyTokenServiceImpl implements VerifyTokenService {
     private final VerifyTokenRepository verifyTokenRepository;
+    private final AccountService accountService;
 
     @Override
     public VerifyToken createVerifyToken(Account account, VerifyTokenType type, Integer expireMinute) {
@@ -37,6 +39,10 @@ public class VerifyTokenServiceImpl implements VerifyTokenService {
     @Override
     public VerifyToken verifyToken(String tokenString) {
         var token = getByTokenString(tokenString);
+        var accountId = token.getAccount().getId();
+        if (accountService.checkLocked(accountId)){
+            throw new RTException(new RecordNotFoundException(accountId.toString(), Account.class.getSimpleName()));
+        }
         if (token.getExpiry().before(Calendar.getInstance().getTime())){
             throw new RTException(new InvalidVerifyTokenException(tokenString));
         }
@@ -45,9 +51,6 @@ public class VerifyTokenServiceImpl implements VerifyTokenService {
 
     @Override
     public VerifyToken rotateVerifyToken(VerifyToken token, Integer expireMinute) {
-//        var newToken = createVerifyToken(token.getAccount(), token.getTokenType(), expireMinute);
-//        verifyTokenRepository.save(newToken);
-//        verifyTokenRepository.delete(token);
         token.setToken(UUID.randomUUID().toString());
         var calendar = Calendar.getInstance(TimeZone.getTimeZone(ZoneId.systemDefault()));
         calendar.add(Calendar.MINUTE, expireMinute);

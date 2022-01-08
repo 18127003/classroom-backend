@@ -31,9 +31,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     @Autowired
     private JwtTokenService jwtService;
 
-    @Autowired
-    private AccountService accountService;
-
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         var cookies = request.getCookies();
@@ -50,16 +47,13 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         }
         try{
             var jwtToken = jwtCookie.getValue();
-            var userIdString = jwtService.validateToken(jwtToken);
-            if (userIdString != null) {
-                UUID userId = UUID.fromString(userIdString);
-                if(!accountService.checkLocked(userId)){
-                    UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
-                            userId, null, null);
-                    usernamePasswordAuthenticationToken
-                            .setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                    SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-                }
+            var userId = jwtService.validateToken(jwtToken);
+            if (userId != null) {
+                UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
+                        UUID.fromString(userId), null, null);
+                usernamePasswordAuthenticationToken
+                        .setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
             }
         } catch (UsernameNotFoundException | JwtException exception){
             System.out.println("Here");

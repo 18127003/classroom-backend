@@ -36,7 +36,6 @@ import static com.example.demo.common.constant.Constants.HOST_EMAIL;
 public class AccountServiceImpl implements AccountService {
     private final AccountRepository accountRepository;
     private final StudentInfoRepository studentInfoRepository;
-    private final VerifyTokenService verifyTokenService;
     private final LockedAccountRepository lockedAccountRepository;
     private final EmailSender emailSender;
     private final PasswordUtil passwordUtil;
@@ -130,13 +129,10 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public void sendResetPasswordEmail(String frontPath, Account account) throws IOException {
-        // create token
-        var token = verifyTokenService.createVerifyToken(account, VerifyTokenType.PASSWORD_RESET, 15);
-
+    public void sendResetPasswordEmail(String frontPath, Account account, VerifyToken token) throws IOException {
         // send email
         var subject = "Reset password link for Classroom";
-        var content = "Please click the link below to reset your password: "+frontPath+"?token="+token;
+        var content = "Please click the link below to reset your password: "+frontPath+"?token="+token.getToken();
         emailSender.sendEmail(HOST_EMAIL, account.getEmail(), subject, content);
     }
 
@@ -150,8 +146,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public void resetPassword(String tokenString, String password) {
-        var token = verifyTokenService.verifyToken(tokenString);
+    public void resetPassword(VerifyToken token, String password) {
         // set new password
         var account = token.getAccount();
         account.setPassword(passwordUtil.encodePassword(password));
@@ -159,19 +154,15 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public void sendAccountActivateEmail(String frontPath, Account account) throws IOException {
-        // create token
-        var token = verifyTokenService.createVerifyToken(account, VerifyTokenType.ACCOUNT_ACTIVATE, 60);
-
+    public void sendAccountActivateEmail(String frontPath, Account account, VerifyToken token) throws IOException {
         // send email
         var subject = "Activate account link for Classroom Account "+account.getName();
-        var content = "Please click the link below to activate your account: "+frontPath+"?token="+token;
+        var content = "Please click the link below to activate your account: "+frontPath+"?token="+token.getToken();
         emailSender.sendEmail(HOST_EMAIL, account.getEmail(), subject, content);
     }
 
     @Override
-    public void activateAccount(String tokenString) {
-        var token = verifyTokenService.verifyToken(tokenString);
+    public void activateAccount(VerifyToken token) {
         var account = token.getAccount();
         account.setStatus(AccountStatus.ACTIVATED);
         accountRepository.save(account);

@@ -1,6 +1,8 @@
 package com.example.demo.service;
 
+import com.example.demo.common.enums.VerifyTokenType;
 import com.example.demo.entity.Account;
+import com.example.demo.entity.VerifyToken;
 
 import java.io.IOException;
 import java.util.List;
@@ -19,15 +21,15 @@ public interface AccountService {
 
     void removeStudentId(UUID accountId);
 
-    void sendResetPasswordEmail(String frontPath, Account account) throws IOException;
+    void sendResetPasswordEmail(String frontPath, Account account, VerifyToken token) throws IOException;
 
     Account getAccountByEmail(String email);
 
-    void resetPassword(String tokenString, String password);
+    void resetPassword(VerifyToken token, String password);
 
-    void sendAccountActivateEmail(String frontPath, Account account) throws IOException;
+    void sendAccountActivateEmail(String frontPath, Account account, VerifyToken token) throws IOException;
 
-    void activateAccount(String tokenString);
+    void activateAccount(VerifyToken token);
 
     List<Account> getAllAccount();
 

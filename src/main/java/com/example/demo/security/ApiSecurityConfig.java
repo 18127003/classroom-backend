@@ -31,6 +31,7 @@ public class ApiSecurityConfig extends WebSecurityConfigurerAdapter {
     private final JwtAuthFilter authenticateFilter;
     private final ApiAccessFilter apiAccessFilter;
     private final AdminAccessFilter adminAccessFilter;
+    private final BlackListFilter blackListFilter;
 
     @Override
     protected final void configure(AuthenticationManagerBuilder auth) {
@@ -50,6 +51,7 @@ public class ApiSecurityConfig extends WebSecurityConfigurerAdapter {
                 .anyRequest().authenticated();
         http.addFilterBefore(apiAccessFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(adminAccessFilter, ApiAccessFilter.class)
-                .addFilterBefore(authenticateFilter, AdminAccessFilter.class);
+                .addFilterBefore(blackListFilter, AdminAccessFilter.class)
+                .addFilterBefore(authenticateFilter, BlackListFilter.class);
     }
 }

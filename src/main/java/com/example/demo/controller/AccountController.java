@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.common.enums.AccountStatus;
+import com.example.demo.common.enums.VerifyTokenType;
 import com.example.demo.common.exception.RTException;
 import com.example.demo.dto.AccountDto;
 import com.example.demo.dto.StudentInfoDto;
@@ -9,6 +10,7 @@ import com.example.demo.dto.request.ResetPasswordRequest;
 import com.example.demo.entity.Account;
 import com.example.demo.mapper.AccountMapper;
 import com.example.demo.service.AccountService;
+import com.example.demo.service.VerifyTokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -23,6 +25,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class AccountController extends AbstractServiceEndpoint{
     private final AccountService accountService;
+    private final VerifyTokenService verifyTokenService;
     private final AccountMapper accountMapper;
 
     @PostMapping("create")
@@ -33,7 +36,8 @@ public class AccountController extends AbstractServiceEndpoint{
     }
 
     @PatchMapping("activate")
-    public ResponseEntity<Void> activateAccount(@RequestBody String token){
+    public ResponseEntity<Void> activateAccount(@RequestBody String tokenString){
+        var token = verifyTokenService.getByTokenString(tokenString);
         accountService.activateAccount(token);
         return ResponseEntity.ok().build();
     }
@@ -42,7 +46,8 @@ public class AccountController extends AbstractServiceEndpoint{
     public ResponseEntity<Void> requestActivateAccount(@RequestParam String email){
         try {
             var account = accountService.getAccountByEmail(email);
-            accountService.sendAccountActivateEmail("http://localhost:8085/#/activateAcocunt", account);
+            var token = verifyTokenService.createVerifyToken(account, VerifyTokenType.ACCOUNT_ACTIVATE, 60);
+            accountService.sendAccountActivateEmail("http://localhost:8085/#/activateAcocunt", account, token);
             return ResponseEntity.ok().build();
         } catch (IOException e){
             return ResponseEntity.badRequest().build();
@@ -51,10 +56,10 @@ public class AccountController extends AbstractServiceEndpoint{
 
     @PostMapping("resetPassword/request")
     public ResponseEntity<Void> requestResetPassword(@RequestParam String email){
-        System.out.println(email);
         try {
             var account = accountService.getAccountByEmail(email);
-            accountService.sendResetPasswordEmail("http://localhost:8085/#/resetPassword", account);
+            var token = verifyTokenService.createVerifyToken(account, VerifyTokenType.PASSWORD_RESET, 15);
+            accountService.sendResetPasswordEmail("http://localhost:8085/#/resetPassword", account, token);
             return ResponseEntity.ok().build();
         } catch (IOException exception){
             return ResponseEntity.badRequest().build();
@@ -63,7 +68,8 @@ public class AccountController extends AbstractServiceEndpoint{
 
     @PatchMapping("resetPassword")
     public ResponseEntity<Void> resetPassword(@RequestBody ResetPasswordRequest request){
-        accountService.resetPassword(request.getToken(), request.getPassword());
+        var token = verifyTokenService.verifyToken(request.getToken());
+        accountService.resetPassword(token, request.getPassword());
         return ResponseEntity.ok().build();
     }
 

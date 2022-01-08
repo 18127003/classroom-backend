@@ -50,7 +50,6 @@ public class AbstractServiceEndpoint {
             ACCOUNT_PATH+"create",
             ACCOUNT_PATH+"resetPassword/**",
             ACCOUNT_PATH+"activate/**",
-            AUTH_PATH+"refreshToken/**",
-            AUTH_PATH+"logout**"
+            AUTH_PATH+"refreshToken/**"
     );
 }
