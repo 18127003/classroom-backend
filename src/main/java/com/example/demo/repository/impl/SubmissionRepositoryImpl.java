@@ -54,7 +54,7 @@ public class SubmissionRepositoryImpl extends AbstractRepositoryImpl<Submission>
                 .on(QSubmission.submission.assignment.id.eq(QAssignment.assignment.id))
                 .join(QStudentInfoClassroom.studentInfoClassroom)
                 .on(QSubmission.submission.studentInfoClassroom.studentInfo.id
-                        .eq(QStudentInfoClassroom.studentInfoClassroom.id)
+                        .eq(QStudentInfoClassroom.studentInfoClassroom.studentInfo.id)
                         .and(QSubmission.submission.studentInfoClassroom.classroom.id
                                 .eq(QStudentInfoClassroom.studentInfoClassroom.classroom.id)))
                 .join(QStudentInfo.studentInfo)
@@ -67,7 +67,6 @@ public class SubmissionRepositoryImpl extends AbstractRepositoryImpl<Submission>
                 .where(QSubmission.submission.studentInfoClassroom.classroom.id.eq(classroomId)
                         .and(QStudentInfo.studentInfo.studentId.eq(studentId))
                         .and(QAssignment.assignment.status.eq(status)))
-                .select(QSubmission.submission)
                 .fetch();
     }
 
@@ -76,7 +75,7 @@ public class SubmissionRepositoryImpl extends AbstractRepositoryImpl<Submission>
         return selectFrom(QSubmission.submission)
                 .rightJoin(QStudentInfoClassroom.studentInfoClassroom)
                 .on(QSubmission.submission.studentInfoClassroom.studentInfo.id
-                        .eq(QStudentInfoClassroom.studentInfoClassroom.id)
+                        .eq(QStudentInfoClassroom.studentInfoClassroom.studentInfo.id)
                         .and(QSubmission.submission.studentInfoClassroom.classroom.id
                                 .eq(QStudentInfoClassroom.studentInfoClassroom.classroom.id)))
                 .join(QAssignment.assignment)

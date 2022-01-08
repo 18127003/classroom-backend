@@ -18,7 +18,7 @@ public class GradeReviewRepositoryImpl extends AbstractRepositoryImpl<GradeRevie
                 .on(QSubmission.submission.assignment.id.eq(QAssignment.assignment.id))
                 .join(QStudentInfoClassroom.studentInfoClassroom)
                 .on(QSubmission.submission.studentInfoClassroom.studentInfo.id
-                        .eq(QStudentInfoClassroom.studentInfoClassroom.id)
+                        .eq(QStudentInfoClassroom.studentInfoClassroom.studentInfo.id)
                         .and(QSubmission.submission.studentInfoClassroom.classroom.id
                                 .eq(QStudentInfoClassroom.studentInfoClassroom.classroom.id)))
                 .join(QStudentInfo.studentInfo)
@@ -36,7 +36,7 @@ public class GradeReviewRepositoryImpl extends AbstractRepositoryImpl<GradeRevie
                 .on(QGradeReview.gradeReview.submission.id.eq(QSubmission.submission.id))
                 .join(QStudentInfoClassroom.studentInfoClassroom)
                 .on(QSubmission.submission.studentInfoClassroom.studentInfo.id
-                        .eq(QStudentInfoClassroom.studentInfoClassroom.id)
+                        .eq(QStudentInfoClassroom.studentInfoClassroom.studentInfo.id)
                         .and(QSubmission.submission.studentInfoClassroom.classroom.id
                                 .eq(QStudentInfoClassroom.studentInfoClassroom.classroom.id)))
                 .join(QStudentInfo.studentInfo)
@@ -53,7 +53,7 @@ public class GradeReviewRepositoryImpl extends AbstractRepositoryImpl<GradeRevie
                 .on(QGradeReview.gradeReview.submission.id.eq(QSubmission.submission.id))
                 .join(QStudentInfoClassroom.studentInfoClassroom)
                 .on(QSubmission.submission.studentInfoClassroom.studentInfo.id
-                        .eq(QStudentInfoClassroom.studentInfoClassroom.id)
+                        .eq(QStudentInfoClassroom.studentInfoClassroom.studentInfo.id)
                         .and(QSubmission.submission.studentInfoClassroom.classroom.id
                                 .eq(QStudentInfoClassroom.studentInfoClassroom.classroom.id)))
                 .where(QStudentInfoClassroom.studentInfoClassroom.classroom.id.eq(classroomId))
