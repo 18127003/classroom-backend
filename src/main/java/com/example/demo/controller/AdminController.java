@@ -4,6 +4,7 @@ import com.example.demo.common.exception.RTException;
 import com.example.demo.dto.AccountDto;
 import com.example.demo.dto.AdminDto;
 import com.example.demo.dto.ClassroomDto;
+import com.example.demo.dto.StudentInfoDto;
 import com.example.demo.entity.Admin;
 import com.example.demo.mapper.AccountMapper;
 import com.example.demo.mapper.AdminMapper;
@@ -74,12 +75,14 @@ public class AdminController extends AbstractServiceEndpoint{
     }
 
     @PutMapping("account/{id}/studentId/map")
-    public ResponseEntity<Void> mapStudentIdToAccount(@PathVariable UUID id, @RequestParam String studentId){
+    public ResponseEntity<Void> mapStudentIdToAccount(@PathVariable UUID id, @RequestBody StudentInfoDto studentInfo){
+        accountService.updateStudentId(id, studentInfo.getStudentId(), studentInfo.getName());
         return ResponseEntity.ok().build();
     }
 
     @PutMapping("account/{id}/studentId/remove")
     public ResponseEntity<Void> removeAccountStudentId(@PathVariable UUID id){
+        accountService.removeStudentId(id);
         return ResponseEntity.ok().build();
     }
 

@@ -37,13 +37,6 @@ public class ApiSecurityConfig extends WebSecurityConfigurerAdapter {
         // no authentication manager: already done by some filters
     }
 
-    @Bean
-    public PasswordEncoder passwordEncoder(){
-        return new BCryptPasswordEncoder();
-    }
-
-
-
     @Override
     protected void configure(HttpSecurity http) throws Exception {
 

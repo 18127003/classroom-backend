@@ -17,6 +17,8 @@ public interface AccountService {
 
     void updateStudentId(UUID accountId, String studentId, String name);
 
+    void removeStudentId(UUID accountId);
+
     void sendResetPasswordEmail(String frontPath, Account account) throws IOException;
 
     Account getAccountByEmail(String email);

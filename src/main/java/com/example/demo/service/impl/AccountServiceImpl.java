@@ -98,9 +98,6 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public void updateStudentId(UUID accountId, String studentId, String name) {
         var account = getAccountById(accountId);
-        if (account==null){
-            throw new RTException(new RecordNotFoundException(accountId.toString(), Account.class.getSimpleName()));
-        }
         // detach previous linked student info
         var existedStudentInfo = account.getStudentInfo();
         if (existedStudentInfo!=null){
@@ -120,6 +117,16 @@ public class AccountServiceImpl implements AccountService {
             info.setClassroomAccount(account);
         }
         studentInfoRepository.save(info);
+    }
+
+    @Override
+    public void removeStudentId(UUID accountId) {
+        var account = getAccountById(accountId);
+        var studentInfo = account.getStudentInfo();
+        if(studentInfo != null){
+            studentInfo.setClassroomAccount(null);
+            studentInfoRepository.save(studentInfo);
+        }
     }
 
     @Override
