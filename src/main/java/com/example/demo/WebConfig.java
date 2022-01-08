@@ -1,6 +1,7 @@
 package com.example.demo;
 
 import com.example.demo.security.ApiSecurityConfig;
+import com.example.demo.websocket.WebSocketConfig;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
@@ -24,7 +25,7 @@ import java.util.Collections;
 import static com.example.demo.common.constant.Constants.GOOGLE_AUTH_CLIENT_ID;
 
 @SpringBootApplication(scanBasePackageClasses = WebConfig.class)
-@Import({ApiSecurityConfig.class})
+@Import({ApiSecurityConfig.class, WebSocketConfig.class})
 @Slf4j
 public class WebConfig {
     @Value("${com.demo.password}")
@@ -37,9 +38,10 @@ public class WebConfig {
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
                         .allowedOrigins(
-                                "http://localhost:8085",
-                                "https://18127003.github.io",
-                                "https://mnclassroom.netlify.app")
+//                                "http://localhost:8085",
+//                                "https://18127003.github.io",
+//                                "https://mnclassroom.netlify.app"
+                        "*")
                         .allowedMethods("PUT","DELETE","GET","POST","PATCH")
                         .allowCredentials(true);
             }
