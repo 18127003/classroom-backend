@@ -16,7 +16,7 @@ import java.io.Serializable;
 public abstract class AbstractEntity implements Serializable {
     public static final String TRUE_FALSE_TYPE = "true_false";
 
-    public abstract Long getId();
+    public abstract Object getId();
 
     @Version
     @NotNull

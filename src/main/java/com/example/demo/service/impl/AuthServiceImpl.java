@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.sql.Date;
 import java.time.Instant;
+import java.util.UUID;
 
 @Service
 @Transactional(rollbackFor = {Throwable.class})
@@ -76,7 +77,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
-        return accountRepository.findById(Long.valueOf(s))
+        return accountRepository.findById(UUID.fromString(s))
                 .orElseThrow(() -> new UsernameNotFoundException("Not found user name "+ s));
     }
 }

@@ -42,7 +42,7 @@ public class AccountServiceImpl implements AccountService {
     private final PasswordUtil passwordUtil;
 
     @Override
-    public Account getAccountById(Long accountId) {
+    public Account getAccountById(UUID accountId) {
         return accountRepository.findById(accountId)
                 .orElseThrow(()->new RTException(new RecordNotFoundException(accountId.toString(),Account.class.getSimpleName())));
     }
@@ -59,7 +59,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Account updateAccount(Long id, Account update) {
+    public Account updateAccount(UUID id, Account update) {
         var account = getAccountById(id);
         if (!update.getEmail().equals(account.getEmail())){
             var email = accountRepository.findByEmail(update.getEmail());
@@ -85,7 +85,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public boolean changePassword(Long id, String oldPassword, String newPassword) {
+    public boolean changePassword(UUID id, String oldPassword, String newPassword) {
         var account = getAccountById(id);
         if(passwordUtil.checkPassword(oldPassword, account.getPassword())){
             account.setPassword(passwordUtil.encodePassword(newPassword));
@@ -96,7 +96,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public void updateStudentId(Long accountId, String studentId, String name) {
+    public void updateStudentId(UUID accountId, String studentId, String name) {
         var account = getAccountById(accountId);
         if (account==null){
             throw new RTException(new RecordNotFoundException(accountId.toString(), Account.class.getSimpleName()));
@@ -176,20 +176,20 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public boolean checkLocked(Long accountId) {
+    public boolean checkLocked(UUID accountId) {
         var lockedAccount = lockedAccountRepository.getByAccountId(accountId);
         return lockedAccount != null;
     }
 
     @Override
-    public void lockAccount(Long accountId) {
+    public void lockAccount(UUID accountId) {
         var account = getAccountById(accountId);
         var lockedAccount = new LockedAccount(account);
         lockedAccountRepository.save(lockedAccount);
     }
 
     @Override
-    public void unlockAccount(Long accountId) {
+    public void unlockAccount(UUID accountId) {
         var locked = lockedAccountRepository.getByAccountId(accountId);
         if (locked==null){
             throw new RTException(new RecordNotFoundException(accountId.toString(), LockedAccount.class.getSimpleName()));

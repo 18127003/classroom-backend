@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.util.UUID;
 
 @RestController
 @RequestMapping(AbstractServiceEndpoint.ACCOUNT_PATH)
@@ -67,13 +68,13 @@ public class AccountController extends AbstractServiceEndpoint{
     }
 
     @PutMapping("/update")
-    public ResponseEntity<AccountDto> updateAccount(@RequestBody Account account, @AuthenticationPrincipal Long accountId){
+    public ResponseEntity<AccountDto> updateAccount(@RequestBody Account account, @AuthenticationPrincipal UUID accountId){
         var updated = accountService.updateAccount(accountId, account);
         return ResponseEntity.ok(accountMapper.toAccountDto(updated));
     }
 
     @PatchMapping("/change_password")
-    public ResponseEntity<Boolean> changePassword(@RequestBody PasswordRequestDto request, @AuthenticationPrincipal Long accountId){
+    public ResponseEntity<Boolean> changePassword(@RequestBody PasswordRequestDto request, @AuthenticationPrincipal UUID accountId){
         if(accountService.changePassword(accountId, request.getOldPassword(), request.getNewPassword())){
             return ResponseEntity.ok(true);
         }
@@ -81,7 +82,7 @@ public class AccountController extends AbstractServiceEndpoint{
     }
 
     @PostMapping("/studentId/update")
-    public ResponseEntity<Void> updateStudentId(@RequestBody StudentInfoDto studentInfo, @AuthenticationPrincipal Long accountId){
+    public ResponseEntity<Void> updateStudentId(@RequestBody StudentInfoDto studentInfo, @AuthenticationPrincipal UUID accountId){
         accountService.updateStudentId(accountId, studentInfo.getStudentId(), studentInfo.getName());
         return ResponseEntity.ok().build();
     }

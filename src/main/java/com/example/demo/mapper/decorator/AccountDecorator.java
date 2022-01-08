@@ -20,15 +20,4 @@ public class AccountDecorator implements AccountMapper {
         }
         return result;
     }
-
-    @Override
-    public AccountDto toParticipantDto(Participant participant) {
-        var user = delegate.toAccountDto(participant.getAccount());
-        user.setRole(participant.getRole().name());
-        user.setHidden(participant.getHidden());
-        if(participant.getAccount().getStudentInfo()!=null){
-            user.setStudentId(participant.getAccount().getStudentInfo().getStudentId());
-        }
-        return user;
-    }
 }

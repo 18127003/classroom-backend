@@ -3,9 +3,10 @@ package com.example.demo.service;
 import com.example.demo.entity.Admin;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface AdminService {
-    boolean checkExist(Long accountId);
+    boolean checkExist(UUID adminId);
 
     Admin createAdmin(Admin admin);
 

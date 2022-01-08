@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Collections;
+import java.util.UUID;
 
 @Component
 public class AdminAccessFilter extends OncePerRequestFilter {
@@ -32,9 +33,8 @@ public class AdminAccessFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain) throws ServletException, IOException {
         var requestUrl = httpServletRequest.getRequestURL().toString();
         if(antPathMatcher.match(ADMIN_URL_PATTERN, requestUrl)){
-            System.out.println("match");
-            Long accountId = (Long) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             try{
+                UUID accountId = (UUID) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
                 if(adminService.checkExist(accountId)){
                     UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
                             accountId,

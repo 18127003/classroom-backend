@@ -21,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RestController
@@ -127,7 +128,7 @@ public class AssignmentController extends AbstractServiceEndpoint {
 
     // For student only
     @GetMapping("submission/overall")
-    public ResponseEntity<OverallGradeDto> getStudentOverallGrade(@AuthenticationPrincipal Long accountId){
+    public ResponseEntity<OverallGradeDto> getStudentOverallGrade(@AuthenticationPrincipal UUID accountId){
         var result = assignmentService.getOverallGrade(accountId, participantInfo.getClassroom().getId());
         return ResponseEntity.ok(result);
     }

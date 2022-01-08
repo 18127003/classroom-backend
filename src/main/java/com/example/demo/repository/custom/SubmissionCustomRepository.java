@@ -7,6 +7,7 @@ import com.querydsl.core.Tuple;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 
 public interface SubmissionCustomRepository {
     Submission getSubmissionByStudentId(Long assignmentId, String studentId);
@@ -15,7 +16,7 @@ public interface SubmissionCustomRepository {
 
     List<Submission> getSubmissionByInfoList(Collection<StudentInfoClassroom> studentInfoClassrooms, Long assignmentId);
 
-    Tuple getStudentOverallGrade(Long accountId, Long classroomId);
+    Tuple getStudentOverallGrade(UUID accountId, Long classroomId);
 
     List<Submission> getSubmissionOfStudentByStatus(Long classroomId, String studentId, AssignmentStatus status);
 

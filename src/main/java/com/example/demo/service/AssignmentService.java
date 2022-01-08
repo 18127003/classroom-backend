@@ -8,6 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 public interface AssignmentService {
     Assignment getAssignment(Long id);
@@ -32,7 +33,7 @@ public interface AssignmentService {
 
     Submission updateSubmissionGrade(Long submissionId, Integer grade);
 
-    OverallGradeDto getOverallGrade(Long accountId, Long classroomId);
+    OverallGradeDto getOverallGrade(UUID accountId, Long classroomId);
 
     List<Submission> getGradeOfClassByStudent(Account account, Long classroomId);
 

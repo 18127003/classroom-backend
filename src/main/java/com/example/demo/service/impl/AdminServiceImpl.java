@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @Transactional(rollbackFor = {Throwable.class})
@@ -23,8 +24,8 @@ public class AdminServiceImpl implements AdminService {
     private final PasswordUtil passwordUtil;
 
     @Override
-    public boolean checkExist(Long accountId) {
-        return adminRepository.existsById(accountId);
+    public boolean checkExist(UUID adminId) {
+        return adminRepository.existsById(adminId);
     }
 
     @Override

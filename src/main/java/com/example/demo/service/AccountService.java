@@ -4,17 +4,18 @@ import com.example.demo.entity.Account;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 public interface AccountService {
-    Account getAccountById(Long accountId);
+    Account getAccountById(UUID accountId);
 
     Account createAccount(Account account);
 
-    Account updateAccount(Long id, Account update);
+    Account updateAccount(UUID id, Account update);
 
-    boolean changePassword(Long id, String oldPassword, String newPassword);
+    boolean changePassword(UUID id, String oldPassword, String newPassword);
 
-    void updateStudentId(Long accountId, String studentId, String name);
+    void updateStudentId(UUID accountId, String studentId, String name);
 
     void sendResetPasswordEmail(String frontPath, Account account) throws IOException;
 
@@ -28,9 +29,9 @@ public interface AccountService {
 
     List<Account> getAllAccount();
 
-    boolean checkLocked(Long accountId);
+    boolean checkLocked(UUID accountId);
 
-    void lockAccount(Long accountId);
+    void lockAccount(UUID accountId);
 
-    void unlockAccount(Long accountId);
+    void unlockAccount(UUID accountId);
 }

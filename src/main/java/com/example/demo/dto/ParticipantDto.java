@@ -5,11 +5,11 @@ import lombok.Data;
 import java.util.UUID;
 
 @Data
-public class AccountDto {
+public class ParticipantDto {
+    private UUID accountId;
     private String name;
-    private String firstName;
-    private String lastName;
     private String studentId;
-    private UUID id;
     private String email;
+    private String role;
+    private Boolean hidden;
 }

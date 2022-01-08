@@ -82,7 +82,7 @@ public class AssignmentServiceImpl implements AssignmentService {
     }
 
     @Override
-    public OverallGradeDto getOverallGrade(Long accountId, Long classroomId) {
+    public OverallGradeDto getOverallGrade(UUID accountId, Long classroomId) {
         var result = submissionRepository.getStudentOverallGrade(accountId, classroomId);
         return new OverallGradeDto(result.get(0, Integer.class), result.get(1, Integer.class));
     }

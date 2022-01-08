@@ -6,6 +6,7 @@ import com.example.demo.repository.custom.ParticipantCustomRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.UUID;
 
 @Repository
 public class ParticipantRepositoryImpl extends AbstractRepositoryImpl<Participant> implements ParticipantCustomRepository {
@@ -18,14 +19,14 @@ public class ParticipantRepositoryImpl extends AbstractRepositoryImpl<Participan
     }
 
     @Override
-    public List<Participant> getAssignedClassrooms(Long accountId) {
+    public List<Participant> getAssignedClassrooms(UUID accountId) {
         return selectFrom(QParticipant.participant)
                 .where(QParticipant.participant.account.id.eq(accountId))
                 .fetch();
     }
 
     @Override
-    public Participant findParticipant(Long classId, Long accountId) {
+    public Participant findParticipant(Long classId, UUID accountId) {
         return selectFrom(QParticipant.participant)
                 .where(QParticipant.participant.classroom.id.eq(classId)
                 .and(QParticipant.participant.account.id.eq(accountId)))

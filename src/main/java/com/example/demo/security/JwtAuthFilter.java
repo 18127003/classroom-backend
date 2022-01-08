@@ -22,6 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.UUID;
 
 import static com.example.demo.common.constant.Constants.JWT_COOKIE_TEXT;
 
@@ -49,7 +50,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             var userId = jwtService.validateToken(jwtToken);
             if (userId != null) {
                 UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
-                        Long.valueOf(userId), null, null);
+                        UUID.fromString(userId), null, null);
                 usernamePasswordAuthenticationToken
                         .setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);

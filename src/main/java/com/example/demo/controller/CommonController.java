@@ -2,13 +2,11 @@ package com.example.demo.controller;
 
 import com.example.demo.common.enums.Role;
 import com.example.demo.common.exception.RTException;
-import com.example.demo.dto.AccountDto;
-import com.example.demo.dto.ClassroomDto;
-import com.example.demo.dto.StudentInfoClassroomDto;
-import com.example.demo.dto.StudentInfoDto;
+import com.example.demo.dto.*;
 import com.example.demo.entity.Classroom;
 import com.example.demo.mapper.AccountMapper;
 import com.example.demo.mapper.ClassroomMapper;
+import com.example.demo.mapper.ParticipantMapper;
 import com.example.demo.mapper.StudentInfoClassroomMapper;
 import com.example.demo.service.AccountService;
 import com.example.demo.service.ClassroomService;
@@ -20,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 
@@ -30,7 +29,7 @@ public class CommonController extends AbstractServiceEndpoint{
     private final ClassroomService classroomService;
     private final ClassroomMapper classroomMapper;
     private final AccountService accountService;
-    private final AccountMapper accountMapper;
+    private final ParticipantMapper participantMapper;
     private final StudentInfoClassroomMapper infoClassroomMapper;
 
     @GetMapping("test")
@@ -40,7 +39,7 @@ public class CommonController extends AbstractServiceEndpoint{
 
     @PostMapping("create")
     public ResponseEntity<ClassroomDto> createClass(@RequestBody Classroom classroom,
-                                                    @AuthenticationPrincipal Long accountId){
+                                                    @AuthenticationPrincipal UUID accountId){
         var account = accountService.getAccountById(accountId);
         return ResponseEntity.ok(classroomMapper.toAssignedClassroomDto(classroomService.createClassroom(classroom, account)));
 
@@ -49,7 +48,7 @@ public class CommonController extends AbstractServiceEndpoint{
     @PostMapping("join")
     public ResponseEntity<ClassroomDto> joinClass(@RequestParam String code,
                                                   @RequestParam(required = false) String role,
-                                                    @AuthenticationPrincipal Long accountId){
+                                                    @AuthenticationPrincipal UUID accountId){
         if(role==null){
             role = Role.STUDENT.name();
         }
@@ -60,13 +59,13 @@ public class CommonController extends AbstractServiceEndpoint{
     }
     
     @DeleteMapping("{id}/removeParticipants")
-    public ResponseEntity<Void> removeParticipants(@PathVariable Long id, @RequestBody List<Long> removals){
+    public ResponseEntity<Void> removeParticipants(@PathVariable Long id, @RequestBody List<UUID> removals){
         classroomService.removeParticipants(id, removals);
         return ResponseEntity.ok().build();
     }
 
     @PatchMapping("{id}/hideParticipants")
-    public ResponseEntity<Void> hideParticipants(@PathVariable Long id, @RequestBody List<Long> participants){
+    public ResponseEntity<Void> hideParticipants(@PathVariable Long id, @RequestBody List<UUID> participants){
         classroomService.hideParticipants(id, participants);
         return ResponseEntity.ok().build();
     }
@@ -77,21 +76,21 @@ public class CommonController extends AbstractServiceEndpoint{
     }
 
     @GetMapping("all")
-    public ResponseEntity<List<ClassroomDto>> getClasses(@AuthenticationPrincipal Long accountId){
+    public ResponseEntity<List<ClassroomDto>> getClasses(@AuthenticationPrincipal UUID accountId){
         return ResponseEntity.ok(classroomService.getAssignedClassrooms(accountId)
                 .stream().map(classroomMapper::toAssignedClassroomDto)
                 .collect(Collectors.toList()));
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<ClassroomDto> getClassroom(@PathVariable Long id, @AuthenticationPrincipal Long accountId){
+    public ResponseEntity<ClassroomDto> getClassroom(@PathVariable Long id, @AuthenticationPrincipal UUID accountId){
         var participant = classroomService.getAssignedClassroom(id, accountId);
         return ResponseEntity.ok(classroomMapper.toAssignedClassroomDto(participant));
     }
 
     @GetMapping("{id}/participant")
-    public ResponseEntity<List<AccountDto>> getParticipants(@PathVariable Long id){
-        return ResponseEntity.ok(classroomService.getParticipants(id).stream().map(accountMapper::toParticipantDto)
+    public ResponseEntity<List<ParticipantDto>> getParticipants(@PathVariable Long id){
+        return ResponseEntity.ok(classroomService.getParticipants(id).stream().map(participantMapper::toParticipantDto)
                 .collect(Collectors.toList()));
     }
 

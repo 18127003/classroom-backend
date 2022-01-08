@@ -7,9 +7,10 @@ import com.example.demo.mapper.decorator.AccountDecorator;
 import org.mapstruct.DecoratedWith;
 import org.mapstruct.Mapper;
 
+import java.util.UUID;
+
 @Mapper(componentModel = "spring")
 @DecoratedWith(AccountDecorator.class)
 public interface AccountMapper {
     AccountDto toAccountDto(Account account);
-    AccountDto toParticipantDto(Participant participant);
 }

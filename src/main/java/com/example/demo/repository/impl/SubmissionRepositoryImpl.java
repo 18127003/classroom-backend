@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 
 @Repository
 public class SubmissionRepositoryImpl extends AbstractRepositoryImpl<Submission> implements SubmissionCustomRepository {
@@ -39,7 +40,7 @@ public class SubmissionRepositoryImpl extends AbstractRepositoryImpl<Submission>
     }
 
     @Override
-    public Tuple getStudentOverallGrade(Long accountId, Long classroomId) {
+    public Tuple getStudentOverallGrade(UUID accountId, Long classroomId) {
         return getSubmissionJoined()
                 .where(QSubmission.submission.studentInfoClassroom.classroom.id.eq(classroomId)
                         .and(QStudentInfo.studentInfo.classroomAccount.id.eq(accountId)))

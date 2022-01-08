@@ -20,11 +20,12 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
+import java.util.UUID;
 
 @Component
 public class ApiAccessFilter extends OncePerRequestFilter {
 
-    public static final String CLASSROOM_URL_PATTERN = "**/classroom/{id:[\\d+]}/**";
+    public static final String CLASSROOM_URL_PATTERN = "**/api/classroom/{id:[\\d+]}/**";
 
     @Autowired
     private AntPathMatcher antPathMatcher;
@@ -40,9 +41,9 @@ public class ApiAccessFilter extends OncePerRequestFilter {
         var requestUrl = httpServletRequest.getRequestURL().toString();
         if(antPathMatcher.match(CLASSROOM_URL_PATTERN, requestUrl)){
             Map<String, String> pathVariables = antPathMatcher.extractUriTemplateVariables(CLASSROOM_URL_PATTERN, requestUrl);
-            var classroomId = Long.valueOf(pathVariables.get("id"));
-            Long accountId = (Long) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             try{
+                var classroomId = Long.valueOf(pathVariables.get("id"));
+                UUID accountId = (UUID) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
                 var participant = classroomService.getAssignedClassroom(classroomId, accountId);
                 participantInfo.setParticipant(participant);
                 UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
@@ -52,7 +53,7 @@ public class ApiAccessFilter extends OncePerRequestFilter {
                 usernamePasswordAuthenticationToken
                         .setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));
                 SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-            } catch (RTException e){
+            } catch (RTException | NumberFormatException e){
                 // ignore because unauthorized later
             }
         }

@@ -15,6 +15,7 @@ import com.example.demo.util.ExcelUtil;
 import com.example.demo.util.dto.StudentInfoData;
 import lombok.RequiredArgsConstructor;
 import org.jasypt.encryption.StringEncryptor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,6 +24,7 @@ import java.io.IOException;
 import java.sql.Date;
 import java.time.Instant;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static com.example.demo.common.constant.Constants.HOST_EMAIL;
@@ -46,7 +48,7 @@ public class ClassroomServiceImpl implements ClassroomService {
     }
 
     @Override
-    public List<Participant> getAssignedClassrooms(Long accountId) {
+    public List<Participant> getAssignedClassrooms(UUID accountId) {
         return participantRepository.getAssignedClassrooms(accountId);
     }
 
@@ -73,19 +75,19 @@ public class ClassroomServiceImpl implements ClassroomService {
     }
 
     @Override
-    public void removeParticipants(Long id, List<Long> removals) {
+    public void removeParticipants(Long id, List<UUID> removals) {
         var removed = getParticipantsWithId(id, removals);
         participantRepository.deleteAll(removed);
     }
 
     @Override
-    public void hideParticipants(Long id, List<Long> participants) {
+    public void hideParticipants(Long id, List<UUID> participants) {
         List<Participant> hidings = getParticipantsWithId(id, participants);
         hidings.forEach(hiding->hiding.setHidden(true));
         participantRepository.saveAll(hidings);
     }
 
-    private List<Participant> getParticipantsWithId(Long id, List<Long> participants) {
+    private List<Participant> getParticipantsWithId(Long id, List<UUID> participants) {
         var allParticipants = participantRepository.getParticipants(id);
         if(allParticipants.isEmpty()){
             throw new RTException(new RecordNotFoundException(id.toString(), Classroom.class.getSimpleName()));
@@ -142,7 +144,7 @@ public class ClassroomServiceImpl implements ClassroomService {
     }
 
     @Override
-    public Participant getAssignedClassroom(Long classroomId, Long accountId) {
+    public Participant getAssignedClassroom(Long classroomId, UUID accountId) {
         var participant = participantRepository.findParticipant(classroomId, accountId);
         if(participant==null){
             throw new RTException(new RecordNotFoundException(classroomId.toString(), Classroom.class.getSimpleName()));
@@ -196,5 +198,13 @@ public class ClassroomServiceImpl implements ClassroomService {
                 .collect(Collectors.toList());
 
         studentInfoClassroomRepository.saveAll(newClassInfo);
+    }
+
+    @Override
+    public List<Classroom> getAllClassroom(boolean sortDesc) {
+        if (sortDesc){
+            return classroomRepository.findAll(Sort.by(Sort.Direction.DESC,"createdAt"));
+        }
+        return classroomRepository.findAll(Sort.by(Sort.Direction.ASC, "createdAt"));
     }
 }

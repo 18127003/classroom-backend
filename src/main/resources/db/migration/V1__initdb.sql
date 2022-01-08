@@ -1,6 +1,6 @@
 create table ACCOUNT
 (
-    id bigint primary key auto_increment not null,
+    id binary(16) primary key not null,
     first_name varchar(150) character set utf8 collate utf8_unicode_ci,
     last_name varchar(100) character set utf8 collate utf8_unicode_ci,
     name varchar(255) character set utf8 collate utf8_unicode_ci,
@@ -20,7 +20,7 @@ create table CLASSROOM
     topic varchar(255) character set utf8 collate utf8_unicode_ci,
     description text character set utf8 collate utf8_unicode_ci,
     code varchar(255) unique,
-    creator bigint not null,
+    creator binary(16) not null,
     created_at datetime not null,
     version  integer default 0,
     key fk_creator (creator),
@@ -30,7 +30,7 @@ create table CLASSROOM
 create table ACCOUNT_CLASSROOM
 (
     id bigint not null auto_increment primary key,
-    account_id bigint not null,
+    account_id binary(16) not null,
     classroom_id bigint not null,
     role varchar(10) not null default 'TEACHER',
     hidden boolean default FALSE,
@@ -52,7 +52,7 @@ create table ASSIGNMENT
     created_at datetime not null,
     position int not null,
     classroom bigint not null,
-    creator bigint not null,
+    creator binary(16) not null,
     status varchar(20) default 'GRADING',
     version integer default 0,
     key fk_assignment_classroom (classroom),
@@ -66,7 +66,7 @@ create table STUDENT_INFO
     id bigint not null auto_increment primary key,
     student_id varchar(10) not null unique,
     name varchar(255) character set utf8 collate utf8_unicode_ci not null ,
-    account_id bigint,
+    account_id binary(16),
     version integer default 0,
     key fk_student_account (account_id),
     constraint fk_student_account foreign key (account_id) references ACCOUNT (id)
@@ -101,7 +101,7 @@ create table SUBMISSION
 
 create table ADMIN
 (
-    id bigint not null auto_increment primary key,
+    id binary(16) not null primary key,
     name varchar(255) character set utf8 collate utf8_unicode_ci,
     password varchar(255) not null,
     email varchar(255) unique not null,
@@ -113,7 +113,7 @@ create table ADMIN
 create table LOCKED_ACCOUNT
 (
     id bigint not null auto_increment primary key,
-    account_id bigint not null unique ,
+    account_id binary(16) not null unique ,
     version integer default 0,
     key fk_locked_account_id (account_id),
     constraint fk_locked_account_id foreign key (account_id) references ACCOUNT (id)
@@ -122,7 +122,7 @@ create table LOCKED_ACCOUNT
 create table GRADE_REVIEW
 (
     id bigint not null auto_increment primary key,
-    request_by bigint not null,
+    request_by binary(16) not null,
     submission bigint not null,
     expect_grade integer,
     explanation text character set utf8 collate utf8_unicode_ci,
@@ -138,7 +138,7 @@ create table COMMENT
 (
     id bigint not null auto_increment primary key,
     grade_review bigint not null,
-    author bigint not null,
+    author binary(16) not null,
     content text character set utf8 collate utf8_unicode_ci,
     version integer default 0,
     constraint fk_comment_author foreign key (author) references ACCOUNT (id)
@@ -147,7 +147,7 @@ create table COMMENT
 create table VERIFY_TOKEN
 (
     id bigint not null auto_increment primary key,
-    account_id bigint not null ,
+    account_id binary(16) not null ,
     expiry datetime not null ,
     token text not null ,
     token_type varchar(30) not null,
@@ -168,7 +168,7 @@ create table NOTIFICATION_RECEIVER
 (
     id bigint not null auto_increment primary key,
     notification_id bigint not null,
-    receiver_id bigint not null,
+    receiver_id binary(16) not null,
     version integer default 0,
     key fk_receiver_notification (notification_id),
     key fk_receiver_account (receiver_id),
@@ -177,6 +177,6 @@ create table NOTIFICATION_RECEIVER
 );
 
 insert into ADMIN (id,name, email, password, status, version) values
-    (1, 'Hai Dang', 'hdang@gmail.com','','ACTIVATED', 0)
+    (unhex(replace(uuid(), '-', '')), 'Hai Dang', 'hdang@gmail.com','','ACTIVATED', 0)
 ;
 

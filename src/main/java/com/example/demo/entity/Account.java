@@ -5,15 +5,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.GenericGenerator;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Entity
 @Getter
@@ -22,8 +20,10 @@ import java.util.List;
 @Table(name = "ACCOUNT")
 public class Account extends AbstractEntity implements UserDetails {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(generator = "uuid2")
+    @GenericGenerator(name = "uuid2", strategy = "uuid2")
+    @Column(columnDefinition = "BINARY(16)")
+    private UUID id;
 
     @Column(name = "first_name")
     private String firstName;
@@ -75,7 +75,7 @@ public class Account extends AbstractEntity implements UserDetails {
         this.createdAt = createdAt;
     }
 
-    public Account(long id, String firstName, String lastName, String password, String email, StudentInfo studentInfo,
+    public Account(UUID id, String firstName, String lastName, String password, String email, StudentInfo studentInfo,
                    AccountStatus accountStatus, Date createdAt){
         this(firstName, lastName, password, email, studentInfo, accountStatus, createdAt);
         this.id = id;
