@@ -34,6 +34,7 @@ public class AdminServiceImpl implements AdminService {
         if(existedAccount!=null){
             throw new RTException(new DuplicateRecordException(existedAccount.getId().toString(), Admin.class.getSimpleName()));
         }
+        admin.setStatus(AccountStatus.CREATED);
         admin.setPassword(passwordUtil.encodePassword(admin.getPassword()));
         return adminRepository.save(admin);
     }

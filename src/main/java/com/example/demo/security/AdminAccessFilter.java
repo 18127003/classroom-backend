@@ -45,7 +45,7 @@ public class AdminAccessFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
                 }
 
-            } catch (RTException e){
+            } catch (RTException | NullPointerException e){
                 // ignore because unauthorized later
                 System.out.println("Admin unauthorized");
             }

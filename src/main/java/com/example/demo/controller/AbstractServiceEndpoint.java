@@ -41,7 +41,10 @@ public class AbstractServiceEndpoint {
     );
 
     public static final Set<String> ADMIN_PROTECTED_PATH = Set.of(
-            ADMIN_PATH + "**"
+            ADMIN_PATH + "classroom/**",
+            ADMIN_PATH + "account/**",
+            ADMIN_PATH + "all**",
+            ADMIN_PATH + "activate**"
     );
 
     public static final Set<String> UNPROTECTED_PATH = Set.of(
@@ -51,6 +54,7 @@ public class AbstractServiceEndpoint {
             ACCOUNT_PATH+"resetPassword/**",
             ACCOUNT_PATH+"activate/**",
             AUTH_PATH+"refreshToken/**",
+            ADMIN_PATH+"create",
             "/ws"
     );
 }
