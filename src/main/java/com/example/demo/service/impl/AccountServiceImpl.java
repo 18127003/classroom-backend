@@ -170,7 +170,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public List<Account> getAllAccount() {
-        return accountRepository.findAll();
+        return accountRepository.getAllNonLockedAccount();
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.example.demo.dto;
 
+import com.example.demo.common.enums.AccountStatus;
 import lombok.Data;
 
 import java.util.UUID;
@@ -10,4 +11,5 @@ public class AdminDto {
     private String name;
     private String email;
     private String role;
+    private AccountStatus status;
 }

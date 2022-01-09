@@ -9,6 +9,7 @@ import com.example.demo.dto.jwt.SignInResponse;
 import com.example.demo.mapper.AccountMapper;
 import com.example.demo.mapper.AdminMapper;
 import com.example.demo.security.JwtTokenService;
+import com.example.demo.service.AccountService;
 import com.example.demo.service.AuthService;
 import com.example.demo.service.VerifyTokenService;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,7 @@ public class AuthController extends AbstractServiceEndpoint{
     private final JwtTokenService jwtService;
     private final AuthService authService;
     private final VerifyTokenService verifyTokenService;
+    private final AccountService accountService;
     private final AccountMapper accountMapper;
     private final AdminMapper adminMapper;
 
@@ -43,6 +45,9 @@ public class AuthController extends AbstractServiceEndpoint{
     @PostMapping(value = "login")
     public ResponseEntity<SignInResponse> authenticate(@RequestBody final JwtRequest jwtRequest, final HttpServletResponse response) {
         var user = authService.validatePassword(jwtRequest);
+        if (user==null || accountService.checkLocked(user.getId())){
+            return ResponseEntity.badRequest().build();
+        }
         response.addHeader(HttpHeaders.SET_COOKIE, generateJwtCookies(user).toString());
         var refreshToken = verifyTokenService.getOrCreateToken(user, VerifyTokenType.REFRESH_TOKEN, refreshTokenExpiry);
         return ResponseEntity.ok(new SignInResponse(accountMapper.toAccountDto(user), refreshToken.getToken()));
@@ -60,7 +65,7 @@ public class AuthController extends AbstractServiceEndpoint{
 
         try {
             var account = authService.validateSocialToken(tokenId);
-            if (account != null){
+            if (account != null && !accountService.checkLocked(account.getId())){
                 response.addHeader(HttpHeaders.SET_COOKIE, generateJwtCookies(account).toString());
                 var refreshToken = verifyTokenService.getOrCreateToken(account, VerifyTokenType.REFRESH_TOKEN, refreshTokenExpiry);
                 return ResponseEntity.ok(new SignInResponse(accountMapper.toAccountDto(account), refreshToken.getToken()));

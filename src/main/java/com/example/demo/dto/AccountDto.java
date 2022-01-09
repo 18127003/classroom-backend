@@ -1,5 +1,6 @@
 package com.example.demo.dto;
 
+import com.example.demo.common.enums.AccountStatus;
 import lombok.Data;
 
 import java.util.UUID;
@@ -12,4 +13,5 @@ public class AccountDto {
     private String studentId;
     private UUID id;
     private String email;
+    private AccountStatus status;
 }

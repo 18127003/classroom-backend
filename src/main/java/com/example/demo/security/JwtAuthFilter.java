@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -31,10 +32,16 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     @Autowired
     private JwtTokenService jwtService;
 
+    @Autowired
+    private AntPathMatcher antPathMatcher;
+
+    private static final String LOGIN_URL_PATTERN = "**/login**";
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         var cookies = request.getCookies();
-        if (cookies==null){
+        var requestUrl = request.getRequestURL().toString();
+        if (cookies==null || antPathMatcher.match(LOGIN_URL_PATTERN, requestUrl)){
             filterChain.doFilter(request, response);
             return;
         }
