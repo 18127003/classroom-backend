@@ -163,10 +163,15 @@ public class AssignmentServiceImpl implements AssignmentService {
     }
 
     @Override
-    public Comment createReviewComment(Comment comment, Long reviewId, Account account) {
+    public Comment createReviewComment(Comment comment, Long reviewId, Account account, Role role) {
         var gradeReview = getGradeReview(reviewId);
         comment.setGradeReview(gradeReview);
         comment.setAuthor(account);
+        if (role.equals(Role.TEACHER)){
+            String content = String.format("GTeacher has replied your grade review for %s",
+                    gradeReview.getSubmission().getAssignment().getName());
+            notificationService.sendNotification(Collections.singletonList(gradeReview.getRequestBy()), content);
+        }
         return commentRepository.save(comment);
     }
 

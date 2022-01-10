@@ -8,6 +8,4 @@ import java.util.UUID;
 
 public interface NotificationService {
     void sendNotification(List<Account> accounts, String content);
-
-    void test(UUID accountId);
 }

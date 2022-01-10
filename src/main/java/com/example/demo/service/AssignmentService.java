@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import com.example.demo.common.enums.Role;
 import com.example.demo.dto.OverallGradeDto;
 import com.example.demo.dto.SubmissionDto;
 import com.example.demo.entity.*;
@@ -53,7 +54,7 @@ public interface AssignmentService {
 
     List<String> checkFillSubmission(Long assignmentId);
 
-    Comment createReviewComment(Comment comment, Long reviewId, Account account);
+    Comment createReviewComment(Comment comment, Long reviewId, Account account, Role role);
 
     Submission finalizeGradeReview(Long gradeReviewId, Integer grade);
 

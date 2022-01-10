@@ -33,7 +33,6 @@ import java.util.stream.Collectors;
 public class AccountController extends AbstractServiceEndpoint{
     private final AccountService accountService;
     private final VerifyTokenService verifyTokenService;
-    private final NotificationService notificationService;
     private final AccountMapper accountMapper;
     private final NotificationMapper notificationMapper;
 
@@ -108,11 +107,5 @@ public class AccountController extends AbstractServiceEndpoint{
         return ResponseEntity.ok(accountService.getAllNotification(accountId)
                 .stream().map(notificationMapper::toNotificationDto)
                 .collect(Collectors.toList()));
-    }
-
-    @GetMapping("notification/test")
-    public ResponseEntity<Void> test(@AuthenticationPrincipal UUID accountId){
-        notificationService.test(accountId);
-        return ResponseEntity.ok().build();
     }
 }

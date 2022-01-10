@@ -186,7 +186,8 @@ public class AssignmentController extends AbstractServiceEndpoint {
 
     @PostMapping("*/submission/review/{id}/comment/create")
     public ResponseEntity<CommentDto> createGradeReviewComment(@PathVariable Long id, @RequestBody Comment comment){
-        var createdComment = assignmentService.createReviewComment(comment, id, participantInfo.getAccount());
+        var createdComment = assignmentService.createReviewComment(comment, id, participantInfo.getAccount(),
+                participantInfo.getRole());
         return ResponseEntity.ok(commentMapper.toCommentDto(createdComment));
     }
 

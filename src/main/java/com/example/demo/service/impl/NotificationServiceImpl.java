@@ -36,11 +36,5 @@ public class NotificationServiceImpl implements NotificationService {
                         notificationMapper.toNotificationDto(receiver.getNotification())));
     }
 
-    @Override
-    public void test(UUID accountId) {
-        System.out.println(accountId.toString());
-        simpMessagingTemplate.convertAndSendToUser(accountId.toString(),"/topic/noti",new Notification("hello front"));
-    }
-
 
 }
