@@ -2,6 +2,7 @@ package com.example.demo.service;
 
 import com.example.demo.common.enums.VerifyTokenType;
 import com.example.demo.entity.Account;
+import com.example.demo.entity.Notification;
 import com.example.demo.entity.VerifyToken;
 
 import java.io.IOException;
@@ -33,9 +34,13 @@ public interface AccountService {
 
     List<Account> getAllAccount();
 
+    List<Account> getAllLockedAccount();
+
     boolean checkLocked(UUID accountId);
 
     void lockAccount(UUID accountId);
 
     void unlockAccount(UUID accountId);
+
+    List<Notification> getAllNotification(UUID accountId);
 }

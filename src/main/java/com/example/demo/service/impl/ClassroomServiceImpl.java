@@ -114,12 +114,12 @@ public class ClassroomServiceImpl implements ClassroomService {
     }
 
     @Override
-    public void sendInvitation(List<String> invitations, Long classroomId, Role role) {
+    public void sendInvitation(String frontHost, List<String> invitations, Long classroomId, Role role) {
         var classroom = classroomRepository.findById(classroomId)
                 .orElseThrow(()->new RTException(
                         new RecordNotFoundException(classroomId.toString(), Classroom.class.getSimpleName())));
 
-        var invitationLink = generateInvitationLink(classroom, role);
+        var invitationLink = generateInvitationLink(frontHost, classroom, role);
 
         //Prepare subject & content
         var content = "Please follow the link to accept "+role.toString().toLowerCase()+ " invitation "+invitationLink;
@@ -133,9 +133,9 @@ public class ClassroomServiceImpl implements ClassroomService {
         });
     }
 
-    private String generateInvitationLink(Classroom classroom, Role role){
+    private String generateInvitationLink(String frontHost, Classroom classroom, Role role){
 //        return "http://localhost:8085/#/invite/accept_token/"
-        return "https://18127003.github.io/classroom-frontend/#/invite/accept_token/"
+        return frontHost + "/#/invite/accept_token/"
                 +classroom.getId()
                 +"?role="
                 +role.toString()

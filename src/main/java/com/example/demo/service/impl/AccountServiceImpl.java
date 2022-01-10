@@ -7,10 +7,7 @@ import com.example.demo.common.exception.InvalidVerifyTokenException;
 import com.example.demo.common.exception.RTException;
 import com.example.demo.common.exception.RecordNotFoundException;
 import com.example.demo.entity.*;
-import com.example.demo.repository.AccountRepository;
-import com.example.demo.repository.LockedAccountRepository;
-import com.example.demo.repository.StudentInfoRepository;
-import com.example.demo.repository.VerifyTokenRepository;
+import com.example.demo.repository.*;
 import com.example.demo.service.AccountService;
 import com.example.demo.service.VerifyTokenService;
 import com.example.demo.util.EmailSender;
@@ -27,6 +24,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.TimeZone;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static com.example.demo.common.constant.Constants.HOST_EMAIL;
 
@@ -37,6 +35,7 @@ public class AccountServiceImpl implements AccountService {
     private final AccountRepository accountRepository;
     private final StudentInfoRepository studentInfoRepository;
     private final LockedAccountRepository lockedAccountRepository;
+    private final ReceiverRepository receiverRepository;
     private final EmailSender emailSender;
     private final PasswordUtil passwordUtil;
 
@@ -54,6 +53,7 @@ public class AccountServiceImpl implements AccountService {
         }
         account.setPassword(passwordUtil.encodePassword(account.getPassword()));
         account.setName(account.getFirstName()+" "+account.getLastName());
+        account.setStatus(AccountStatus.CREATED);
         return accountRepository.save(account);
     }
 
@@ -67,18 +67,10 @@ public class AccountServiceImpl implements AccountService {
             }
         }
 
-//        var studentId = update.getStudentId();
-//        if(studentId!=null && !studentId.equals(account.getStudentId())){
-//            if(accountRepository.findByStudentId(studentId)!=null){
-//                throw new RTException(new DuplicateRecordException(studentId, Account.class.getSimpleName()));
-//            }
-//        }
-
         account.setFirstName(update.getFirstName());
         account.setLastName(update.getLastName());
         account.setName(update.getFirstName()+" "+update.getLastName());
         account.setEmail(update.getEmail());
-//        account.setStudentId(studentId);
 
         return accountRepository.save(account);
     }
@@ -174,6 +166,12 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    public List<Account> getAllLockedAccount() {
+        return lockedAccountRepository.findAll().stream().map(LockedAccount::getAccount)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public boolean checkLocked(UUID accountId) {
         var lockedAccount = lockedAccountRepository.getByAccountId(accountId);
         return lockedAccount != null;
@@ -193,5 +191,10 @@ public class AccountServiceImpl implements AccountService {
             throw new RTException(new RecordNotFoundException(accountId.toString(), LockedAccount.class.getSimpleName()));
         }
         lockedAccountRepository.delete(locked);
+    }
+
+    @Override
+    public List<Notification> getAllNotification(UUID accountId) {
+        return receiverRepository.getAllOfAccount(accountId);
     }
 }

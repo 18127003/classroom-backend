@@ -199,8 +199,6 @@ public class AssignmentServiceImpl implements AssignmentService {
     public Assignment addAssignment(Assignment assignment, Account creator, Classroom classroom) {
         assignment.setClassroom(classroom);
         assignment.setCreator(creator);
-//        Date current = Date.from(Instant.now());
-//        assignment.setCreatedAt(current);
         assignment.setStatus(AssignmentStatus.GRADING);
         return assignmentRepository.save(assignment);
     }

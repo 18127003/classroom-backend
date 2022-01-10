@@ -16,6 +16,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
@@ -96,8 +97,9 @@ public class CommonController extends AbstractServiceEndpoint{
 
     @PostMapping("{id}/invite")
     public void inviteParticipants(@RequestBody List<String> invitations, @PathVariable Long id,
-                                   @RequestParam String role) {
-        classroomService.sendInvitation(invitations, id, Role.valueOf(role.toUpperCase()));
+                                   @RequestParam String role, HttpServletRequest request) {
+        var frontHost = request.getHeader("origin");
+        classroomService.sendInvitation(frontHost, invitations, id, Role.valueOf(role.toUpperCase()));
     }
 
     @GetMapping("{id}/studentInfo/all")

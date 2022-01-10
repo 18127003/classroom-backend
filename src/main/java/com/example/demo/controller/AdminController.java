@@ -56,6 +56,13 @@ public class AdminController extends AbstractServiceEndpoint{
                 .collect(Collectors.toList()));
     }
 
+    @GetMapping("account/locked/all")
+    public ResponseEntity<List<AccountDto>> getAllLocked(){
+        return ResponseEntity.ok(accountService.getAllLockedAccount().stream()
+                .map(accountMapper::toAccountDto)
+                .collect(Collectors.toList()));
+    }
+
     @GetMapping("account/{id}")
     public ResponseEntity<AccountDto> getAccount(@PathVariable UUID id){
         var account = accountService.getAccountById(id);

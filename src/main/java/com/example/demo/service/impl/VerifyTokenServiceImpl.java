@@ -32,7 +32,7 @@ public class VerifyTokenServiceImpl implements VerifyTokenService {
         var tokenString = UUID.randomUUID().toString();
         var calendar = Calendar.getInstance(TimeZone.getTimeZone(ZoneId.systemDefault()));
         calendar.add(Calendar.MINUTE, expireMinute);
-        var token = new VerifyToken(tokenString, Calendar.getInstance().getTime(), type, account);
+        var token = new VerifyToken(tokenString, calendar.getTime(), type, account);
         return verifyTokenRepository.save(token);
     }
 

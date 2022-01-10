@@ -25,7 +25,7 @@ public interface ClassroomService {
 
     List<Participant> getParticipants(Long classroomId);
 
-    void sendInvitation(List<String> invitations, Long classroomId, Role role);
+    void sendInvitation(String frontHost, List<String> invitations, Long classroomId, Role role);
 
     Participant getAssignedClassroom(Long classroomId, UUID accountId);
 
