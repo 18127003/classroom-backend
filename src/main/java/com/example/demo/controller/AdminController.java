@@ -45,20 +45,26 @@ public class AdminController extends AbstractServiceEndpoint{
     }
 
     @GetMapping("all")
-    public ResponseEntity<List<AdminDto>> getAllAdmin(){
-        return ResponseEntity.ok(adminService.getAllAdmin().stream().map(adminMapper::toAdminDto)
+    public ResponseEntity<List<AdminDto>> getAllAdmin(@RequestParam boolean desc,
+                                                      @RequestParam(required = false) String q){
+        var admins = adminService.getAllAdmin(desc, q);
+        return ResponseEntity.ok(admins.stream().map(adminMapper::toAdminDto)
                 .collect(Collectors.toList()));
     }
 
     @GetMapping("account/all")
-    public ResponseEntity<List<AccountDto>> getAllAccount(){
-        return ResponseEntity.ok(accountService.getAllAccount().stream().map(accountMapper::toAccountDto)
+    public ResponseEntity<List<AccountDto>> getAllAccount(@RequestParam boolean desc,
+                                                          @RequestParam(required = false) String q){
+        var accounts = accountService.getAllAccount(desc, q);
+        return ResponseEntity.ok(accounts.stream().map(accountMapper::toAccountDto)
                 .collect(Collectors.toList()));
     }
 
     @GetMapping("account/locked/all")
-    public ResponseEntity<List<AccountDto>> getAllLocked(){
-        return ResponseEntity.ok(accountService.getAllLockedAccount().stream()
+    public ResponseEntity<List<AccountDto>> getAllLocked(@RequestParam boolean desc,
+                                                         @RequestParam(required = false) String q){
+        var locks = accountService.getAllLockedAccount(desc, q);
+        return ResponseEntity.ok(locks.stream()
                 .map(accountMapper::toAccountDto)
                 .collect(Collectors.toList()));
     }
@@ -94,8 +100,9 @@ public class AdminController extends AbstractServiceEndpoint{
     }
 
     @GetMapping("classroom/all")
-    public ResponseEntity<List<ClassroomDto>> getAllClassroom(){
-        var classrooms = classroomService.getAllClassroom(false);
+    public ResponseEntity<List<ClassroomDto>> getAllClassroom(@RequestParam boolean desc,
+                                                              @RequestParam(required = false) String q){
+        var classrooms = classroomService.getAllClassroom(desc, q);
         return ResponseEntity.ok(classrooms.stream().map(classroomMapper::toClassroomDto).collect(Collectors.toList()));
     }
 

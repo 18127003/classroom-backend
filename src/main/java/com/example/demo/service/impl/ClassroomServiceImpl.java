@@ -14,6 +14,8 @@ import com.example.demo.util.EmailSender;
 import com.example.demo.util.ExcelUtil;
 import com.example.demo.util.dto.StudentInfoData;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.util.StringUtil;
 import org.jasypt.encryption.StringEncryptor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -201,10 +203,10 @@ public class ClassroomServiceImpl implements ClassroomService {
     }
 
     @Override
-    public List<Classroom> getAllClassroom(boolean sortDesc) {
-        if (sortDesc){
-            return classroomRepository.findAll(Sort.by(Sort.Direction.DESC,"createdAt"));
+    public List<Classroom> getAllClassroom(boolean sortDesc, String q) {
+        if (StringUtils.isEmpty(q)){
+            return classroomRepository.findAllSort(sortDesc);
         }
-        return classroomRepository.findAll(Sort.by(Sort.Direction.ASC, "createdAt"));
+        return classroomRepository.findAllSortSearch(sortDesc, q);
     }
 }

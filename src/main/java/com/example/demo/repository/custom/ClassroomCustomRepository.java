@@ -6,4 +6,8 @@ import java.util.List;
 
 public interface ClassroomCustomRepository {
     Classroom findByCode(String code);
+
+    List<Classroom> findAllSort(boolean isDesc);
+
+    List<Classroom> findAllSortSearch(boolean isDesc, String q);
 }

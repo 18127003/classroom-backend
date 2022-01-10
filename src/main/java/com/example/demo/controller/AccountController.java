@@ -12,14 +12,17 @@ import com.example.demo.entity.Account;
 import com.example.demo.mapper.AccountMapper;
 import com.example.demo.mapper.NotificationMapper;
 import com.example.demo.service.AccountService;
+import com.example.demo.service.NotificationService;
 import com.example.demo.service.VerifyTokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.security.Principal;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -30,6 +33,7 @@ import java.util.stream.Collectors;
 public class AccountController extends AbstractServiceEndpoint{
     private final AccountService accountService;
     private final VerifyTokenService verifyTokenService;
+    private final NotificationService notificationService;
     private final AccountMapper accountMapper;
     private final NotificationMapper notificationMapper;
 
@@ -104,5 +108,11 @@ public class AccountController extends AbstractServiceEndpoint{
         return ResponseEntity.ok(accountService.getAllNotification(accountId)
                 .stream().map(notificationMapper::toNotificationDto)
                 .collect(Collectors.toList()));
+    }
+
+    @GetMapping("notification/test")
+    public ResponseEntity<Void> test(@AuthenticationPrincipal UUID accountId){
+        notificationService.test(accountId);
+        return ResponseEntity.ok().build();
     }
 }

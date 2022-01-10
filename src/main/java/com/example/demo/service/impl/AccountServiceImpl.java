@@ -13,6 +13,7 @@ import com.example.demo.service.VerifyTokenService;
 import com.example.demo.util.EmailSender;
 import com.example.demo.util.PasswordUtil;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -161,14 +162,19 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public List<Account> getAllAccount() {
-        return accountRepository.getAllNonLockedAccount();
+    public List<Account> getAllAccount(boolean isDesc, String q) {
+        if (StringUtils.isEmpty(q)){
+            return accountRepository.getAllNonLockedAccount(isDesc);
+        }
+        return accountRepository.getAllNonLockedAccountSearch(isDesc, q);
     }
 
     @Override
-    public List<Account> getAllLockedAccount() {
-        return lockedAccountRepository.findAll().stream().map(LockedAccount::getAccount)
-                .collect(Collectors.toList());
+    public List<Account> getAllLockedAccount(boolean isDesc, String q) {
+        if (StringUtils.isEmpty(q)){
+            return lockedAccountRepository.getAllLockedSort(isDesc);
+        }
+        return lockedAccountRepository.getAllLockedSortSearch(isDesc, q);
     }
 
     @Override

@@ -35,5 +35,5 @@ public interface ClassroomService {
 
     void importStudentInfo(MultipartFile file, Classroom classroom) throws IOException;
 
-    List<Classroom> getAllClassroom(boolean sortDesc);
+    List<Classroom> getAllClassroom(boolean sortDesc, String q);
 }

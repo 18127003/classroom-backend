@@ -10,5 +10,7 @@ public interface AccountCustomRepository {
 
     Account findByEmail(String email);
 
-    List<Account> getAllNonLockedAccount();
+    List<Account> getAllNonLockedAccount(boolean isDesc);
+
+    List<Account> getAllNonLockedAccountSearch(boolean isDesc, String q);
 }

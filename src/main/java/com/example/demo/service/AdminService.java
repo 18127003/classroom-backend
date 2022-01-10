@@ -14,5 +14,5 @@ public interface AdminService {
 
     Admin getByEmail(String email);
 
-    List<Admin> getAllAdmin();
+    List<Admin> getAllAdmin(boolean isDesc, String q);
 }

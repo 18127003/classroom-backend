@@ -10,6 +10,7 @@ import com.example.demo.repository.AdminRepository;
 import com.example.demo.service.AdminService;
 import com.example.demo.util.PasswordUtil;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -55,7 +56,10 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public List<Admin> getAllAdmin() {
-        return adminRepository.findAll();
+    public List<Admin> getAllAdmin(boolean isDesc, String q) {
+        if (StringUtils.isEmpty(q)){
+            return adminRepository.findAllSort(isDesc);
+        }
+        return adminRepository.findAllSOrtSearch(isDesc, q);
     }
 }

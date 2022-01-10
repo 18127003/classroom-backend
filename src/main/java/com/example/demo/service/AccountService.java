@@ -32,9 +32,9 @@ public interface AccountService {
 
     void activateAccount(VerifyToken token);
 
-    List<Account> getAllAccount();
+    List<Account> getAllAccount(boolean isDesc, String q);
 
-    List<Account> getAllLockedAccount();
+    List<Account> getAllLockedAccount(boolean isDesc, String q);
 
     boolean checkLocked(UUID accountId);
 
