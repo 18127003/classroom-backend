@@ -168,7 +168,7 @@ public class AssignmentServiceImpl implements AssignmentService {
         comment.setGradeReview(gradeReview);
         comment.setAuthor(account);
         if (role.equals(Role.TEACHER)){
-            String content = String.format("GTeacher has replied your grade review for %s",
+            String content = String.format("Teacher has replied your grade review for %s",
                     gradeReview.getSubmission().getAssignment().getName());
             notificationService.sendNotification(Collections.singletonList(gradeReview.getRequestBy()), content);
         }
