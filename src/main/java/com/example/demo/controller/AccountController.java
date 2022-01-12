@@ -43,9 +43,9 @@ public class AccountController extends AbstractServiceEndpoint{
     }
 
     @PatchMapping("activate")
-    public ResponseEntity<Void> activateAccount(@RequestBody String tokenString){
-        var token = verifyTokenService.getByTokenString(tokenString);
-        accountService.activateAccount(token);
+    public ResponseEntity<Void> activateAccount(@RequestParam String token){
+        var verified = verifyTokenService.getByTokenString(token);
+        accountService.activateAccount(verified);
         return ResponseEntity.ok().build();
     }
 
